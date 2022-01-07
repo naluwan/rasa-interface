@@ -1,0 +1,35 @@
+<div class="row m-5">
+  <div class="col-8 m-auto">
+    <div class="card card-body">
+      <h1 class="text-center mt-3">編輯公司資訊</h1>
+      {{> message}}
+      <form action="/company/{{info.INFO_NO}}?_method=PUT" method="POST">
+        <div class="modal-body">
+
+          <div class="input-group mb-3">
+            <div class="input-group-prepend">
+              <label class="input-group-text new-title" for="INFO_NO">資訊類別</label>
+            </div>
+            <select class="custom-select new-title" id="INFO_NO" name="INFO_NO" required>
+              <option value="" hidden>請選擇</option>
+              <option value="{{info.INFO_NO}}" selected disabled>{{info.INFO_NAME}}</option>
+            </select>
+          </div>
+
+          <div class="input-group">
+            <div class="input-group-prepend">
+              <span class="input-group-text new-title">資訊內容</span>
+            </div>
+            <textarea type="text" class="form-control new-des" name="INFO_DES" placeholder="請輸入資訊內容..." aria-label="inputDes"
+              aria-describedby="des" rows="10" required>{{ info.INFO_DES }}</textarea>
+          </div>
+
+        </div>
+        <div class="modal-footer">
+          <a href="/company" class="btn btn-outline-info">取消</a>
+          <button type="submit" class="btn btn-primary confirm-btn" id="confirm-create">儲存</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,42 @@
+<div class="row m-5">
+  <div class="col-8 m-auto">
+    <div class="card card-body">
+      <h1 class="text-center mt-3">新增功能</h1>
+      <form action="/bf_cs/function/new" method="POST">
+        <div class="modal-body">
+          {{> message}}
+          <div class="input-group pt-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text new-title" for="category">類別</span>
+            </div>
+            <select class="custom-select new-title" id="category" name="category" required>
+              <option value="" selected hidden>請選擇</option>
+              {{#each categoryInfo}}
+              <option value="{{this.CATEGORY_ID}}" {{#is this.CATEGORY_ID ../category}} selected {{/is}}>{{this.CATEGORY_NAME}}</option>
+              {{/each}}
+            </select>
+          </div>
+
+          <div class="input-group pt-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text new-title">功能名稱</span>
+            </div>
+            <input type="text" class="form-control new-des" name="function_name" placeholder="請輸入功能名稱" value="{{function_name}}" required>
+          </div>
+
+          <div class="input-group pt-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text new-title">功能英文名稱</span>
+            </div>
+            <input type="text" class="form-control new-des" name="entity_name" placeholder="請輸入功能英文名稱" value="{{entity_name}}" required>
+          </div>
+
+        </div>
+        <div class="modal-footer">
+          <a href="/bf_cs/function" class="btn btn-outline-info">取消</a>
+          <button type="submit" class="btn btn-primary confirm-btn" id="confirm-create">新增</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,141 @@
+actions:
+  - action_answer_question_res
+  - action_answer_stock
+  - action_botfront_disambiguation
+  - action_botfront_disambiguation_followup
+  - action_botfront_fallback
+  - action_botfront_mapping
+  - action_cs_answer
+  - action_show_time
+  - utter_2vS2v0pTQ
+  - utter_BaM1tk9Mo
+  - utter_HS3FhBwFr
+  - utter_JJHJxJ5d8
+  - utter_NhsgyoV3UR
+  - utter_default
+  - utter_no_answer
+  - utter_no_function_answer
+  - utter_out_of_scope
+  - utter_sM_f1TDs0
+entities:
+  - company
+  - stock
+forms: {}
+intents:
+  - get_started
+  - menu
+  - nlu_fallback
+  - out_of_scope
+  - 分類加功能
+  - 問好
+  - 問答
+  - 問股票
+  - 道謝
+responses:
+  utter_2vS2v0pTQ:
+    - language: zh
+      text: 您好，我是棉花糖客服機器人，有什麼需要幫忙的嗎？
+  utter_BaM1tk9Mo:
+    - elements:
+        - buttons:
+            - payload: '/分類加功能{"category":"personnel"}'
+              title: 查詢人事分類
+              type: postback
+          default_action: null
+          image_url: "https://i.imgur.com/OgoOsms.png"
+          subtitle: 人事基本資料設定、人事相關異動作業(新人報到、入職)
+          title: 人事
+        - buttons:
+            - payload: '/分類加功能{"category":"attendance"}'
+              title: 查詢考勤分類
+              type: postback
+          default_action: null
+          image_url: "https://i.imgur.com/dIQ3SG2.jpg"
+          subtitle: 考勤相關設定(排班、請假、加班、出差、刷卡、特休)、考勤結算
+          title: 考勤
+        - buttons:
+            - payload: '/分類加功能{"category":"salary"}'
+              title: 查詢薪資分類
+              type: postback
+          default_action: null
+          image_url: "https://i.imgur.com/kw8SeoC.jpg"
+          subtitle: 薪資相關設定(薪資項目、全勤、遲到、彈性上下班、所得稅、銀行轉帳格式)、薪資結算、獎金作業、薪資報表
+          title: 薪資
+        - buttons:
+            - payload: '/分類加功能{"category":"insurance"}'
+              title: 查詢保險分類
+              type: postback
+          default_action: null
+          image_url: "https://i.imgur.com/XPmTSRy.png"
+          subtitle: 勞保作業、健保作業、勞退作業
+          title: 保險
+        - buttons:
+            - payload: '/分類加功能{"category":"otherCategory"}'
+              title: 查詢額外分類
+              type: postback
+          default_action: null
+          image_url: "https://i.imgur.com/Wt2nVtY.jpg"
+          subtitle: APP版、棉花糖首頁及功能設定所遇到的問題或bug
+          title: 額外
+      language: zh
+  utter_HS3FhBwFr:
+    - language: zh
+      text: 對話中如要返回主選單，請在對話框輸入「**主選單**」或「**menu**」即可。
+  utter_JJHJxJ5d8:
+    - language: zh
+      text: |-
+        很抱歉，棉花糖客服機器人還在學習中，請換個方式提問!!  
+        ex.兼職人員如何設定、一天如何異動多筆項目
+    - language: zh
+      text: |-
+        抱歉，我不明白你的意思，麻煩換個方式重新提問試試看!!  
+        ex.特休沒休完可以遞延嗎、雙週變形工時的規定
+  utter_NhsgyoV3UR:
+    - language: zh
+      text: 不客氣！希望今天有幫助到您！！
+    - language: zh
+      text: 不客氣，有任何問題歡迎使用棉花糖客服機器人～
+  utter_default:
+    - language: zh
+      text: |-
+        抱歉，我不明白你的意思，麻煩換個方式重新提問試試看!!  
+        ex.特休沒休完可以遞延嗎、雙週變形工時的規定
+    - language: zh
+      text: |-
+        非常抱歉，請您換個方式提問，我會盡力回答您!!  
+        ex.新增部門時出現上層單位流程分類錯誤、可以隱藏離職員工的資料嗎
+  utter_no_answer:
+    - language: zh
+      text: |
+        很抱歉，棉花糖客服機器人目前沒有此問題的答案。  
+        棉花糖客服機器人會盡快將資料學習完成，給予您最好的解答。  
+  utter_no_function_answer:
+    - language: zh
+      text: 很抱歉，目前此功能沒有相對應的問答資訊，棉花糖客服機器人會盡快將資料學習完成，給予您最好的答覆。
+  utter_out_of_scope:
+    - language: zh
+      text: |-
+        很抱歉，棉花糖客服機器人還在學習中，請換個方式提問!!  
+        ex.兼職人員如何設定、一天如何異動多筆項目
+    - language: zh
+      text: |-
+        非常抱歉，請您換個方式提問，我會盡力回答您!!  
+        ex.新增部門時出現上層單位流程分類錯誤、可以隱藏離職員工的資料嗎
+  utter_sM_f1TDs0:
+    - language: zh
+      text: 您好，歡迎使用棉花糖客服機器人，請問有什麼可以幫助您的嗎？
+session_config: {}
+slots:
+  category:
+    type: text
+  company:
+    type: text
+  disambiguation_message:
+    type: unfeaturized
+  fallback_language:
+    initial_value: zh
+    type: unfeaturized
+  function:
+    type: text
+  stock:
+    type: text

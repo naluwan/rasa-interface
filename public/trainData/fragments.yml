@@ -1,0 +1,83 @@
+stories:
+  - story: get_started
+    steps:
+      - intent: get_started
+        entities: []
+      - action: action_show_time
+      - action: utter_sM_f1TDs0
+      - checkpoint: link-to-主選單/1b7b523d-7703-41c1-a2fc-3285ef5c1b4b
+    metadata:
+      group: greet
+  - story: menu
+    steps:
+      - intent: menu
+        entities: []
+      - checkpoint: link-to-主選單/1b7b523d-7703-41c1-a2fc-3285ef5c1b4b
+    metadata:
+      group: greet
+  - story: 主選單
+    steps:
+      - checkpoint: link-to-主選單/1b7b523d-7703-41c1-a2fc-3285ef5c1b4b
+      - action: utter_BaM1tk9Mo
+      - action: utter_HS3FhBwFr
+    metadata:
+      group: greet
+  - story: 多entity
+    steps:
+      - intent: 問股票
+        user: 我想問鴻海今天的股價
+        entities:
+          - stock: 股價
+          - company: 鴻海
+      - action: action_answer_stock
+    metadata:
+      group: new main
+  - story: 客服 - 分類加功能
+    steps:
+      - intent: 分類加功能
+        entities: []
+      - action: action_cs_answer
+    metadata:
+      group: new main
+  - story: 客服 - 問答
+    steps:
+      - intent: 問答
+        entities: []
+      - action: action_answer_question_res
+    metadata:
+      group: new main
+rules:
+  - rule: nlu_fallback
+    condition: []
+    steps:
+      - intent: nlu_fallback
+        entities: []
+      - action: utter_JJHJxJ5d8
+    metadata:
+      group: greet
+  - rule: out_of_scope
+    condition: []
+    steps:
+      - intent: out_of_scope
+        entities: []
+      - action: utter_out_of_scope
+    metadata:
+      group: greet
+  - rule: 問好
+    condition: []
+    steps:
+      - intent: 問好
+        user: 你好
+        entities: []
+      - action: utter_2vS2v0pTQ
+    metadata:
+      group: greet
+  - rule: 道謝
+    condition: []
+    steps:
+      - intent: 道謝
+        user: 謝謝
+        entities: []
+      - action: utter_NhsgyoV3UR
+    metadata:
+      group: greet

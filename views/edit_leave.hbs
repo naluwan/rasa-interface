@@ -1,0 +1,35 @@
+<div class="row m-5">
+  <div class="col-8 m-auto">
+    <div class="card card-body">
+      <h1 class="text-center mt-3">編輯假別資訊</h1>
+      {{> message}}
+      <form action="/leave/{{result.LEAVE_NO}}?_method=PUT" method="POST">
+        <div class="modal-body">
+
+          <div class="input-group mb-3">
+            <div class="input-group-prepend">
+              <label class="input-group-text new-title" for="category">假別類別</label>
+            </div>
+            <select class="custom-select new-title" id="category" name="category" required>
+              <option value="" hidden>請選擇</option>
+              <option value="{{result.LEAVE_NO}}" selected disabled>{{result.LEAVE_NAME}}</option>
+            </select>
+          </div>
+
+          <div class="input-group mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text new-title">假別內容</span>
+            </div>
+            <textarea type="text" class="form-control new-des" name="LEAVE_DES" placeholder="請輸入假別內容..." aria-label="inputDes"
+              aria-describedby="des" rows="10" required>{{ result.LEAVE_DES }}</textarea>
+          </div>
+
+        </div>
+        <div class="modal-footer">
+          <a href="/leave" class="btn btn-outline-info">取消</a>
+          <button type="submit" class="btn btn-primary confirm-btn" id="confirm-create">儲存</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

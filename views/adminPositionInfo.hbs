@@ -1,0 +1,103 @@
+<div class="row d-flex flex-column align-items-center all">
+  <h1 class="m-5">職缺類別</h1>
+  <div class="row">
+    <div class="industry-filter-wrapper">
+      <form action="/adminPositionInfo">
+        <label for="industryFilter">產業類別篩選：</label>
+        <select name="industryFilter" id="industryFilter" onchange="submit()">
+          <option value="">全部顯示</option>
+          {{#forEach industryInfo}}
+          <option value="{{INDUSTRY_NAME}}" {{#is INDUSTRY_NAME ../industryFilter}} selected {{/is}}
+          {{#is INDUSTRY_NAME 'Admin'}} disabled hidden {{/is}}>{{INDUSTRY_NAME}}</option>
+          {{/forEach}}
+        </select>
+      </form> 
+    </div>
+  </div>
+  <div class="col-9 wrapper">
+    {{> message}}
+    <div class="scroll-view">
+      <ul class="list-group">
+        <div class="row d-flex justify-content-center" id="data-panel">
+          {{#each adminPositionInfo}}
+          <div class="col-12">
+            <li class="list-group-item" id="record-item" style="border: none;">
+              <div class="row">
+                <div class=" item-wrapper">
+                  <div class=" my-2 item-title">
+                    <div class="d-flex">
+                      <div class="label-title">產業類別：</div>
+                      <div class="label-des">{{this.INDUSTRY_NAME}}</div>
+                    </div>
+                    <div class="d-flex">
+                      <div class="label-title">職缺名稱：</div>
+                      <div class="label-des">{{this.POSITION_NAME}}</div>
+                    </div>
+                    <div class="d-flex">
+                      <div class="label-title">職缺英文名稱：</div>
+                      <div class="label-des">{{this.POSITION_ENTITY_NAME}}</div>
+                    </div>
+                    
+                  </div>
+                  <div class="d-flex justify-content-center item-buttons">
+                    {{#unless this.TRAINED}}
+                    <form action="/adminPositionInfo/trained/{{this.POSITION_ID}}?_method=PUT" method="POST">
+                      <button class="btn btn-warning mx-2" style="font-size:medium; height:fit-content">
+                        訓練完成
+                      </button>
+                    </form>
+                    {{/unless}}
+                    <button class=" btn btn-danger mx-2" style="font-size:medium; height:fit-content"
+                        id="delete-btn" data-toggle="modal" data-target="#deleteModal" data-id="{{ this.POSITION_ID }}"
+                        data-name="{{ this.POSITION_NAME }}" data-category="adminPositionInfo">
+                        刪除
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </li>
+          </div>
+          {{/each}}
+        </div>
+      </ul>
+    </div>
+  </div>
+  <div class="col-10 my-5 d-flex justify-content-center">
+    <div class="col-6">
+      <div class="row justify-content-center">
+        <a href="/adminPositionInfo/new" class="btn btn-outline-warning col-8" id="create-btn"
+          style="font-size: 1.5rem;">新增資訊</a>
+      </div>
+    </div>
+    <div class="col-6">
+      <div class="row justify-content-center">
+        <a href="/" class="btn btn-outline-dark col-8" id="create-btn"
+          style="font-size: 1.5rem;">返回</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalScrollableTitle">刪除資訊</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>確定要刪除<strong id="delete-position">{{ this.POSITION_NAME }}</strong>?</p> 
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+        <form action="/company/{{ this.POSITION_ID }}" method="post" style="display:inline-block;" id="delete-form">
+          <button type="submit" class="btn btn-danger">確定</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

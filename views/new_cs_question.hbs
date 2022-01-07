@@ -1,0 +1,64 @@
+<div class="row m-5">
+  <div class="col-8 m-auto">
+    <div class="card card-body">
+      <h1 class="text-center mt-3">新增問答</h1>
+      <form action="/bf_cs/question/new" method="POST">
+        <div class="cs-search-wrapper">
+          <div class="modal-body">
+            {{> message}}
+              <div class="input-group pt-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text new-title" for="categorySelect">類別</span>
+                </div>
+                <select class="custom-select new-title" id="categorySelect" name="categorySelect" required>
+                  <option value="" selected hidden>請選擇</option>
+                  {{#each categoryInfo}}
+                  <option value="{{this.CATEGORY_ID}}" {{#is this.CATEGORY_ID ../categorySelect}} selected {{/is}}>{{this.CATEGORY_NAME}}</option>
+                  {{/each}}
+                </select>
+              </div>
+
+              <div class="input-group pt-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text new-title" for="functionSelect">功能</span>
+                </div>
+                <select class="custom-select new-title" id="functionSelect" name="functionSelect" required>
+                  <option value="" selected hidden>暫無資料</option>
+                  {{#each functionInfo}}
+                  <option value="{{this.FUNCTION_ID}}" {{#is this.FUNCTION_ID ../functionSelect}} selected {{/is}}>{{this.FUNCTION_NAME}}</option>
+                  {{/each}}
+                </select>
+              </div>
+
+              <div class="input-group pt-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text new-title">問題描述</span>
+                </div>
+                <textarea type="text" class="form-control new-des" name="description" placeholder="請輸入問題描述" rows="2" required>{{description}}</textarea>
+              </div>
+
+              <div class="input-group pt-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text new-title">英文代號</span>
+                </div>
+                <input type="text" class="form-control new-des" name="entity_name" placeholder="請輸入問題英文代號" value="{{entity_name}}" required>
+              </div>
+
+              <div class="input-group pt-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text new-title">問題答案</span>
+                </div>
+                <textarea type="text" class="form-control new-des" name="answer" placeholder="請輸入問題答案" rows="5" required>{{answer}}</textarea>
+              </div>
+        
+            
+            <div class="modal-footer">
+              <a href="/bf_cs/question" class="btn btn-outline-info">取消</a>
+              <button type="submit" class="btn btn-primary confirm-btn" id="confirm-create">新增</button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

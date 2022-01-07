@@ -1,0 +1,1185 @@
+actions:
+  - action_all_slot_reset
+  - action_botfront_disambiguation
+  - action_botfront_disambiguation_followup
+  - action_botfront_fallback
+  - action_botfront_mapping
+  - action_deactivate_form
+  - action_form_position_reset
+  - action_save_test
+  - action_set_res
+  - action_show_time
+  - action_single_slot_reset
+  - utter_-CMaRYaby
+  - utter_-aUg8L1T3
+  - utter_-rHnMxRmk
+  - utter_-tsAJ8QP9z
+  - utter_0QNdHjsN4
+  - utter_2cjYxwfNL
+  - utter_2kXmoIKtC
+  - utter_48cC8hHiJ
+  - utter_97Qfw2zg3
+  - utter_9ETxnswaGU
+  - utter_9h4IPjz0K
+  - utter_AU8VoQgDj
+  - utter_B6wpTPO74
+  - utter_BKOQQQs-Bh
+  - utter_C1iNevCGl
+  - utter_Dm5jtuNidU
+  - utter_Dq7Y7lwk8
+  - utter_EK8kUoIQJs
+  - utter_Fy4IxusMZ
+  - utter_GeUyORFfx
+  - utter_GeyhaNXU_
+  - utter_GwRBjjf3K
+  - utter_IVazv8VJf
+  - utter_OocP_6PXt
+  - utter_OvtWYOGNw
+  - utter_Ow_hgLYLp
+  - utter_PfWJsO0vs
+  - utter_RHjScoBE7s
+  - utter_RYVQv4UpK
+  - utter_RbhDa5Y1G
+  - utter_SXOXOaihb
+  - utter_Su93NDz6p
+  - utter_UGfhaMnEu
+  - utter_VBqyBbsKT
+  - utter_YI9k2obPr
+  - utter_YoiKzYGYS
+  - utter_ask_form_birthday
+  - utter_ask_form_education
+  - utter_ask_form_email
+  - utter_ask_form_name
+  - utter_ask_form_phone
+  - utter_ask_form_position
+  - utter_ask_form_skill
+  - utter_ask_rephrase
+  - utter_bcaFYTze8
+  - utter_default
+  - utter_eXaXPr42-
+  - utter_fcJ0FL800
+  - utter_g3KmUIGP0
+  - utter_gRlrAvEbq
+  - utter_gSR8zuf4q
+  - utter_invalid_form_birthday
+  - utter_invalid_form_email
+  - utter_invalid_form_name
+  - utter_invalid_form_phone
+  - utter_invalid_form_position
+  - utter_jTkAHe-4r
+  - utter_jd8_RuWLl
+  - utter_kYF7meGXc
+  - utter_kvsU_3Co7
+  - utter_lEJ_fTFA3
+  - utter_lOMoX-74U
+  - utter_lvu6KSNn8
+  - utter_m0eWDfuil
+  - utter_n5CVOvc1L
+  - utter_nDEyeHes-
+  - utter_nMbCDcMWV
+  - utter_nWeu2xqe6
+  - utter_not_in_position
+  - utter_out_of_scope
+  - utter_pTb9Muj10
+  - utter_pl8iESbyE
+  - utter_qIJVNtyi8
+  - utter_r158RcjdU5
+  - utter_uvMtQxW7d
+  - utter_valid_form_skill
+  - utter_wvyTRsovR
+  - utter_xBlgx1M2e
+  - utter_yRSxpy_qu
+entities:
+  - AP
+  - AS
+  - CSE
+  - MA
+  - ME
+  - PM
+  - RD
+  - SA
+  - ST
+  - TM
+  - VSM
+  - all
+  - ask_func
+  - ask_time
+  - company_WFH
+  - company_accept
+  - company_benefits
+  - company_bonus
+  - company_bussinessTrip
+  - company_children_subsidy
+  - company_commuter_subsidy
+  - company_exempt
+  - company_flexible
+  - company_headcount
+  - company_insurance
+  - company_interview
+  - company_introduction
+  - company_leave
+  - company_license_subsidy
+  - company_location
+  - company_overtime
+  - company_parking
+  - company_promotion
+  - company_rent_subsidy
+  - company_restaurant
+  - company_shifts
+  - company_shuttleBus
+  - company_subsidy
+  - company_traffic
+  - company_vacation
+  - company_workTime
+  - get_menu
+  - sales
+  - stop
+forms:
+  resume_form:
+    collect_in_botfront: true
+    description: ''
+    graph_elements:
+      edges:
+        - condition: null
+          id: e1-form_position
+          source: '1'
+          target: form_position
+          type: condition
+        - condition: null
+          id: eform_position-form_name
+          source: form_position
+          target: form_name
+          type: condition
+        - condition: null
+          id: eform_name-form_email
+          source: form_name
+          target: form_email
+          type: condition
+        - condition: null
+          id: eform_email-form_birthday
+          source: form_email
+          target: form_birthday
+          type: condition
+        - condition: null
+          id: eform_birthday-form_phone
+          source: form_birthday
+          target: form_phone
+          type: condition
+        - condition: null
+          id: eform_phone-form_skill
+          source: form_phone
+          target: form_skill
+          type: condition
+        - condition: null
+          id: eform_skill-form_education
+          source: form_skill
+          target: form_education
+          type: condition
+      nodes:
+        - id: '1'
+          position:
+            x: 200
+            'y': 200
+          type: start
+        - id: form_position
+          position:
+            x: 120
+            'y': 360
+          slotName: form_position
+          type: slot
+        - id: form_name
+          position:
+            x: 120
+            'y': 520
+          slotName: form_name
+          type: slot
+        - id: form_email
+          position:
+            x: 120
+            'y': 660
+          slotName: form_email
+          type: slot
+        - id: form_birthday
+          position:
+            x: 120
+            'y': 810
+          slotName: form_birthday
+          type: slot
+        - id: form_phone
+          position:
+            x: 120
+            'y': 960
+          slotName: form_phone
+          type: slot
+        - id: form_skill
+          position:
+            x: 120
+            'y': 1110
+          slotName: form_skill
+          type: slot
+        - id: form_education
+          position:
+            x: 120
+            'y': 1260
+          slotName: form_education
+          type: slot
+    groupName: form story
+    name: resume_form
+    slots:
+      - filling:
+          - intent: null
+            not_intent:
+              - 停止
+              - 未開職缺
+              - 表單查職缺
+              - nlu_fallback
+            type: from_text
+        name: form_position
+        utter_on_new_valid_slot: false
+      - filling:
+          - intent: null
+            not_intent:
+              - 停止
+            type: from_text
+        name: form_name
+        utter_on_new_valid_slot: false
+        validation:
+          comparatum: 4
+          operator: shorter_or_equal
+      - filling:
+          - intent: null
+            not_intent:
+              - 停止
+            type: from_text
+        name: form_email
+        utter_on_new_valid_slot: false
+        validation:
+          comparatum: null
+          operator: email
+      - filling:
+          - intent: null
+            not_intent:
+              - 停止
+            type: from_text
+        name: form_birthday
+        utter_on_new_valid_slot: false
+        validation:
+          comparatum: '^[0-1]?\d{1,2}[0-1]\d[0-3]\d$'
+          operator: matches
+      - filling:
+          - intent: null
+            not_intent:
+              - 停止
+            type: from_text
+        name: form_phone
+        utter_on_new_valid_slot: false
+        validation:
+          comparatum: '^09[0-9]{8}$'
+          operator: matches
+      - filling:
+          - intent: null
+            not_intent:
+              - 停止
+            type: from_text
+        name: form_skill
+        utter_on_new_valid_slot: false
+      - filling:
+          - intent: null
+            not_intent:
+              - 停止
+            type: from_text
+        name: form_education
+        utter_on_new_valid_slot: false
+    updatedAt: 1633512043632
+intents:
+  - get_started
+  - menu
+  - nlu_fallback
+  - out_of_scope
+  - trigger_WgVx9fjpG
+  - who_are_you
+  - 修改全部表單
+  - 停止
+  - 再見
+  - 問上班時間
+  - 問交通
+  - 問交通補助
+  - 問交通車
+  - 問停車位
+  - 問公司資訊
+  - 問出差
+  - 問功能
+  - 問加班
+  - 問勞健保
+  - 問升遷
+  - 問吃飯
+  - 問地址
+  - 問居家上班
+  - 問年假
+  - 問年終
+  - 問彈性上班
+  - 問時間
+  - 問福利
+  - 問租屋補助
+  - 問簡介
+  - 問育兒補助
+  - 問補助
+  - 問規模
+  - 問請假
+  - 問證照補助
+  - 問責任制
+  - 問輪班
+  - 問錄取通知
+  - 問面試
+  - 回答不
+  - 回答好
+  - 填寫基本資料
+  - 打招呼
+  - 未開職缺
+  - 查公司資訊
+  - 職缺
+  - 表單查職缺
+  - 道謝
+responses:
+  utter_-CMaRYaby:
+    - language: zh
+      text: >-
+        【銷售處】業務工作內容：  
+
+        1. 資訊本科系或相關科系畢業。  
+
+        2. 有銷售HR或其他商用系統軟體者佳。  
+          
+        詳情可以點擊[**連結**](https://www.interinfo.com.tw/servlet/jform?file=hrm8w_hire.pkg&locale=TW&init_func=JH004&CPNYID=97090920)查看
+
+
+        【銷售處】業務：月薪30,000~40,000元  
+
+        (1)依據職位決定薪資福利及獎金制度。  
+
+        (2)採底薪+津貼+加給+獎金制。
+  utter_-aUg8L1T3:
+    - language: zh
+      text: 請問你哪一項需要修改？或是所有資料都要重寫呢？
+  utter_-rHnMxRmk:
+    - language: zh
+      quick_replies:
+        - payload: /get_started
+          title: 徵厲Hire小幫手
+          type: postback
+      text: |-
+        歡迎來到徵厲Hire！  
+        請點擊下方按鈕，開啟徵厲Hire小幫手進行快速搜尋導覽吧！！
+  utter_-tsAJ8QP9z:
+    - language: zh
+      text: >-
+        【CMO單位】專案經理工作內容：  
+
+        1. 負責專案事件的統籌、分配、追蹤，並與客戶溝通協調。  
+
+        2. 收集並分析市場訊息。  
+
+        3. 執行新專案之規劃、執行、掌控、成本控制及結案。  
+
+        4. 協助各部門及廠處推動專案之執行、管理、問題追蹤及解決。  
+
+        5. 進行各部門之人員培訓。  
+
+        6. 溝通協調跨部門問題。  
+
+        7. 協助各部門檢討並改進工作流程及內容。  
+
+        8. 協助專案產品功能、規格、品質確認與仲裁。  
+
+        9. 執行開發階段各項會議策劃、召集、記錄及進度跟催等工作。  
+
+        10. 統籌專案產品量化技術移轉工作。  
+
+        11. 進行客戶溝通及訴願處理。  
+          
+        詳情可以點擊[**連結**](https://www.interinfo.com.tw/servlet/jform?file=hrm8w_hire.pkg&locale=TW&init_func=JH004&CPNYID=97090920)查看
+
+
+        【CMO單位】專案經理：待遇面議  
+
+        (1)依據職位決定薪資福利及獎金制度。  
+
+        (2)採底薪+津貼+加給+獎金制。
+  utter_0QNdHjsN4:
+    - language: zh
+      text: |-
+        **不須自備電腦，由公司配置設備使用**
+
+        優於勞基法的福利如下:  
+        (1)生日假：滿三年員工  
+        (2)保險：團保、職災  
+        (3)活動：慶生會、春遊、員工旅遊、聖誕餐會、尾牙  
+        (4)津貼：住房、證照、語言、遠距交通津貼  
+  utter_2cjYxwfNL:
+    - elements:
+        - buttons: []
+          default_action: null
+          image_url: 'https://www.interinfo.com.tw/web/hire/1.jpg'
+          subtitle: 如果想要返回此選單，請在對話框輸入「主選單」即可。
+          title: 主選單
+        - buttons:
+            - payload: /找工作
+              title: 查看職缺
+              type: postback
+          default_action: null
+          image_url: 'https://www.interinfo.com.tw/web/hire/2.jpg'
+          subtitle: 想知道公司有什麼職缺、工作內容及薪水，請點擊下方按鈕
+          title: 職缺資訊
+        - buttons:
+            - payload: /填寫基本資料
+              title: 填寫資料
+              type: postback
+          default_action: null
+          image_url: 'https://www.interinfo.com.tw/web/hire/3.jpg'
+          subtitle: 點擊下方按鈕或在對話框輸入「填寫資料」，HR人員會盡快聯繫你。
+          title: 填寫面試資料
+        - buttons:
+            - payload: /查公司資訊
+              title: 公司資訊
+              type: postback
+          default_action: null
+          image_url: 'https://www.interinfo.com.tw/web/hire/4.jpg'
+          subtitle: 想了解公司福利？上班時間？與公司相關資訊請點擊下面按鈕
+          title: 公司資訊
+      language: zh
+      metadata: null
+  utter_2kXmoIKtC:
+    - language: zh
+      text: |-
+        (1)依據職位決定是否需要安排出差  
+        (2)需要出差的職位：  
+        ＊【國際處-HR雲端銷售】通路開發專員(北區)  
+        ＊【國際處-HR雲端銷售】業務副理  
+        ＊【銷售處】助理業務  
+        ＊【銷售處】業務  
+        ＊【CMO單位】專案經理  
+        ＊【研發處】系統分析師  
+        ＊【總管理處】行銷專員
+  utter_48cC8hHiJ:
+    - language: zh
+      text: |-
+        嗨！我是徵厲Hire小幫手！
+
+        我可以幫助你了解公司資訊、查看職缺和薪資範圍、填寫面試基本資料。
+  utter_97Qfw2zg3:
+    - language: zh
+      text: |-
+        居家上班
+
+        很抱歉，徵厲Hire小幫手正在收集資料，相關資料會盡快補上。
+  utter_9ETxnswaGU:
+    - language: zh
+      text: 你好，有什麼可以幫助你的嗎？
+  utter_9h4IPjz0K:
+    - language: zh
+      text: 抱歉，目前沒有此職缺，請重新輸入！
+  utter_AU8VoQgDj:
+    - language: zh
+      quick_replies:
+        - payload: /回答好
+          title: 是，我要離開。
+          type: postback
+        - payload: /回答不
+          title: 不，繼續填寫。
+          type: postback
+      text: 離開後，資料會全部刪除，確定要離開嗎？
+  utter_B6wpTPO74:
+    - language: zh
+      quick_replies:
+        - payload: '/問交通補助{"company_commuter_subsidy":"通勤補助"}'
+          title: 通勤補助
+          type: postback
+        - payload: '/問育兒補助{"company_children_subsidy":"育兒補助"}'
+          title: 育兒補助
+          type: postback
+        - payload: '/問租屋補助{"company_rent_subsidy":"租屋補助"}'
+          title: 租屋補助
+          type: postback
+        - payload: '/問證照補助{"company_license_subsidy":"證照補助"}'
+          title: 證照補助
+          type: postback
+      text: 公司目前有以下幾種補助津貼：
+  utter_BKOQQQs-Bh:
+    - language: zh
+      text: >-
+        【總管理處】行政專員：  
+
+        1. 負責專案資料紀錄、整理與文件管理。  
+
+        2. 行政庶務工作。  
+
+        3. 福委會活動執行。  
+
+        4. 其他主管交辦事項。  
+          
+        詳情可以點擊[**連結**](https://www.interinfo.com.tw/servlet/jform?file=hrm8w_hire.pkg&locale=TW&init_func=JH004&CPNYID=97090920)查看
+
+
+        【總管理處】行政專員：月薪32,000元 ~ 36,000元  
+
+        (1)依據職位決定薪資福利及獎金制度。  
+
+        (2)採底薪+津貼+加給+獎金制。
+  utter_C1iNevCGl:
+    - language: zh
+      text: 不客氣，有什麼問題都可以問我！
+    - language: zh
+      text: 沒問題，很開心能夠幫助到你！
+  utter_Dm5jtuNidU:
+    - language: zh
+      text: >-
+        【總管理處】行政主管工作內容：  
+
+        1. 規劃、組織、指導及協調企業或組織內部行政作業。  
+
+        2. 控制支出及確保資源有效使用。  
+
+        3. 建立及指導作業及行政程序。  
+
+        4. 規劃及指導日常行政相關作業。  
+
+        5. 監督人員之選擇、訓練及業績。  
+          
+        詳情可以點擊[**連結**](https://www.interinfo.com.tw/servlet/jform?file=hrm8w_hire.pkg&locale=TW&init_func=JH004&CPNYID=97090920)查看
+
+
+        【總管理處】行政主管：待遇面議  
+
+        (1)依據職位決定薪資福利及獎金制度。  
+
+        (2)採底薪+津貼+加給+獎金制。
+  utter_Dq7Y7lwk8:
+    - language: zh
+      text: 以上資料是否全部正確？
+  utter_EK8kUoIQJs:
+    - language: zh
+      text: >-
+        【國際處-HR雲端銷售】業務副理工作內容：  
+
+        1.  對企業應用資訊化推動有極大熱情。  
+
+        2.  海外市場業務接洽，具東南亞經驗者佳。  
+
+        3.  熟悉經銷通路合作、擬定經銷通路行銷策略、經營管理經銷通路。  
+
+        4.  與當地經銷夥伴開發潛在客戶，拓展市場，達成業績目標。  
+
+        5.  業務推展，傳達及說明公司各項業務重大訊息、活動及產品。  
+
+        6.  系統展示、產品報價及洽談合約，處理應收帳款，維繫穩定客戶關係。  
+          
+        詳情可以點擊[**連結**](https://www.interinfo.com.tw/servlet/jform?file=hrm8w_hire.pkg&locale=TW&init_func=JH004&CPNYID=97090920)查看
+
+
+        【國際處-HR雲端銷售】業務副理：月薪30,000~40,000元  
+
+        (1)依據職位決定薪資福利及獎金制度。  
+
+        (2)採底薪+津貼+加給+獎金制。
+  utter_Fy4IxusMZ:
+    - language: zh
+      text: 我是徵厲Hire小幫手，有什麼可以幫你的嗎？
+  utter_GeUyORFfx:
+    - language: zh
+      text: 不用輪班，公司尚無輪班制度。
+  utter_GeyhaNXU_:
+    - buttons:
+        - payload: '/職缺{"RD":"【研發處】研發工程師"}'
+          title: 【研發處】研發工程師
+          type: postback
+        - payload: '/職缺{"CSE":"【研發處】資訊客服專員"}'
+          title: 【研發處】資訊客服專員
+          type: postback
+        - payload: '/職缺{"SA":"【研發處】系統分析師"}'
+          title: 【研發處】系統分析師
+          type: postback
+        - payload: '/職缺{"PM":"【CMO單位】專案經理"}'
+          title: 【CMO單位】專案經理
+          type: postback
+        - payload: '/職缺{"ST":"【CMO單位】業務助理"}'
+          title: 【CMO單位】業務助理
+          type: postback
+        - payload: '/職缺{"TM":"【國際處-HR雲端銷售】通路開發專員(北區)"}'
+          title: 【國際處-HR雲端銷售】通路開發專員(北區)
+          type: postback
+        - payload: '/職缺{"VSM":"【國際處-HR雲端銷售】業務副理"}'
+          title: 【國際處-HR雲端銷售】業務副理
+          type: postback
+        - payload: '/職缺{"MA":"【銷售處】助理業務"}'
+          title: 【銷售處】助理業務
+          type: postback
+        - payload: '/職缺{"sales":"【銷售處】業務"}'
+          title: 【銷售處】業務
+          type: postback
+        - payload: '/職缺{"ME":"【總管理處】行銷專員"}'
+          title: 【總管理處】行銷專員
+          type: postback
+        - payload: '/職缺{"AS":"【總管理處】行政主管"}'
+          title: 【總管理處】行政主管
+          type: postback
+        - payload: '/職缺{"AP":"【總管理處】行政專員"}'
+          title: 【總管理處】行政專員
+          type: postback
+      language: zh
+      text: 以下為有職缺的工作，請問你需要查看哪一個職位的工作介紹及薪資？
+  utter_GwRBjjf3K:
+    - language: zh
+      text: |-
+        (1)有勞健保，到職加保符合勞基法規定  
+        (2)另外替員工投保團保、職災福利
+  utter_IVazv8VJf:
+    - language: zh
+      metadata: null
+      text: >-
+        (1)台北總公司  
+
+        地址：新北市中和區建一路150號6樓之3  
+
+        電話：02-8227-1675  
+          
+        (2)新竹辦事處  
+
+        地址：新竹縣竹北市高鐵七路65號10樓之10  
+
+        電話：03-550-4961  
+          
+        (3)高雄辦事處  
+
+        地址：高雄市苓雅區中正二路141號13樓之3    
+
+        電話：07-226-5988  
+          
+        其他詳情可點擊[**公司網站**](http://www.interinfo.com.tw/web/company/location.html)查詢
+  utter_OocP_6PXt:
+    - language: zh
+      text: >-
+        公司依勞基法規定，**滿半年**會給予三天年假  
+          
+        詳細資料可點擊[**網站**](https://law.moj.gov.tw/LawClass/LawSingle.aspx?pcode=N0030001&flno=38)查詢
+  utter_OvtWYOGNw:
+    - language: zh
+      text: |-
+        好的，已為你儲存資料。
+
+        待HR人員查閱後，會盡快與你聯絡。
+
+        為你導回主選單！
+  utter_Ow_hgLYLp:
+    - language: zh
+      text: 我是徵厲Hire小幫手，有問題都可以問我！
+  utter_PfWJsO0vs:
+    - language: zh
+      text: |-
+        目前有開放的職缺如下：
+
+        【研發處】研發工程師    
+        【研發處】資訊客服專員    
+        【研發處】系統分析師  
+          
+        【CMO單位】專案經理  
+        【CMO單位】業務助理  
+            
+        【國際處-HR雲端銷售】通路開發專員(北區)  
+        【國際處-HR雲端銷售】業務副理  
+            
+        【銷售處】助理業務  
+        【銷售處】業務  
+            
+        【總管理處】行銷專員  
+        【總管理處】行政主管  
+        【總管理處】行政專員
+  utter_RHjScoBE7s:
+    - language: zh
+      text: 求職者面試合格後，將於**二週內**作錄取通知，會由**系統發送**給求職者通知信並由**人事單位電洽作確認**
+  utter_RYVQv4UpK:
+    - language: zh
+      text: |-
+        再見，希望今天有幫助到你！
+
+        有任何需要，歡迎再回來！
+    - language: zh
+      text: 拜拜，有需要隨時可以再回來！
+  utter_RbhDa5Y1G:
+    - language: zh
+      text: 公司並非責任制，可依個人情況可提出申請調整上下班時間
+  utter_SXOXOaihb:
+    - language: zh
+      metadata: null
+      text: >-
+        (1)公司位於北二高中和交流道口之遠東世紀廣場，交通便利    
+          
+        (2)可利用以下公共運輸工具到達：  
+
+        ＊捷運及公車：    
+
+        至景安捷運站轉搭公車【275正線 德霖技術學院─松山機場】、【908三峽－捷運景安站】    
+
+        (單邊設站南下) 或【921三峽北大社區－捷運景安站】(單邊設站南下)
+        公車(一段票)在【海外公司】站下車步行400公尺              
+          
+        ＊火車及公車：  
+
+        至板橋火車站轉搭公車【307板橋－撫遠街】公車(一段票)在【海外公司】站下車 步行400公尺     
+                    
+        其他詳情可點擊[**公司網站**](http://www.interinfo.com.tw/web/company/location.html)查詢
+  utter_Su93NDz6p:
+    - language: zh
+      metadata: null
+      text: 請問你想了解英特內的什麼資訊呢？(ex.上下班時間、公司地址、員工福利....)
+  utter_UGfhaMnEu:
+    - language: zh
+      text: 好的，那我們繼續填寫資料。
+  utter_VBqyBbsKT:
+    - language: zh
+      metadata:
+        forceClose: false
+        forceOpen: false
+        linkTarget: _blank
+        pageChangeCallbacks: null
+        pageEventCallbacks: null
+        userInput: show
+      quick_replies:
+        - payload: '/menu{"get_menu":"主選單"}'
+          title: 主選單
+          type: postback
+      text: 你可以從這邊點選按鈕返回主選單，可以查看更多內容！
+  utter_YI9k2obPr:
+    - language: zh
+      quick_replies:
+        - payload: '/問補助{"company_subsidy":"查看其他補助"}'
+          title: 查看其他補助
+          type: postback
+      text: |-
+        證照補助  
+          
+        很抱歉，徵厲Hire小幫手正在收集資料，相關資料會盡快補上。
+  utter_YoiKzYGYS:
+    - language: zh
+      text: 公司目前有92人。
+  utter_ask_form_birthday:
+    - language: zh
+      text: 請問你的出生年月日是？(請輸入**民國年月日** ex.750109)
+  utter_ask_form_education:
+    - language: zh
+      text: 請問你的最高學歷畢業學校是？
+  utter_ask_form_email:
+    - language: zh
+      text: 請問你的email是？
+  utter_ask_form_name:
+    - language: zh
+      text: 請問你的姓名是？(**請輸入中文全名**)
+  utter_ask_form_phone:
+    - language: zh
+      text: 請問你的手機號碼是？(ex.0912345678)
+  utter_ask_form_position:
+    - language: zh
+      text: 請問你要應徵哪一個職缺？
+  utter_ask_form_skill:
+    - language: zh
+      text: '請問你會的相關技能是？(如有多個技能，請用『 , 』分隔開)'
+  utter_ask_rephrase:
+    - language: zh
+      text: 抱歉，我不明白你的意思，請換個方式再問一次。
+    - language: zh
+      text: 徵厲Hire小幫手還在學習中，請換個方式描述問題，我會盡力回答你，謝謝。ex.通路開發的薪資、上下班時間
+  utter_bcaFYTze8:
+    - language: zh
+      text: >-
+        【銷售處】助理業務工作內容：  
+
+        1. 資訊本科系或相關科系畢業。  
+
+        2. 有銷售HR或其他商用系統軟體者佳。  
+
+        3. 有電話行銷經驗者佳。  
+          
+        詳情可以點擊[**連結**](https://www.interinfo.com.tw/servlet/jform?file=hrm8w_hire.pkg&locale=TW&init_func=JH004&CPNYID=97090920)查看
+
+
+        【銷售處】助理業務：月薪30,000~40,000元  
+
+        (1)依據職位決定薪資福利及獎金制度。  
+
+        (2)採底薪+津貼+加給+獎金制。
+  utter_default:
+    - language: zh
+      text: 抱歉，我不明白你的意思，請換個方式再試一次。
+    - language: zh
+      text: 徵厲害小幫手還在學習中，麻煩你換個方式描述問題，我會盡力回答你，謝謝！ ex.通路開發的工作內容？公司有什麼福利？
+  utter_eXaXPr42-:
+    - elements:
+        - buttons:
+            - title: 查看更多
+              type: web_url
+              url: 'https://www.interinfo.com.tw/web/company/profile.html'
+          image_url: 'https://www.interinfo.com.tw/web/company/20191104.png'
+          subtitle: 更多詳細介紹，請點擊按鈕查看。
+          title: 公司簡介
+        - buttons:
+            - title: 查看更多
+              type: web_url
+              url: 'https://www.interinfo.com.tw/web/product/product1.html'
+          image_url: 'http://www.interinfo.com.tw/web/product/Product_t1_image1.png'
+          subtitle: 更多產品資訊，請點擊按鈕查看。
+          title: 產品專區
+        - buttons:
+            - title: 查看更多
+              type: web_url
+              url: 'https://www.interinfo.com.tw/web/casestudie/casestudies.html'
+          image_url: 'https://bankpass168.com/wp-content/uploads/2019/05/negociation.jpg'
+          subtitle: 與英特內合作的成功案例分享。
+          title: 成功案例
+      language: zh
+  utter_fcJ0FL800:
+    - language: zh
+      text: >-
+        【國際處-HR雲端銷售】通路開發專員(北區)工作內容：  
+
+        1. 對HR雲端產品服務銷售充滿極大熱情。  
+
+        2. 開發及經營通路夥伴關係，拓展市場，達成業績目標。  
+
+        3. 業務推展，傳達雲端產品服務，公司各項業務重大訊息、活動及產品說明。  
+
+        4. 系統展示、產品報價及洽談合約，處理應收帳款，維繫穩定客戶關係。  
+          
+        詳情可以點擊[**連結**](https://www.interinfo.com.tw/servlet/jform?file=hrm8w_hire.pkg&locale=TW&init_func=JH004&CPNYID=97090920)查看
+
+
+        【國際處-HR雲端銷售】通路開發專員(北區)：月薪30,000~40,000元  
+
+        (1)依據職位決定薪資福利及獎金制度。  
+
+        (2)採底薪+津貼+加給+獎金制。
+  utter_g3KmUIGP0:
+    - language: zh
+      text: >-
+        【CMO單位】業務助理工作內容：  
+
+        1. 文書處理及檔案管理。  
+
+        2. 報價單.出貨單.合約書製作。  
+
+        3. 提報業務系統問題。  
+
+        4. 出貨包裝.處理出口報關事務。  
+
+        5. 協助國內外參展.公司活動前作業準備。  
+
+        6. 即時回報主管正確資訊及提供相關資料。  
+
+        7. 業績報表製作.應收帳款催收。  
+          
+        詳情可以點擊[**連結**](https://www.interinfo.com.tw/servlet/jform?file=hrm8w_hire.pkg&locale=TW&init_func=JH004&CPNYID=97090920)查看
+
+
+        【CMO單位】業務助理：月薪30,000~40,000元  
+
+        (1)依據職位決定薪資福利及獎金制度。  
+
+        (2)採底薪+津貼+加給+獎金制。
+  utter_gRlrAvEbq:
+    - language: zh
+      quick_replies:
+        - payload: '/問補助{"company_subsidy":"查看其他補助"}'
+          title: 查看其他補助
+          type: postback
+      text: |-
+        租房津貼  
+          
+        很抱歉，徵厲Hire小幫手正在收集資料，相關資料會盡快補上。
+  utter_gSR8zuf4q:
+    - language: zh
+      text: 抱歉，目前沒有此職缺，請重新輸入！
+  utter_invalid_form_birthday:
+    - language: zh
+      text: 生日格式有誤，請重新輸入！
+  utter_invalid_form_email:
+    - language: zh
+      text: email格式有誤，請重新輸入！
+  utter_invalid_form_name:
+    - language: zh
+      text: 姓名格式有誤，請重新輸入！
+  utter_invalid_form_phone:
+    - language: zh
+      text: 手機號碼格式有誤，請重新輸入！
+  utter_invalid_form_position:
+    - language: zh
+      text: 所輸入職位無法辨識，請重新輸入！ex.通路開發、業務助理、業務....
+  utter_jTkAHe-4r:
+    - language: zh
+      text: |-
+        停車位
+
+        很抱歉，徵厲Hire小幫手正在收集資料，相關資料會盡快補上。
+  utter_jd8_RuWLl:
+    - language: zh
+      text: 公司並不是責任制。
+  utter_kYF7meGXc:
+    - language: zh
+      quick_replies:
+        - payload: /填寫基本資料
+          title: 填寫面試基本資料
+          type: postback
+        - payload: /找工作
+          title: 查看其他職缺
+          type: postback
+        - payload: '/menu{"get_menu":"主選單"}'
+          title: 返回主選單
+          type: postback
+      text: 需要什麼服務呢？
+  utter_kvsU_3Co7:
+    - language: zh
+      text: 依照每年兩次績效考核結果並評估公司營運狀況給予年終獎金
+  utter_lEJ_fTFA3:
+    - language: zh
+      text: >-
+        【研發處】資訊客服專員工作內容：  
+
+        1. 排除客戶線上平台提報之系統操作面問題，給予線上指導或提供產品相關資訊。  
+
+        2. 驗證客戶通報的系統異常問題，協調工程師解決，並測試確認回報客戶。  
+
+        3. 追蹤客戶產品使用狀況，主動提供操作面協助；針對客戶需求，與內部研擬解決方案。  
+
+        4. 對客戶進行教育訓練。  
+
+        5. 解決客戶抱怨。  
+          
+        詳情可以點擊[**連結**](https://www.interinfo.com.tw/servlet/jform?file=hrm8w_hire.pkg&locale=TW&init_func=JH004&CPNYID=97090920)查看
+
+
+        【研發處】資訊客服專員：月薪32,000元 ~ 42,000元  
+
+        (1)依據職位決定薪資福利及獎金制度。  
+
+        (2)採底薪+津貼+加給+獎金制。
+  utter_lOMoX-74U:
+    - language: zh
+      quick_replies:
+        - payload: '/問補助{"company_subsidy":"查看其他補助"}'
+          title: 查看其他補助
+          type: postback
+      text: |-
+        針對遠距上班人員，提供遠距津貼補助。  
+          
+        (1)居住地與(各辦公室)上班地點(最短交通)距離15km以上者，每月補助$600元。  
+        (2)居住地與(各辦公室)上班地點(最短交通)距離30km以上者，每月補助NT$1,200元。
+  utter_lvu6KSNn8:
+    - language: zh
+      text: |-
+        你的資料如下：
+
+        應徵職位：{form_position}
+
+        姓名：{form_name}
+
+        email：{form_email}
+
+        生日：{form_birthday}
+
+        手機：{form_phone}
+
+        相關技能：{form_skill}
+
+        最高學歷：{form_education}
+  utter_m0eWDfuil:
+    - language: zh
+      text: >-
+        【研發處】研發工程師工作內容：  
+
+        1. 機房、網路維運、硬體設備維護和相關軟硬體設備問題解決。  
+
+        2. 公司內部資訊系統、伺服器之儲存、備份規劃、管理。  
+
+        3. 使用者帳號與權限申請管控與開放、關閉。  
+
+        4. 環境管制區管控、整備。  
+
+        5. 設備維修、採購、保養、資產盤點。　  
+
+        6. 資訊安全管理、稽核、風險管理。  
+
+        7. 主管交辦事項。  
+
+        8. 客戶端雲端服務主機維運。  
+          
+        詳情可以點擊[**連結**](https://www.interinfo.com.tw/servlet/jform?file=hrm8w_hire.pkg&locale=TW&init_func=JH004&CPNYID=97090920)查看
+
+
+        【研發處】研發工程師：月薪55,000元 ~ 65,000元  
+
+        (1)依據職位決定薪資福利及獎金制度。  
+
+        (2)採底薪+津貼+加給+獎金制。
+  utter_n5CVOvc1L:
+    - language: zh
+      metadata:
+        forceClose: false
+        forceOpen: false
+        linkTarget: _blank
+        pageChangeCallbacks: null
+        pageEventCallbacks: null
+        userInput: show
+      text: |-
+        請假制度
+
+        很抱歉，徵厲Hire小幫手正在收集資料，相關資料會盡快補上。
+  utter_nDEyeHes-:
+    - language: zh
+      text: 我是徵厲Hire小幫手，有什麼可以幫你的嗎？
+  utter_nMbCDcMWV:
+    - language: zh
+      text: |-
+        已為你刪除所填寫的資料。
+
+        幫你導回主選單！
+  utter_nWeu2xqe6:
+    - language: zh
+      text: |-
+        **上、下班須進行簽到簽退**    
+          
+        (1)上、下班時間：    
+        上午09:00至下午18:00    
+        (2)中午休息時間：    
+        中午12:30至下午13:30    
+        (3)遲到規定：    
+        **上班緩衝時間為10分鐘**，自第11分鐘起至第30分鐘視為遲到，並依遲到時間扣除薪資    
+        (4)全勤制度：    
+        當月出勤無遲到、早退、曠職、事假、病假者，可領全勤獎金NT$2,000元
+  utter_not_in_position:
+    - language: zh
+      text: 很抱歉，目前沒有提供此職缺，請重新選擇！！
+  utter_out_of_scope:
+    - language: zh
+      text: 抱歉，徵厲Hire小幫手還在學習中，徵厲Hire小幫手會盡快學習新技能的！！
+  utter_pTb9Muj10:
+    - language: zh
+      text: |-
+        公司沒有員工餐廳。  
+        但公司位於遠東世紀廣場，**餐廳、店家多選擇性多，用餐方便。**
+  utter_pl8iESbyE:
+    - language: zh
+      text: 每半年實施績效考核作業，依照考核結果評估升遷及調薪
+  utter_qIJVNtyi8:
+    - language: zh
+      text: >-
+        【研發處】系統分析師工作內容：  
+
+        1. 系統規劃、規格撰寫、功能測試、系統相關文件維護。  
+
+        2. 驗證通報的系統異常問題，協調工程師解決，並測試確認回報客戶。  
+
+        3. 追蹤產品使用狀況，提供操作面協助；針對客戶需求，與內部研擬解決方案。  
+
+        4. 撰寫系統操作手冊。  
+
+        5. 其他主管交辦事項。  
+          
+        詳情可以點擊[**連結**](https://www.interinfo.com.tw/servlet/jform?file=hrm8w_hire.pkg&locale=TW&init_func=JH004&CPNYID=97090920)查看
+
+
+        【研發處】系統分析師：月薪32,000元 ~ 42,000元  
+
+        (1)依據職位決定薪資福利及獎金制度。  
+
+        (2)採底薪+津貼+加給+獎金制。
+  utter_r158RcjdU5:
+    - language: zh
+      text: >-
+        【總管理處】行銷專員工作內容：  
+
+        1. 產品/企業形象包裝。  
+
+        2. 文章規劃及撰寫。  
+
+        3. 社群平台經營。  
+          
+        詳情可以點擊[**連結**](https://www.interinfo.com.tw/servlet/jform?file=hrm8w_hire.pkg&locale=TW&init_func=JH004&CPNYID=97090920)查看
+
+
+        【總管理處】行銷專員：月薪33,000元 ~ 42,000元  
+
+        (1)依據職位決定薪資福利及獎金制度。  
+
+        (2)採底薪+津貼+加給+獎金制。
+  utter_uvMtQxW7d:
+    - language: zh
+      text: |-
+        (1)有加班費，須事前送加班申請單  
+        (2)加班提供給薪或補休方式  
+        (3)加班費率：  
+          
+        ＊平日加班費：  
+        加班前兩小時按每小時支給額1.34倍核計，其後兩小時按每小時支給額1.67倍核計  
+          
+        ＊休息日加班費：  
+        前兩小時按每小時支給額1.34倍核計，其後六小時按每小時支給額1.67倍核計，超過八小時按每小時支給額2.67倍核計
+  utter_valid_form_skill:
+    - language: zh
+      text: ''
+  utter_wvyTRsovR:
+    - language: zh
+      quick_replies:
+        - payload: '/問交通補助{"company_commuter_subsidy":"通勤補助"}'
+          title: 查詢通勤補助
+          type: postback
+      text: |-
+        公司沒有交通車。  
+        另有提供遠距津貼補助。
+  utter_xBlgx1M2e:
+    - language: zh
+      quick_replies:
+        - payload: '/問補助{"company_subsidy":"查看其他補助"}'
+          title: 查看其他補助
+          type: postback
+      text: |-
+        育兒補助  
+          
+        很抱歉，徵厲Hire小幫手正在收集資料，相關資料會盡快補上。
+  utter_yRSxpy_qu:
+    - language: zh
+      text: >-
+        基本資料需要填寫的個人信息包含姓名、生日、手機、email及學歷等等...在填寫過程中，如改變心意不想繼續填寫，直接**在輸入框內輸入**「**離開**」或「**跳出**」，經確認後，會刪除所有已填信息並離開。
+session_config: {}
+slots:
+  disambiguation_message:
+    type: unfeaturized
+  fallback_language:
+    initial_value: zh
+    type: unfeaturized
+  form_birthday:
+    type: unfeaturized
+  form_education:
+    type: unfeaturized
+  form_email:
+    type: unfeaturized
+  form_name:
+    type: unfeaturized
+  form_phone:
+    type: unfeaturized
+  form_position:
+    type: unfeaturized
+  form_skill:
+    type: unfeaturized
+  is_in_position_db:
+    type: bool
+  position_id:
+    type: text
+  requested_slot:
+    type: categorical
+    values:
+      - form_position
+      - form_name
+      - form_email
+      - form_birthday
+      - form_phone
+      - form_skill
+      - form_education
+  test:
+    type: text

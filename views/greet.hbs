@@ -1,0 +1,43 @@
+<div class="row d-flex flex-column align-items-center all">
+  <h1 class="m-5">通知問候</h1>
+  <div class="col-9 wrapper">
+    {{> message}}
+    <div class="scroll-view">
+      <ul class="list-group">
+        <div class="row d-flex justify-content-center" id="data-panel">
+          {{#each greetInfo}}
+          <div class="col-12">
+            <li class="list-group-item" id="record-item" style="border: none;">
+              <div class="row">
+                <div class=" item-wrapper">
+                  <div class=" my-2 item-title">
+                    <div class="label-title">
+                      {{this.GREET_NAME}}
+                    </div>
+                  </div>
+                  <div class="item-des">
+                    <p class="des-text">{{ this.GREET_DES }}</p>
+                  </div>
+                  <div class="d-flex justify-content-center item-buttons">
+                    <a href="/greet/{{ this.GREET_NO}}/edit" class="btn btn-primary mx-2" style="font-size: 1rem; height:fit-content;">
+                        編輯
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </li>
+          </div>
+          {{/each}}
+        </div>
+      </ul>
+    </div>
+  </div>
+  <div class="col-10 my-5 d-flex  justify-content-center">
+    <div class="col-6">
+      <div class="row justify-content-center">
+        <a href="/" class="btn btn-outline-dark col-8" id="create-btn"
+          style="font-size: 1.5rem;">返回</a>
+      </div>
+    </div>
+  </div>
+</div>

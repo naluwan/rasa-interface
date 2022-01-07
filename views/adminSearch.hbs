@@ -1,0 +1,110 @@
+<div class="row d-flex flex-column align-items-center all">
+  <h1 class="m-5">查詢各公司回覆資料</h1>
+  <div class="row">
+    <div class="admin-search-wrapper">
+      <form action="/adminSearch/filter">
+        <label for="companyFilter">公司：</label>
+        <select name="companyFilter" id="companyFilter" onchange="submit()">
+          <option value="" selected hidden>請選擇</option>
+          {{#each adminCompany}}
+          <option value="{{this.CPY_ID}}" {{#is this.CPY_ID ../companyFilter}} selected {{/is}}
+          {{#is this.CPY_NAME 'Admin'}} disabled hidden {{/is}}>{{this.CPY_NAME}}</option>
+          {{/each}}
+        </select>
+
+        <label for="tableFilter">類別：</label>
+        <select name="tableFilter" id="tableFilter" onchange="submit()">
+          <option value="" selected hidden>請選擇</option>
+          <option value="COMPANY" {{#is tableFilter 'COMPANY'}} selected {{/is}}>公司資訊</option>
+          <option value="POSITION" {{#is tableFilter 'POSITION'}} selected {{/is}}>職缺資訊</option>
+          <option value="SUBSIDY" {{#is tableFilter 'SUBSIDY'}} selected {{/is}}>補助資訊</option>
+          <option value="LEAVE" {{#is tableFilter 'LEAVE'}} selected {{/is}}>假別資訊</option>
+          <option value="GREET" {{#is tableFilter 'GREET'}} selected {{/is}}>問候資訊</option>
+              <option value="DEFAULT" {{#is tableFilter 'DEFAULT'}} selected {{/is}}>預設回覆</option>
+        </select>
+
+        <label for="search">搜尋：</label>
+        <input type="text" name="search" id="search" value="{{search}}" onchange="submit()" placeholder="請輸入關鍵字...(可空白)">
+      
+        {{!-- <button type="submit" class="btn btn-outline-dark" style="font-size: 1.5rem;">查詢</button> --}}
+      </form> 
+    </div>
+  </div>
+  <div class="col-9 wrapper pt-3">
+    {{> message}}
+    <div class="scroll-view">
+      <ul class="list-group">
+        <div class="row d-flex justify-content-center" id="data-panel">
+          {{#each adminSearchInfo}}
+          <div class="col-12">
+            <li class="list-group-item" id="record-item" style="border: none;">
+              <div class="row">
+                <div class=" item-wrapper">
+                  <div class=" my-2 item-title">
+                    <div class="label-title">
+                      {{this.adminSearch_name}}
+                    </div>
+                  </div>
+                  <div class="item-des">
+                    <p class="des-text">{{ this.adminSearch_des }}</p>
+                  </div>
+                  <div class="d-flex justify-content-center item-buttons">
+                    <a href="/adminSearch/{{this.CPY_NO}}/{{../tableFilter}}/{{ this.adminSearch_no}}/edit" class="btn btn-primary mx-2" style="font-size: 1rem; height:fit-content;">
+                      編輯
+                    </a>
+
+                    {{!-- 設置data名稱，在資料傳遞時都會把名稱轉成全部小寫，所以設定名稱時，全部小寫就好 --}}
+                    <button class=" btn btn-danger mx-2" style="font-size:medium; height:fit-content"
+                        id="adminSearch-delete-btn" data-toggle="modal" data-target="#deleteModal" data-id="{{ this.adminSearch_no }}"
+                        data-name="{{ this.adminSearch_name }}" data-cpyno="{{this.CPY_NO}}" data-table="{{../tableFilter}}" data-cpyname="{{this.CPY_NAME}}" data-category="adminSearch">
+                        刪除
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </li>
+          </div>
+          {{/each}}
+        </div>
+      </ul>
+    </div>
+  </div>
+  <div class="col-10 my-5 d-flex">
+    <div class="col-6">
+      <div class="row justify-content-center">
+        <a href="/adminSearch/new" class="btn btn-outline-warning col-8" id="create-btn"
+          style="font-size: 1.5rem;">新增資訊</a>
+      </div>
+    </div>
+    <div class="col-6">
+      <div class="row justify-content-center">
+        <a href="/" class="btn btn-outline-dark col-8" id="create-btn"
+          style="font-size: 1.5rem;">返回</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalScrollableTitle">刪除資訊</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>確定要刪除<strong id="delete-position">{{ this.adminSearch_name }}</strong>?</p> 
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+        <form action="/adminSearch/{{ this.adminSearch_no }}" method="post" style="display:inline-block;" id="delete-form">
+          <button type="submit" class="btn btn-danger">確定</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

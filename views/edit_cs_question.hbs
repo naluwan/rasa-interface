@@ -1,0 +1,47 @@
+<div class="row m-5">
+  <div class="col-8 m-auto">
+    <div class="card card-body">
+      <h1 class="text-center mt-3">編輯問答資訊</h1>
+      {{> message}}
+      <form 
+      {{#if category_id}}action="/bf_cs/{{category_id}}/{{function_id}}/{{ questionInfo.QUESTION_ID}}?_method=PUT"
+      {{else}}
+      action="/bf_cs/{{function_id}}/{{ questionInfo.QUESTION_ID}}?_method=PUT"
+      {{/if}} method="POST">
+        <div class="modal-body">
+
+          <div class="input-group mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text new-title">問題描述</span>
+            </div>
+            <textarea type="text" class="form-control new-des" name="description" placeholder="請輸入問題描述..." aria-label="inputDes"
+              aria-describedby="des" rows="2" disabled required>{{ questionInfo.DESCRIPTION }}</textarea>
+          </div>
+
+          <div class="input-group mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text new-title">答案內容</span>
+            </div>
+            <textarea type="text" class="form-control new-des" name="answer" placeholder="請輸入補助內容..." aria-label="inputAns"
+              aria-describedby="ans" rows="10" required>{{ questionInfo.ANSWER }}</textarea>
+          </div>
+
+        </div>
+        <div class="modal-footer">
+          <a 
+          {{#if isAdmin}}
+            {{#if category_id}}href="/bf_cs/question/filter?categorySelect={{category_id}}&functionSelect={{function_id}}&search=" 
+            {{else}}href="/bf_cs/notTrainQuestion"
+            {{/if}}
+          {{else}}
+            {{#if category_id}}href="/bf_cs/question/filter?categorySelect={{category_id}}&functionSelect={{function_id}}&search=" 
+            {{else}}href="/bf_cs/question"
+            {{/if}}
+          {{/if}}
+          class="btn btn-outline-info">取消</a>
+          <button type="submit" class="btn btn-primary confirm-btn" id="confirm-create">儲存</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
