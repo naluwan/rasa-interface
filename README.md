@@ -1,5 +1,5 @@
 # RASA-INTERFACE
-RASA為聊天機器人的訓練核心，而RASA-INTERFACE是用於新增或刪除RASA的訓練資料
+RASA為聊天機器人的訓練核心，而RASA-INTERFACE是用於新增或刪除RASA的訓練資料  
 目前主要用於棉花糖客服機器人
 # Features
 * 有登入功能
@@ -47,7 +47,7 @@ http://localhost:3030
 >* password: 12345678 -->
 # Built With
 * Node.js: 10.24.1
-* bcryptjs: ^2.4.3
+* bcryptjs: 2.4.3
 * body-parser: 1.19.1
 * connect-flash: 0.1.1
 * dotenv: 10.0.0
