@@ -1,4 +1,5 @@
 # RASA-INTERFACE
+[![Author](https://img.shields.io/badge/author-@NaLuWan-blue.svg?style=flat)](http://github.com/naluwan)  ![Email](https://img.shields.io/badge/email-street.baller06@gmail.com-green.svg?style=flat)<br>
 RASA為聊天機器人的訓練核心，而RASA-INTERFACE是用於新增或刪除RASA的訓練資料  
 目前主要用於棉花糖客服機器人
 # Features
@@ -37,14 +38,7 @@ Now you can browse the website on
 ```
 http://localhost:3030
 ```
-<!-- Test account
 
->* name: user1
->* email: user1@example.com
->* password: 12345678
->* name: user2
->* email: user2@example.com
->* password: 12345678 -->
 # Built With
 * Node.js: 10.24.1
 * bcryptjs: 2.4.3
@@ -62,7 +56,3 @@ http://localhost:3030
 * nodemon: 2.0.15
 * passport: 0.5.2
 * passport-local: 1.0.0
- 
-# Author
-Harry Chien 簡碩亨 
-Email： street.baller06@gmail.com
