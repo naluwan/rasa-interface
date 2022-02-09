@@ -6,7 +6,7 @@ const yaml = require('js-yaml')
 module.exports = {
   // 新增問題寫檔
   fsWriteQuestion: (description, entity_name, request) => {
-    axios.get('http://localhost:3030/train/trainingData')
+    axios.get('http://localhost:3030/train/cs/trainingData')
     .then(response => {
       return response.data
     })
@@ -51,7 +51,7 @@ module.exports = {
   },
   // 刪除問題寫檔
   fsDeleteQuestion: (questionCheck, request) => {
-    axios.get('http://localhost:3030/train/trainingData')
+    axios.get('http://localhost:3030/train/cs/trainingData')
     .then(response => {
       return response.data
     })
@@ -97,7 +97,7 @@ module.exports = {
     // console.log(category_name[category])
     const currentCategory = category_name[category]
 
-    axios.get('http://localhost:3030/train/trainingData')
+    axios.get('http://localhost:3030/train/cs/trainingData')
     .then(response => {
       return response.data
     })
@@ -168,7 +168,7 @@ module.exports = {
   },
   // 刪除功能寫檔
   fsDeleteFunction: (functionCheck, category_id, request) => {
-    axios.get('http://localhost:3030/train/trainingData')
+    axios.get('http://localhost:3030/train/cs/trainingData')
     .then(response => {
       return response.data
     })
@@ -223,7 +223,7 @@ module.exports = {
   },
 
   fsDeleteFunctionRef: (questionCheck, functionCheck, category_id, function_id, request, req, res) => {
-    axios.get('http://localhost:3030/train/trainingData')
+    axios.get('http://localhost:3030/train/cs/trainingData')
     .then(response => {
       return response.data
     })

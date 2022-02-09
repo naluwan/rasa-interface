@@ -74,7 +74,6 @@ if(adminSearchWrapper){
 
 
 function callAPI(tableName, cpy_no){
-
 	if(tableName == 'INDUSTRY'){
 		axios.get(INDEX_URL + tableName + '/' + cpy_no)
 		.then(res => {
