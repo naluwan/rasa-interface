@@ -308,6 +308,11 @@ color:#fff;
   min-height: 200px !important;
 }
 
+.fast-spin {
+  -webkit-animation: fa-spin 0.75s infinite linear;
+  animation: fa-spin 0.75s infinite linear;
+}
+
 @media screen and (min-width: 800px) {
   .rw-messages-container {
       height: 100% !important;
