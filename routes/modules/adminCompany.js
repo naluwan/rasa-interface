@@ -18,8 +18,8 @@ router.delete('/:CPY_ID', (req, res) => {
       console.log(err)
       return
     }
-    result = result.recordset[0]
-    if(!result){
+    const companyCheck = result.recordset[0]
+    if(!companyCheck){
       req.flash('error', '查無此公司，請重新嘗試!!')
       return res.redirect('/adminCompany')
     }
@@ -29,8 +29,15 @@ router.delete('/:CPY_ID', (req, res) => {
         console.log(err)
         return
       }
-      req.flash('success_msg', '刪除成功!!')
-      res.redirect('/adminCompany')
+      request.query(`delete BOTFRONT_TYPE_OF_INDUSTRY
+      where INDUSTRY_ID = '${companyCheck.INDUSTRY_NO}'`, (err, result) => {
+        if(err){
+          console.log(err)
+          return
+        }
+        req.flash('success_msg', '刪除成功!!')
+        res.redirect('/adminCompany')
+      })
     })
   })
 })
