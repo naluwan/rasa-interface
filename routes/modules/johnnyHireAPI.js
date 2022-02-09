@@ -8,11 +8,12 @@ const pool = require('../../config/connectPool')
 const {TrainSendMail, userSendMAil} = require('../../modules/sendMail')
 
 // 使用者帳號
-router.post('/api/v1/user', (req, res) => {
+router.post('/api/v1/newUser', (req, res) => {
   const { cpy_id, cpy_name, email, password, token} = req.body
+  let data = {}
   if(token == process.env.API_TOKEN){
     if(!cpy_id || !cpy_name || !email || !password){
-      return res.status(400).send('需求參數：cpy_id => 公司代號(統編), cpy_name => 公司名稱, email => 信箱(帳號), password => 密碼')
+      return res.status(400).send({status: `fail`, code: 400, message:[`系統錯誤`], data})
     }
     const request = new sql.Request(pool)
     // 驗證使用者資訊是否重複
@@ -26,15 +27,15 @@ router.post('/api/v1/user', (req, res) => {
       const userCheck = result.recordset[0]
       if(userCheck){
         if(userCheck.CPY_ID == cpy_id){
-          return res.status(409).send({message: '公司代號重複!!請重新嘗試!!'})
+          return res.status(409).send({status: `fail`, code: 409, message: ['公司代號重複，請重新嘗試!!'], data})
         }
 
         if(userCheck.CPY_NAME == cpy_name){
-          return res.status(409).send({message: '公司名稱重複!!請重新嘗試!!'})
+          return res.status(409).send({status: `fail`, code: 409, message: ['公司名稱重複，請重新嘗試!!'], data})
         }
 
         if(userCheck.EMAIL == email){
-          return res.status(409).send({message: '公司信箱重複!!請重新嘗試!!'})
+          return res.status(409).send({status: `fail`, code: 409, message: ['公司信箱重複，請重新嘗試!!'], data})
         }
         
       }else{
@@ -49,75 +50,82 @@ router.post('/api/v1/user', (req, res) => {
           }
           const industryCheck = result.recordset[0]
           if(industryCheck){
-            return res.status(409).send({message: '公司代號或公司名稱重複!!請重新嘗試!!'})
+            return res.status(409).send({status: `fail`, code: 409, message: ['公司代號或公司名稱重複!!請重新嘗試!!'], data})
           }else{
-            // 利用公司名稱和公司代號創建產業類別
-            request.input('industry_name', sql.NVarChar(200), cpy_name)
-            .input('industry_id', sql.NVarChar(30), cpy_id)
-            .query(`insert into BOTFRONT_TYPE_OF_INDUSTRY(INDUSTRY_ID, INDUSTRY_NAME)
-            values (@industry_id, @industry_name)`,(err, result) => {
-              if(err){
-                console.log(err)
-                return
-              }
-            })
-            // 使用bcrypt加密密碼再存進資料庫
-            bcrypt
-            .genSalt(10)
-            .then(salt => bcrypt.hash(password, salt))
-            .then(hash => {
-              request.query(`select INDUSTRY_ID
-              from BOTFRONT_TYPE_OF_INDUSTRY
-              where INDUSTRY_NAME = '${cpy_name}'`, (err, result) => {
+            try {
+              // 利用公司名稱和公司代號創建產業類別
+              request.input('industry_name', sql.NVarChar(200), cpy_name)
+              .input('industry_id', sql.NVarChar(30), cpy_id)
+              .query(`insert into BOTFRONT_TYPE_OF_INDUSTRY(INDUSTRY_ID, INDUSTRY_NAME)
+              values (@industry_id, @industry_name)`,(err, result) => {
                 if(err){
                   console.log(err)
                   return
                 }
-                const industry_no = result.recordset[0].INDUSTRY_ID
-                // 新增進資料庫
-                request.input('cpy_id', sql.NVarChar(30), cpy_id)
-                .input('cpy_name', sql.NVarChar(80), cpy_name)
-                .input('email', sql.NVarChar(80), email)
-                .input('password', sql.NVarChar(100), hash)
-                .input('industry_no', sql.NVarChar(30), industry_no)
-                .query(`insert into BOTFRONT_USERS_INFO (CPY_ID, CPY_NAME, EMAIL, PASSWORD, INDUSTRY_NO)
-                values (@cpy_id, @cpy_name, @email, @password, @industry_no)`, (err, result) => {
+              })
+              // 使用bcrypt加密密碼再存進資料庫
+              bcrypt
+              .genSalt(10)
+              .then(salt => bcrypt.hash(password, salt))
+              .then(hash => {
+                request.query(`select INDUSTRY_ID
+                from BOTFRONT_TYPE_OF_INDUSTRY
+                where INDUSTRY_NAME = '${cpy_name}'`, (err, result) => {
                   if(err){
                     console.log(err)
                     return
                   }
-                  // 增加公司資訊description(ex.tel, address)
-
-
-
-
-
-
-
-                  userSendMAil(res, 'mail_newUser', cpy_id, cpy_name, email, '新使用者加入')
-                  // 用response回傳狀態碼和成功資訊，另外回傳此間公司的industry_no，以便要傳入職缺類別
-                  return res.status(200).send({message:'使用者資料寫入成功!!', industry_no})
+                  const industry_no = result.recordset[0].INDUSTRY_ID
+                  // 新增進資料庫
+                  request.input('cpy_id', sql.NVarChar(30), cpy_id)
+                  .input('cpy_name', sql.NVarChar(80), cpy_name)
+                  .input('email', sql.NVarChar(80), email)
+                  .input('password', sql.NVarChar(100), hash)
+                  .input('industry_no', sql.NVarChar(30), industry_no)
+                  .query(`insert into BOTFRONT_USERS_INFO (CPY_ID, CPY_NAME, EMAIL, PASSWORD, INDUSTRY_NO)
+                  values (@cpy_id, @cpy_name, @email, @password, @industry_no)`, (err, result) => {
+                    if(err){
+                      console.log(err)
+                      return
+                    }
+                    // 增加公司資訊description(ex.tel, address)
+                    
+                    userSendMAil(res, 'mail_newUser', cpy_id, cpy_name, email, '新使用者加入')
+                    request.query(`select * 
+                    from BOTFRONT_USERS_INFO
+                    where CPY_ID = '${cpy_id}'`, (err, result) => {
+                      if(err){
+                        console.log(err)
+                        return
+                      }
+                      // 用response回傳狀態碼和成功資訊，另外回傳此間公司的industry_no，以便要傳入職缺類別
+                      data = result.recordset[0]
+                      return res.status(200).send({status: `success`,message: ['使用者資料設定成功!!'], data})
+                    })
+                  })
                 })
-              })
-            }).catch(err => console.log(err))
+              }).catch(err => console.log(err))
+            } catch (error) {
+              return res.status(500).send({status: `fail`, code: 500, message: [error], data})
+            }
           }
         })
       }
     })
   }else{
-    return res.status(401).send('沒有足夠權限做此操作!!')
+    return res.status(403).send({status: `fail`, code: 403, message: ['沒有權限做此操作!!'], data})
   }
 })
 
 // 新增新職缺類別及職缺資訊
-router.post('/api/v1/position', (req, res) => {
+router.post('/api/v1/newPosition', (req, res) => {
   const {cpy_no, industry_no, position_name, position_entity_name, position_des, token} = req.body
   
   // 判斷傳入的token是否正確
   if(token == process.env.API_TOKEN){
     if(!cpy_no || !industry_no || !position_name || !position_entity_name || !position_des){
-      return res.status(400).send(`需求參數：cpy_no => 公司代號(統編), industry_no => 產業類別代號(新增使用者帳戶後會回傳industry_no), 
-      position_name => 職缺名稱, position_entity_name => 職缺英文名稱, position_des => 職缺資訊`)
+      return res.status(400).send({message:`需求參數：cpy_no => 公司代號(統編), industry_no => 產業類別代號(新增使用者帳戶後會回傳industry_no), 
+      position_name => 職缺名稱, position_entity_name => 職缺英文名稱, position_des => 職缺資訊`})
     }
 
     // 連接資料庫
@@ -403,7 +411,7 @@ router.post('/api/v1/position', (req, res) => {
       }
     })
   }else{
-    return res.status(401).send('沒有足夠權限做此操作!!')
+    return res.status(403).send({status: `fail`, code: 403, message: ['沒有權限做此操作!!'], data})
   }
 })
 
