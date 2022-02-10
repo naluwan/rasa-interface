@@ -6,6 +6,27 @@ const pool = require('../../config/connectPool')
 
 const {fsJhWritePosition} = require('../../modules/fileSystem')
 
+router.get('/:position_id/edit', (req, res) => {
+  const {position_id} = req.params
+  const request = new sql.Request(pool)
+  const errors = []
+
+  request.query(`select b.POSITION_NAME as name, b.POSITION_ID as id, a.POSITION_DES as des 
+  from BF_JH_POSITION a
+  left join BF_JH_POSITION_CATEGORY b
+  on a.POSITION_ID = b.POSITION_ID
+  where a.POSITION_ID = ${position_id}`, (err, result) => {
+    if(err){
+      console.log(err)
+      return
+    }
+    const positionInfo = result.recordset[0]
+    if(!positionInfo) errors.push({message: '查無此職缺資訊，請重新嘗試!'})
+    res.render('jh_edit_position', {positionInfo, errors})
+  })
+})
+
+// 新增職缺資訊
 router.post('/', (req, res) => {
   const user = res.locals.user
 	const cpyId = user.CPY_ID
@@ -101,10 +122,13 @@ router.post('/', (req, res) => {
   }
 })
 
+// 顯示新增position頁面
 router.get('/new', (req, res) => {
   res.render('jh_new_position')
 })
 
+
+// 顯示position頁面
 router.get('/', (req, res) => {
   const user = res.locals.user
 	const cpyId = user.CPY_ID
