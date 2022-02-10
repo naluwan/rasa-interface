@@ -79,11 +79,9 @@ if(csTrainBtn){
 			
 			fetch('http://localhost:3030/train/cs/trainingData')
 			.then(response => {
-				// console.log(response.json())
 				return response.json()
 			})
 			.then(data => {
-				// console.log(data)
 				fetch('http://192.168.10.108:5005/model/train?save_to_default_model_directory=true&force_training=false',{
 					method: 'post',
 					body: JSON.stringify(data),
@@ -139,11 +137,9 @@ if(jhTrainBtn){
 			
 			fetch('http://localhost:3030/train/jh/trainingData')
 			.then(response => {
-				// console.log(response.json())
 				return response.json()
 			})
 			.then(data => {
-				// console.log(data)
 				fetch('http://192.168.10.108:5005/model/train?save_to_default_model_directory=true&force_training=false',{
 					method: 'post',
 					body: JSON.stringify(data),

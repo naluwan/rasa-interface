@@ -114,7 +114,7 @@
   {{/is}}
 {{else if isHr}}
 <div class="row">
-  <div class="col-10 mx-auto mt-3">
+  <div class="col-10 mx-auto mt-3" id="message-block">
   {{> message}}
   </div>
   <div class="col-12 mx-auto home">
@@ -142,8 +142,8 @@
 </div>
 {{else}}
 <div class="row">
-  <div class="col-6 mx-auto mt-3">
-  {{> message}}
+  <div class="col-10 mx-auto mt-3" id="message-block">
+    {{> message}}
   </div>
   <div class="col-12 mx-auto d-flex justify-content-end">
     <button class="btn btn-dark active mx-3 jh-train-btn" type="button">Train</button>
