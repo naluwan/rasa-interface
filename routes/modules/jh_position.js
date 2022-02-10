@@ -6,10 +6,48 @@ const pool = require('../../config/connectPool')
 
 const {fsJhWritePosition} = require('../../modules/fileSystem')
 
+// 編輯職缺
+router.put('/:position_id', (req, res) => {
+  const {position_id} = req.params
+  const {position_des} = req.body
+  const request = new sql.Request(pool)
+
+  if(!position_des){
+    req.flash('warning_msg', '職缺內容為必填欄位!!')
+    return res.redirect(`/position/${position_id}/edit`)
+  }
+
+  request.query(`select * 
+  from BF_JH_POSITION
+  where POSITION_ID = ${position_id}`, (err, result) => {
+    if(err){
+      console.log(err)
+      return
+    }
+
+    const positionDesCheck = result.recordset[0]
+    if(!positionDesCheck){
+      req.flash('error', '查無此職缺，請重新嘗試!')
+      return res.redirect('/position')
+    }else{
+      request.query(`update BF_JH_POSITION
+      set POSITION_DES = '${position_des}'
+      where POSITION_ID = ${position_id}`, (err, result) => {
+        if(err){
+          console.log(err)
+          return
+        }
+        req.flash('success_msg', '更新職缺內容成功!')
+        res.redirect('/position')
+      })
+    }
+  })
+})
+
+// 顯示編輯職缺頁面
 router.get('/:position_id/edit', (req, res) => {
   const {position_id} = req.params
   const request = new sql.Request(pool)
-  const errors = []
 
   request.query(`select b.POSITION_NAME as name, b.POSITION_ID as id, a.POSITION_DES as des 
   from BF_JH_POSITION a
@@ -21,8 +59,11 @@ router.get('/:position_id/edit', (req, res) => {
       return
     }
     const positionInfo = result.recordset[0]
-    if(!positionInfo) errors.push({message: '查無此職缺資訊，請重新嘗試!'})
-    res.render('jh_edit_position', {positionInfo, errors})
+    if(!positionInfo){
+      req.flash('error', '查無此職缺，請重新嘗試!')
+      return res.redirect('/position')
+    }
+    res.render('jh_edit_position', {positionInfo})
   })
 })
 
