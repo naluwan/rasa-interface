@@ -331,7 +331,7 @@ module.exports = {
     .then(data => {
       // 新增position category
       const nluData = data.nlu.zh.rasa_nlu_data.common_examples
-      const newContent = {
+      const entity_1 = {
         "text": `${position_name}`,
         "intent": "職缺",
         "entities": [
@@ -340,11 +340,29 @@ module.exports = {
         "metadata": { "language": "zh", "canonical": true }
       }
 
-      const repeatText = nluData.filter(item => item.text == newContent.text)
+      const entity_2 = {
+        "text": `${position_name}的工作內容`,
+        "intent": "職缺",
+        "entities": [
+          { "entity": `${entity_name}`, "value": `${position_name}`, "start": 0, "end": position_name.length}
+        ],
+        "metadata": { "language": "zh", "canonical": true }
+      }
+
+      const entity_3 = {
+        "text": `我想知道${position_name}的薪資`,
+        "intent": "職缺",
+        "entities": [
+          { "entity": `${entity_name}`, "value": `${position_name}`, "start": 4, "end": 4 + position_name.length}
+        ],
+        "metadata": { "language": "zh", "canonical": true }
+      }
+
+      const repeatText = nluData.filter(item => item.text == entity_1.text)
       if(repeatText.length){
         console.log(`已有訓練資料： ` + JSON.stringify(repeatText[0]))
       }else{
-        nluData.push(newContent)
+        nluData.push(entity_1, entity_2, entity_3)
         data.nlu.zh.rasa_nlu_data.common_examples = nluData
         try{
           fs.writeFileSync(path.resolve(__dirname, '../public/trainData/nlu-json.json'), JSON.stringify(data.nlu.zh))
@@ -381,7 +399,28 @@ module.exports = {
       })
       const index = arrayText.indexOf(positionDesCheck.POSITION_NAME)
       data.nlu.zh.rasa_nlu_data.common_examples.splice(index, 1)
+      return data
+    })
+    .then(data => {
+      const arrayText = []
+      data.nlu.zh.rasa_nlu_data.common_examples.forEach(item => {
+        arrayText.push(item.text)
+      })
 
+      const text = `${positionDesCheck.POSITION_NAME}的工作內容`
+      const index = arrayText.indexOf(text)
+      data.nlu.zh.rasa_nlu_data.common_examples.splice(index, 1)
+      return data
+    })
+    .then(data => {
+      const arrayText = []
+      data.nlu.zh.rasa_nlu_data.common_examples.forEach(item => {
+        arrayText.push(item.text)
+      })
+
+      const text = `我想知道${positionDesCheck.POSITION_NAME}的薪資`
+      const index = arrayText.indexOf(text)
+      data.nlu.zh.rasa_nlu_data.common_examples.splice(index, 1)
       try{
         fs.writeFileSync(path.resolve(__dirname, '../public/trainData/nlu-json.json'), JSON.stringify(data.nlu.zh))
       } catch(err){
