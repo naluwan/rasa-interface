@@ -366,5 +366,39 @@ module.exports = {
       })
     })
     .catch(err => console.log(err))
+  },
+  
+  // 刪除徵厲害職缺寫檔
+  fsJhDeletePosition: (positionDesCheck, request) => {
+    axios.get('http://localhost:3030/train/jh/trainingData')
+    .then(response => {
+      return response.data 
+    })
+    .then(data => {
+      const arrayText = []
+      data.nlu.zh.rasa_nlu_data.common_examples.forEach(item => {
+        arrayText.push(item.text)
+      })
+      const index = arrayText.indexOf(positionDesCheck.POSITION_NAME)
+      data.nlu.zh.rasa_nlu_data.common_examples.splice(index, 1)
+
+      try{
+        fs.writeFileSync(path.resolve(__dirname, '../public/trainData/nlu-json.json'), JSON.stringify(data.nlu.zh))
+      } catch(err){
+        console.log(err)
+      }
+      const newNluData =  yaml.load(fs.readFileSync(path.resolve(__dirname, '../public/trainData/nlu-json.json'), 'utf8'))
+      return JSON.stringify(newNluData)
+    })
+    .then(data => {
+      request.query(`update BF_JH_TRAINING_DATA
+      set DATA_CONTENT = '${data}'
+      where DATA_NAME = 'nlu-json'`, (err, result) => {
+        if(err){
+          console.log(err)
+          return
+        }
+      })
+    })
   }
 }
