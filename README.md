@@ -1,7 +1,7 @@
 # RASA-INTERFACE
 [![Author](https://img.shields.io/badge/author-@NaLuWan-blue.svg?style=flat)](http://github.com/naluwan)  ![Email](https://img.shields.io/badge/email-street.baller06@gmail.com-green.svg?style=flat)<br>
 RASA為聊天機器人的訓練核心，而RASA-INTERFACE是用於新增或刪除RASA的訓練資料  
-目前主要用於棉花糖客服機器人
+目前主要用於棉花糖客服機器人和徵厲害招募機器人
 # Features
 * 有登入功能
 * 可以新增、刪除功能
