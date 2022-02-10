@@ -4,7 +4,7 @@ const path = require('path')
 const yaml = require('js-yaml')
 
 module.exports = {
-  // 新增問題寫檔
+  // 新增客服問題寫檔
   fsWriteQuestion: (description, entity_name, request) => {
     axios.get('http://localhost:3030/train/cs/trainingData')
     .then(response => {
@@ -49,7 +49,7 @@ module.exports = {
     })
     .catch(err => console.log(err))
   },
-  // 刪除問題寫檔
+  // 刪除客服問題寫檔
   fsDeleteQuestion: (questionCheck, request) => {
     axios.get('http://localhost:3030/train/cs/trainingData')
     .then(response => {
@@ -85,7 +85,7 @@ module.exports = {
     })
     .catch(err => console.log(err))
   },
-  // 新增功能寫檔
+  // 新增客服功能寫檔
   fsWriteFunction: (category, function_name, entity_name, request) => {
     const category_name = {
       1: {name: '人事', entity: 'personnel'},
@@ -166,7 +166,7 @@ module.exports = {
     })
     .catch(err => console.log(err))
   },
-  // 刪除功能寫檔
+  // 刪除客服功能寫檔
   fsDeleteFunction: (functionCheck, category_id, request) => {
     axios.get('http://localhost:3030/train/cs/trainingData')
     .then(response => {
@@ -222,6 +222,7 @@ module.exports = {
     .catch(err => console.log(err))
   },
 
+  // 刪除客服功能及關聯問答資訊
   fsDeleteFunctionRef: (questionCheck, functionCheck, category_id, function_id, request, req, res) => {
     axios.get('http://localhost:3030/train/cs/trainingData')
     .then(response => {
@@ -317,6 +318,52 @@ module.exports = {
     .then(data => {
       req.flash('success_msg', '刪除功能成功!!')
       return res.redirect(`/bf_cs/function/filter?category=${category_id}&search=`)
+    })
+    .catch(err => console.log(err))
+  },
+
+  // 新增徵厲害職缺
+  fsJhWritePosition: (position_name, entity_name, request) => {
+    axios.get('http://localhost:3030/train/jh/trainingData')
+    .then(response => {
+      return response.data
+    })
+    .then(data => {
+      // 新增position category
+      const nluData = data.nlu.zh.rasa_nlu_data.common_examples
+      const newContent = {
+        "text": `${position_name}`,
+        "intent": "職缺",
+        "entities": [
+          { "entity": `${entity_name}`, "value": `${position_name}`, "start": 0, "end": position_name.length}
+        ],
+        "metadata": { "language": "zh", "canonical": true }
+      }
+
+      const repeatText = nluData.filter(item => item.text == newContent.text)
+      if(repeatText.length){
+        console.log(`已有訓練資料： ` + JSON.stringify(repeatText[0]))
+      }else{
+        nluData.push(newContent)
+        data.nlu.zh.rasa_nlu_data.common_examples = nluData
+        try{
+          fs.writeFileSync(path.resolve(__dirname, '../public/trainData/nlu-json.json'), JSON.stringify(data.nlu.zh))
+        } catch(err){
+          console.log(err)
+        }
+      }
+      const newNluData =  yaml.load(fs.readFileSync(path.resolve(__dirname, '../public/trainData/nlu-json.json'), 'utf8'))
+      return JSON.stringify(newNluData)
+    })
+    .then(data => {
+      request.query(`update BF_JH_TRAINING_DATA
+      set DATA_CONTENT = '${data}'
+      where DATA_NAME = 'nlu-json'`, (err, result) => {
+        if(err){
+          console.log(err)
+          return
+        }
+      })
     })
     .catch(err => console.log(err))
   }
