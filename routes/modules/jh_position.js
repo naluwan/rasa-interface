@@ -4,7 +4,43 @@ const router = express.Router()
 const sql = require('mssql')
 const pool = require('../../config/connectPool')
 
-const {fsJhWritePosition} = require('../../modules/fileSystem')
+const {fsJhWritePosition, fsJhDeletePosition} = require('../../modules/fileSystem')
+
+// 刪除職缺
+router.delete('/:position_id', (req, res) => {
+  const {position_id} = req.params
+  const cpyId = res.locals.user.CPY_ID
+  const request = new sql.Request(pool)
+
+  request.query(`select b.POSITION_NAME 
+  from BF_JH_POSITION a
+  left join BF_JH_POSITION_CATEGORY b
+  on a.POSITION_ID = b.POSITION_ID
+  where a.POSITION_ID = ${position_id}
+  and a.CPY_ID = '${cpyId}'`, (err, result) => {
+    if(err){
+      console.log(err)
+      return
+    }
+    const positionDesCheck = result.recordset[0]
+    if(!positionDesCheck){
+      req.flash('error', '查無此職缺，請重新嘗試!')
+      return res.redirect('/position')
+    }else{
+      request.query(`delete from BF_JH_POSITION
+      where POSITION_ID = ${position_id}
+      and CPY_ID = '${cpyId}'`, (err, result) => {
+        if(err){
+          console.log(err)
+          return
+        }
+        fsJhDeletePosition(positionDesCheck, request)
+        req.flash('success_msg', '成功刪除職缺!')
+        res.redirect('/position')
+      })
+    }
+  })
+})
 
 // 編輯職缺
 router.put('/:position_id', (req, res) => {
@@ -91,6 +127,7 @@ router.post('/', (req, res) => {
         return
       }
       const positionCheck = result.recordset[0]
+      
       if(positionCheck){
         const position_id = positionCheck.POSITION_ID
 
