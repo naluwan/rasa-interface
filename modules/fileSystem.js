@@ -222,7 +222,7 @@ module.exports = {
     .catch(err => console.log(err))
   },
 
-  // 刪除客服功能及關聯問答資訊
+  // 刪除客服功能及關聯問答資訊的寫檔功能
   fsDeleteFunctionRef: (questionCheck, functionCheck, category_id, function_id, request, req, res) => {
     axios.get('http://localhost:3030/train/cs/trainingData')
     .then(response => {
@@ -322,7 +322,7 @@ module.exports = {
     .catch(err => console.log(err))
   },
 
-  // 新增徵厲害職缺
+  // 新增徵厲害職缺寫檔
   fsJhWritePosition: (position_name, entity_name, request) => {
     axios.get('http://localhost:3030/train/jh/trainingData')
     .then(response => {
