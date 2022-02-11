@@ -46,10 +46,10 @@ router.delete('/:position_id', (req, res) => {
 // 編輯職缺
 router.put('/:position_id', (req, res) => {
   const {position_id} = req.params
-  const {position_des} = req.body
+  const {des} = req.body
   const request = new sql.Request(pool)
 
-  if(!position_des){
+  if(!des){
     req.flash('warning_msg', '職缺內容為必填欄位!!')
     return res.redirect(`/position/${position_id}/edit`)
   }
@@ -68,7 +68,7 @@ router.put('/:position_id', (req, res) => {
       return res.redirect('/position')
     }else{
       request.query(`update BF_JH_POSITION
-      set POSITION_DES = '${position_des}'
+      set POSITION_DES = '${des}'
       where POSITION_ID = ${position_id}`, (err, result) => {
         if(err){
           console.log(err)
@@ -108,21 +108,21 @@ router.get('/:position_id/edit', (req, res) => {
 router.post('/', (req, res) => {
   const user = res.locals.user
 	const cpyId = user.CPY_ID
-  const {position_name, entity_name, position_des} = req.body
+  const {name, entity_name, des} = req.body
   const request = new sql.Request(pool)
   const errors = []
 
-  if(!position_name || !entity_name || !position_des){
+  if(!name || !entity_name || !des){
     errors.push({message: '所有欄位都是必填的!'})
   }
 
   if(errors.length){
-    return res.render('jh_new_position', {position_name, entity_name, position_des, errors})
+    return res.render('jh_new_position', {name, entity_name, des, errors})
   }else{
     // 驗證資料庫是否有職缺類別資料
     request.query(`select * 
     from BF_JH_POSITION_CATEGORY
-    where POSITION_NAME = '${position_name}'`, (err, result) => {
+    where POSITION_NAME = '${name}'`, (err, result) => {
       if(err){
         console.log(err)
         return
@@ -149,7 +149,7 @@ router.post('/', (req, res) => {
           }else{
             request.input('cpyId', sql.NVarChar(30), cpyId)
             .input('position_id', sql.Int, position_id)
-            .input('des', sql.NVarChar(2000), position_des)
+            .input('des', sql.NVarChar(2000), des)
             .query(`insert into BF_JH_POSITION (CPY_ID, POSITION_ID, POSITION_DES)
             values (@cpyId, @position_id, @des)`, (err, result) => {
               if(err){
@@ -162,7 +162,7 @@ router.post('/', (req, res) => {
         })
       }else{
         // 資料庫沒有職缺類別資料時先新增
-        request.input('name', sql.NVarChar(200), position_name)
+        request.input('name', sql.NVarChar(200), name)
         .input('entity', sql.NVarChar(200), entity_name)
         .query(`insert into BF_JH_POSITION_CATEGORY (POSITION_NAME, ENTITY_NAME)
         values (@name, @entity)`, (err, result) => {
@@ -170,13 +170,13 @@ router.post('/', (req, res) => {
             console.log(err)
             return
           }
-          // 用function將職缺類別資料寫入訓練檔及BF_JH_TRAINING_DATA資料表
-          fsJhWritePosition(position_name, entity_name, request)
-          setPositionDict(position_name)
+          // 將職缺類別資料寫入訓練檔及BF_JH_TRAINING_DATA資料表
+          fsJhWritePosition(name, entity_name, request)
+          setPositionDict(name)
           // 新增完職缺類別資料後，獲取position_id
           request.query(`select POSITION_ID 
           from BF_JH_POSITION_CATEGORY
-          where POSITION_NAME = '${position_name}'
+          where POSITION_NAME = '${name}'
           and ENTITY_NAME = '${entity_name}'`, (err, result) => {
             if(err){
               console.log(err)
@@ -186,7 +186,7 @@ router.post('/', (req, res) => {
 
             request.input('cpyId', sql.NVarChar(30), cpyId)
             .input('position_id', sql.Int, position_id)
-            .input('des', sql.NVarChar(2000), position_des)
+            .input('des', sql.NVarChar(2000), des)
             .query(`insert into BF_JH_POSITION (CPY_ID, POSITION_ID, POSITION_DES)
             values (@cpyId, @position_id, @des)`, (err, result) => {
               if(err){
