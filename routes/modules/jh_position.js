@@ -5,6 +5,7 @@ const sql = require('mssql')
 const pool = require('../../config/connectPool')
 
 const {fsJhWritePosition, fsJhDeletePosition} = require('../../modules/fileSystem')
+const {setPositionDict} = require('../../modules/setDict')
 
 // 刪除職缺
 router.delete('/:position_id', (req, res) => {
@@ -34,7 +35,7 @@ router.delete('/:position_id', (req, res) => {
           console.log(err)
           return
         }
-        fsJhDeletePosition(positionDesCheck, request)
+        // fsJhDeletePosition(positionDesCheck, request)
         req.flash('success_msg', '成功刪除職缺!')
         res.redirect('/position')
       })
@@ -127,7 +128,7 @@ router.post('/', (req, res) => {
         return
       }
       const positionCheck = result.recordset[0]
-      
+
       if(positionCheck){
         const position_id = positionCheck.POSITION_ID
 
@@ -140,7 +141,7 @@ router.post('/', (req, res) => {
             console.log(err)
             return
           }
-          const positionDesCheck = result.recordset
+          const positionDesCheck = result.recordset[0]
 
           if(positionDesCheck){
             req.flash('warning_msg', '已新增過此職缺資訊，如要修改職缺內容請使用編輯功能!')
@@ -171,6 +172,7 @@ router.post('/', (req, res) => {
           }
           // 用function將職缺類別資料寫入訓練檔及BF_JH_TRAINING_DATA資料表
           fsJhWritePosition(position_name, entity_name, request)
+          setPositionDict(position_name)
           // 新增完職缺類別資料後，獲取position_id
           request.query(`select POSITION_ID 
           from BF_JH_POSITION_CATEGORY
