@@ -340,20 +340,22 @@ module.exports = {
         "metadata": { "language": "zh", "canonical": true }
       }
 
+      const entity_2_text = `${position_name}的工作內容`
       const entity_2 = {
-        "text": `${position_name}的工作內容`,
+        "text": entity_2_text,
         "intent": "職缺",
         "entities": [
-          { "entity": `${entity_name}`, "value": `${position_name}`, "start": 0, "end": position_name.length}
+          { "entity": `${entity_name}`, "value": entity_2_text, "start": 0, "end": entity_2_text.length}
         ],
         "metadata": { "language": "zh", "canonical": true }
       }
 
+      const entity_3_text = `我想知道${position_name}的薪資`
       const entity_3 = {
-        "text": `我想知道${position_name}的薪資`,
+        "text": entity_3_text,
         "intent": "職缺",
         "entities": [
-          { "entity": `${entity_name}`, "value": `${position_name}`, "start": 4, "end": 4 + position_name.length}
+          { "entity": `${entity_name}`, "value": entity_3_text, "start": 0, "end": entity_3_text.length}
         ],
         "metadata": { "language": "zh", "canonical": true }
       }
