@@ -4,6 +4,45 @@ const router = express.Router()
 const sql = require('mssql')
 const pool = require('../../config/connectPool')
 
+// 編輯公司資訊
+router.put('/:cpnyInfo_id/:cpnyId', (req, res) => {
+  const {cpnyInfo_id, cpnyId} = req.params
+  const {des} = req.body
+  const request = new sql.Request(pool)
+
+  if(!des){
+    req.flash('warning_msg', '資訊內容為必填欄位!')
+    return res.redirect(`/company/${cpnyInfo_id}/${cpnyId}/edit`)
+  }
+
+  request.query(`select *
+  from BF_JH_CPNYINFO
+  where INFO_ID = ${cpnyInfo_id}
+  and CPY_ID = '${cpnyId}'`, (err, result) => {
+    if(err){
+      console.log(err)
+      return
+    }
+    const cpnyInfoCheck = result.recordset[0]
+    
+    if(!cpnyInfoCheck){
+      req.flash('error', '查無此資訊，請重新嘗試!')
+      return res.redirect('/company')
+    }else{
+      request.query(`update BF_JH_CPNYINFO
+      set INFO_DES = '${des}'
+      where INFO_ID = ${cpnyInfo_id}
+      and CPY_ID = '${cpnyId}'`, (err, result) => {
+        if(err){
+          console.log(err)
+          return
+        }
+        req.flash('success_msg', '更新資訊內容成功!')
+        res.redirect('/company')
+      })
+    }
+  })
+})
 // 顯示編輯公司資訊頁面
 router.get('/:cpnyInfo_id/:cpnyId/edit', (req, res) => {
   const {cpnyInfo_id, cpnyId} = req.params
