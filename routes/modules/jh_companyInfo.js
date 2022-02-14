@@ -5,9 +5,10 @@ const sql = require('mssql')
 const pool = require('../../config/connectPool')
 
 
+// 新增公司資訊
 router.post('/', (req, res) => {
   const user = res.locals.user
-	const cpyId = user.CPY_ID
+	const cpnyId = user.CPY_ID
   const {name, entity_name, des} = req.body
   const request = new sql.Request(pool)
   const errors = []
@@ -36,7 +37,7 @@ router.post('/', (req, res) => {
         request.query(`select *
         from BF_JH_CPNYINFO
         where INFO_ID = ${info_id}
-        and CPY_ID = '${cpyId}'`, (err, result) => {
+        and CPY_ID = '${cpnyId}'`, (err, result) => {
           if(err){
             console.log(err)
             return
@@ -47,11 +48,11 @@ router.post('/', (req, res) => {
             req.flash('warning_msg', '已新增過此公司資訊，如要修改資訊內容請使用編輯功能!')
             return res.redirect('/company')
           }else{
-            request.input('cpyId', sql.NVarChar(30), cpyId)
+            request.input('cpnyId', sql.NVarChar(30), cpnyId)
             .input('info_id', sql.Int, info_id)
             .input('des', sql.NVarChar(2000), des)
-            .query(`insert into BF_JH_COMPANY (CPY_ID, INFO_ID, INFO_DES)
-            values (@cpyId, @info_id, @des)`, (err, result) => {
+            .query(`insert into BF_JH_CPNYINFO (CPY_ID, INFO_ID, INFO_DES)
+            values (@cpnyId, @info_id, @des)`, (err, result) => {
               if(err){
                 console.log(err)
                 return
@@ -71,9 +72,11 @@ router.post('/', (req, res) => {
             return
           }
           
-          // 這邊要加入寫檔和設定dict module
+          // 加入寫檔和設定dict module
+          fsJhWriteCpnyInfo(name, entity_name, request)
+          setCpnyInfoDict(name)
 
-          // 新增完資訊類別資料後，獲取position_id
+          // 新增完資訊類別資料後，獲取cpnyInfo_id
           request.query(`select INFO_ID
           from BF_JH_CPNYINFO_CATEGORY
           where INFO_NAME = '${name}'
@@ -84,11 +87,11 @@ router.post('/', (req, res) => {
             }
             const info_id = result.recordset[0]['INFO_ID']
 
-            request.input('cpyId', sql.NVarChar(30), cpyId)
+            request.input('cpnyId', sql.NVarChar(30), cpnyId)
             .input('info_id', sql.Int, info_id)
             .input('des', sql.NVarChar(2000), des)
             .query(`insert into BF_JH_CPNYINFO (CPY_ID, INFO_ID, INFO_DES)
-            values (@cpyId, @info_id, @des)`, (err, result) => {
+            values (@cpnyId, @info_id, @des)`, (err, result) => {
               if(err){
                 console.log(err)
                 return
@@ -110,7 +113,7 @@ router.get('/new', (req, res) => {
 // 顯示公司資訊頁面
 router.get('/', (req, res) => {
   const user = res.locals.user
-	const cpyId = user.CPY_ID
+	const cpnyId = user.CPY_ID
   const request = new sql.Request(pool)
   const warning = []
 
@@ -119,7 +122,7 @@ router.get('/', (req, res) => {
   from BF_JH_CPNYINFO a
   left join BF_JH_CPNYINFO_CATEGORY b
   on a.INFO_ID = b.INFO_ID
-  where CPY_ID = '${cpyId}'`, (err, result) => {
+  where CPY_ID = '${cpnyId}'`, (err, result) => {
     if(err){
       console.log(err)
       return
@@ -128,12 +131,12 @@ router.get('/', (req, res) => {
 
     // 如果完全沒資料，給予default(公司電話、地址、簡介)
 		if(cpnyInfo.length == 0){
-      request.input('cpyId', sql.NVarChar(30), cpyId)
+      request.input('cpnyId', sql.NVarChar(30), cpnyId)
       .input('tel', sql.Int, 1)
       .input('address', sql.Int, 2)
       .input('introduction', sql.Int, 3)
       .query(`insert into BF_JH_CPNYINFO(CPY_ID, INFO_ID, INFO_DES)
-      values (@cpyId, @tel, ''), (@cpyId, @address, ''), (@cpyId, @introduction, '')`, (err, result) => {
+      values (@cpnyId, @tel, ''), (@cpnyId, @address, ''), (@cpnyId, @introduction, '')`, (err, result) => {
         if(err){
           console.log(err)
           return
@@ -141,7 +144,7 @@ router.get('/', (req, res) => {
       })
       return res.redirect('/company')
     }else{
-      res.render('jh_cpnyInfo', {cpnyInfo})
+      res.render('jh_cpnyInfo', {cpnyInfo, cpnyId})
     }
   })
 })
