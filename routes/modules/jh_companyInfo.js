@@ -4,6 +4,31 @@ const router = express.Router()
 const sql = require('mssql')
 const pool = require('../../config/connectPool')
 
+// 顯示編輯公司資訊頁面
+router.get('/:cpnyInfo_id/:cpnyId/edit', (req, res) => {
+  const {cpnyInfo_id, cpnyId} = req.params
+  const request = new sql.Request(pool)
+
+  request.query(`select a.INFO_DES as des, b.INFO_ID as id, b.INFO_NAME as name
+  from BF_JH_CPNYINFO a
+  left join BF_JH_CPNYINFO_CATEGORY b
+  on a.INFO_ID = b.INFO_ID
+  where a.INFO_ID = ${cpnyInfo_id}
+  and a.CPY_ID = '${cpnyId}'`, (err, result) => {
+    if(err){
+      console.log(err)
+      return
+    }
+    const cpnyInfo = result.recordset[0]
+
+    if(!cpnyInfo){
+      req.flash('warning_msg', '查無此資訊資料，請重新嘗試!')
+      return res.redirect('/company')
+    }else{
+      res.render('jh_edit_cpnyInfo', {cpnyInfo, cpnyId})
+    }
+  })
+})
 
 // 新增公司資訊
 router.post('/', (req, res) => {
