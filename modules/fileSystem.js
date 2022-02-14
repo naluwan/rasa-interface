@@ -441,5 +441,69 @@ module.exports = {
         }
       })
     })
+  },
+  // 徵厲害新增公司資訊寫檔
+  fsJhWriteCpnyInfo: (cpny_name, entity_name, request) => {
+    axios.get('http://localhost:3030/train/jh/trainingData')
+    .then(response => {
+      return response.data
+    })
+    .then(data => {
+      // 新增cpnyInfo_category
+      const nluData = data.nlu.zh.rasa_nlu_data.common_examples
+      const entity_1 = {
+        "text": `${cpny_name}`,
+        "intent": "問公司資訊",
+        "entities": [
+          { "entity": `${entity_name}`, "value": `${cpny_name}`, "start": 0, "end": cpny_name.length}
+        ],
+        "metadata": { "language": "zh", "canonical": true }
+      }
+
+      const entity_2_text = `我想了解${cpny_name}`
+      const entity_2 = {
+        "text": `${entity_2_text}`,
+        "intent": "問公司資訊",
+        "entities": [
+          { "entity": `${entity_name}`, "value": `${entity_2_text}`, "start": 0, "end": entity_2_text.length}
+        ],
+        "metadata": { "language": "zh", "canonical": true }
+      }
+
+      const entity_3_text = `我想知道${cpny_name}的資訊`
+      const entity_3 = {
+        "text": `${entity_3_text}`,
+        "intent": "問公司資訊",
+        "entities": [
+          { "entity": `${entity_name}`, "value": `${entity_3_text}`, "start": 0, "end": entity_3_text.length}
+        ],
+        "metadata": { "language": "zh", "canonical": true }
+      }
+
+      const repeatText = nluData.filter(item => item.text == entity_1.text)
+      if(repeatText.length){
+        console.log(`已有訓練資料： ` + JSON.stringify(repeatText[0]))
+      }else{
+        nluData.push(entity_1, entity_2, entity_3)
+        data.nlu.zh.rasa_nlu_data.common_examples = nluData
+        try{
+          fs.writeFileSync(path.resolve(__dirname, '../public/trainData/nlu-json.json'), JSON.stringify(data.nlu.zh))
+        } catch(err){
+          console.log(err)
+        }
+      }
+      const newNluData =  yaml.load(fs.readFileSync(path.resolve(__dirname, '../public/trainData/nlu-json.json'), 'utf8'))
+      return JSON.stringify(newNluData)
+    })
+    .then(data => {
+      request.query(`update BF_JH_TRAINING_DATA
+      set DATA_CONTENT = '${data}'
+      where DATA_NAME = 'nlu-json'`, (err, result) => {
+        if(err){
+          console.log(err)
+          return
+        }
+      })
+    })
   }
 }
