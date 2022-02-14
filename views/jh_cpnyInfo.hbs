@@ -24,7 +24,7 @@
                     </a>
                     <button class=" btn btn-danger mx-2" style="font-size:medium; height:fit-content"
                         id="delete-btn" data-toggle="modal" data-target="#deleteModal" data-id="{{ this.INFO_ID }}"
-                        data-name="{{ this.INFO_NAME }}" data-cpyid="{{../cpnyId}}" data-category="company">
+                        data-name="{{ this.INFO_NAME }}" data-cpnyid="{{../cpnyId}}" data-category="company">
                         刪除
                     </button>
                   </div>
@@ -40,7 +40,7 @@
   <div class="col-10 my-5 d-flex">
     <div class="col-6">
       <div class="row justify-content-center">
-        <a href="/company/new" class="btn btn-outline-warning col-8" id="create-btn"
+        <a href="/company/{{cpnyId}}/new" class="btn btn-outline-warning col-8" id="create-btn"
           style="font-size: 1.5rem;">新增資訊</a>
       </div>
     </div>
