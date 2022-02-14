@@ -106,9 +106,8 @@ router.get('/:cpnyInfo_id/:cpnyId/edit', (req, res) => {
 })
 
 // 新增公司資訊
-router.post('/', (req, res) => {
-  const user = res.locals.user
-	const cpnyId = user.CPY_ID
+router.post('/:cpnyId', (req, res) => {
+  const {cpnyId} = req.params
   const {name, entity_name, des} = req.body
   const request = new sql.Request(pool)
   const errors = []
@@ -206,8 +205,9 @@ router.post('/', (req, res) => {
 })
 
 // 顯示公司新增資訊頁面
-router.get('/new', (req, res) => {
-  res.render('jh_new_cpnyInfo')
+router.get('/:cpnyId/new', (req, res) => {
+  const {cpnyId} = req.params
+  res.render('jh_new_cpnyInfo', {cpnyId})
 })
 
 // 顯示公司資訊頁面
@@ -229,23 +229,24 @@ router.get('/', (req, res) => {
     }
     const cpnyInfo = result.recordset
 
-    // 如果完全沒資料，給予default(公司電話、地址、簡介)
 		if(cpnyInfo.length == 0){
-      request.input('cpnyId', sql.NVarChar(30), cpnyId)
-      .input('tel', sql.Int, 1)
-      .input('address', sql.Int, 2)
-      .input('introduction', sql.Int, 3)
-      .query(`insert into BF_JH_CPNYINFO(CPY_ID, INFO_ID, INFO_DES)
-      values (@cpnyId, @tel, ''), (@cpnyId, @address, ''), (@cpnyId, @introduction, '')`, (err, result) => {
-        if(err){
-          console.log(err)
-          return
-        }
-      })
-      return res.redirect('/company')
-    }else{
-      res.render('jh_cpnyInfo', {cpnyInfo, cpnyId})
+      // request.input('cpnyId', sql.NVarChar(30), cpnyId)
+      // .input('tel', sql.Int, 1)
+      // .input('address', sql.Int, 2)
+      // .input('introduction', sql.Int, 3)
+      // .query(`insert into BF_JH_CPNYINFO(CPY_ID, INFO_ID, INFO_DES)
+      // values (@cpnyId, @tel, ''), (@cpnyId, @address, ''), (@cpnyId, @introduction, '')`, (err, result) => {
+      //   if(err){
+      //     console.log(err)
+      //     return
+      //   }
+      // })
+      // return res.redirect('/company')
+      warning.push({message: '還未新增公司資訊，請拉到下方點選按鈕新增公司資訊!!'})
+      warning.push({message: 'ex.地址、電話、簡介、福利、上班時間等公司相關資訊!!'})
     }
+    res.render('jh_cpnyInfo', {cpnyInfo, cpnyId, warning})
+    
   })
 })
 
