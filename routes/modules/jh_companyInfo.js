@@ -4,6 +4,41 @@ const router = express.Router()
 const sql = require('mssql')
 const pool = require('../../config/connectPool')
 
+const {fsJhWriteCpnyInfo} = require('../../modules/fileSystem')
+const {setCpnyInfoDict} = require('../../modules/setDict')
+
+// 刪除公司資訊
+router.delete('/:cpnyInfo_id/:cpnyId', (req, res) => {
+  const {cpnyInfo_id, cpnyId} = req.params
+  const request = new sql.Request(pool) 
+  
+  request.query(`select *
+  from BF_JH_CPNYINFO
+  where INFO_ID = ${cpnyInfo_id}
+  and CPY_ID = '${cpnyId}'`, (err, result) => {
+    if(err){
+      console.log(err)
+      return
+    }
+    const cpnyInfoCheck = result.recordset[0]
+    if(!cpnyInfoCheck){
+      req.flash('error', '查無此資訊，請重新嘗試!')
+      return res.redirect('/company')
+    }else{
+      request.query(`delete from BF_JH_CPNYINFO
+      where INFO_ID = ${cpnyInfo_id}
+      and CPY_ID = '${cpnyId}'`, (err, result) => {
+        if(err){
+          console.log(err)
+          return
+        }
+        req.flash('success_msg', '成功刪除公司資訊!')
+        res.redirect('/company')
+      })
+    }
+  })
+})
+
 // 編輯公司資訊
 router.put('/:cpnyInfo_id/:cpnyId', (req, res) => {
   const {cpnyInfo_id, cpnyId} = req.params
@@ -43,6 +78,7 @@ router.put('/:cpnyInfo_id/:cpnyId', (req, res) => {
     }
   })
 })
+
 // 顯示編輯公司資訊頁面
 router.get('/:cpnyInfo_id/:cpnyId/edit', (req, res) => {
   const {cpnyInfo_id, cpnyId} = req.params
