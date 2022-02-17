@@ -1,15 +1,14 @@
-<div class="row mt-4">
-  <div class="col-md-6 m-auto">
-    <div class="card card-body">
-      <h1 class="text-center mt-3">Login</h1>
+<!--login.hbs-->
+<div>
+  <div>
+    <div class="loginForm">
+      <h1 class="text-center">Login</h1>
       {{> message}}
       <form action="/users/login" method="post">
         <div class="form-group">
-          <label for="email">帳號</label>
           <input type="email" id="email" name="email" class="form-control" placeholder="請輸入E-mail" required>
         </div>
         <div class="form-group">
-          <label for="password">密碼</label>
           <input type="password" id="password" name="password" class="form-control" placeholder="請輸入密碼" required>
         </div>
         <button type="submit" class="btn btn-primary btn-block">Login</button>
@@ -17,7 +16,7 @@
         <button type="button" class="btn btn-info btn-block" data-toggle="modal" data-target="#resetModal">
           忘記密碼
           </button>
-          <p class="lead mt-4">
+          <p class="lead">
           還沒有帳號?<a href="/users/register" style="color: blue;">註冊</a>
         </p>
       </form>

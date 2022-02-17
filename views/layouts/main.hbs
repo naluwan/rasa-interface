@@ -69,9 +69,7 @@
       </a>
       {{!-- <h1 style="color: #fff;">ChatBot設定</h1> --}}
       {{#if isAuthenticated}}
-      <a href="/users/logout" class="btn btn-outline-light">Logout</a>
-      {{else}}
-      <a href="/users/login" class="btn btn-outline-light">Login</a>
+      <a href="/users/logout" class="btn btn-outline-light">登出</a>
       {{/if}}
     </nav>
   </header>
@@ -101,5 +99,14 @@
   <!-- Core theme JS-->
   {{!-- <script src="js/scripts.js"></script> --}}
 </body>
+<script>
+  if(location.pathname == "/"){
+    document.documentElement.setAttribute("class","index");
+  }else{
+    var pageName = location.pathname.replace("/","").replace(/\/[0-9]/g,"").replace(/[0-9]/g,"").replace(/\//g," ");
+    document.documentElement.setAttribute("class",pageName);
+  };
+
+</script>
 
 </html>
