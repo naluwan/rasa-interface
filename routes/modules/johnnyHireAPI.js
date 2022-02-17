@@ -169,7 +169,7 @@ router.post('/api/v2/newPosition', (req, res) => {
                 console.log(err)
                 return
               }
-              request.query(`select b.CPY_ID, b.CPY_NAME, a.POSITION_ID, c.POSITION_NAME, a.POSITION_DES 
+              request.query(`select b.CPY_ID, b.CPY_NAME, a.POSITION_ID, c.POSITION_NAME, c.ENTITY_NAME, a.POSITION_DES 
               from BF_JH_POSITION a
               left join BOTFRONT_USERS_INFO b
               on a.CPY_ID = b.CPY_ID
@@ -223,7 +223,7 @@ router.post('/api/v2/newPosition', (req, res) => {
                 console.log(err)
                 return
               }
-              request.query(`select b.CPY_ID, b.CPY_NAME, a.POSITION_ID, c.POSITION_NAME, a.POSITION_DES 
+              request.query(`select b.CPY_ID, b.CPY_NAME, a.POSITION_ID, c.POSITION_NAME, c.ENTITY_NAME, a.POSITION_DES 
               from BF_JH_POSITION a
               left join BOTFRONT_USERS_INFO b
               on a.CPY_ID = b.CPY_ID
