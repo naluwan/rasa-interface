@@ -532,6 +532,14 @@ router.get('/filter', (req, res) => {
 
   const request = new sql.Request(pool)
   const warning = []
+
+  const regex = /\{|\[|\]|\'|\"\;|\:\?|\\|\/|\.|\,|\>|\<|\=|\+|\-|\(|\)|\!|\@|\#|\$|\%|\^|\&|\*|\`|\~/g
+
+  if(regex.test(search) || regex.test(companyFilter) || regex.test(tableFilter)){
+    req.flash('warning_msg', '搜尋字串包含非法字元，請重新嘗試!')
+    return res.redirect('/adminSearch')
+  }
+
   if(search && (!companyFilter || !tableFilter)){
     req.flash('warning_msg', '請先選擇公司及分類再進行查詢!!')
     return res.redirect('/adminSearch')
