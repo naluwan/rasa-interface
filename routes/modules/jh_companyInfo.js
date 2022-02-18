@@ -8,20 +8,25 @@ const {fsJhWriteInfo} = require('../../modules/fileSystem')
 const {setInfoDict} = require('../../modules/setDict')
 
 // 刪除公司資訊
-router.delete('/:cpnyInfo_id/:cpnyId', (req, res) => {
-  const {cpnyInfo_id, cpnyId} = req.params
+router.delete('/:entity_name', (req, res) => {
+  const {entity_name} = req.params
+  const user = res.locals.user
+	const cpnyId = user.CPY_ID
   const request = new sql.Request(pool) 
   
-  request.query(`select *
-  from BF_JH_CPNYINFO
-  where INFO_ID = ${cpnyInfo_id}
-  and CPY_ID = '${cpnyId}'`, (err, result) => {
+  request.query(`select b.INFO_ID
+  from BF_JH_CPNYINFO a
+  left join BF_JH_CPNYINFO_CATEGORY b
+  on a.INFO_ID = b.INFO_ID
+  where b.ENTITY_NAME = '${entity_name}'
+  and a.CPY_ID = '${cpnyId}'`, (err, result) => {
     if(err){
       console.log(err)
       return
     }
-    const cpnyInfoCheck = result.recordset[0]
-    if(!cpnyInfoCheck){
+    const cpnyInfo_id = result.recordset[0]['INFO_ID']
+
+    if(!cpnyInfo_id){
       req.flash('error', '查無此資訊，請重新嘗試!')
       return res.redirect('/company')
     }else{
@@ -40,27 +45,31 @@ router.delete('/:cpnyInfo_id/:cpnyId', (req, res) => {
 })
 
 // 編輯公司資訊
-router.put('/:cpnyInfo_id/:cpnyId', (req, res) => {
-  const {cpnyInfo_id, cpnyId} = req.params
+router.put('/:entity_name', (req, res) => {
+  const {entity_name} = req.params
   const {des} = req.body
+  const user = res.locals.user
+	const cpnyId = user.CPY_ID
   const request = new sql.Request(pool)
 
   if(!des){
     req.flash('warning_msg', '資訊內容為必填欄位!')
-    return res.redirect(`/company/${cpnyInfo_id}/${cpnyId}/edit`)
+    return res.redirect(`/company/${entity_name}/edit`)
   }
 
-  request.query(`select *
-  from BF_JH_CPNYINFO
-  where INFO_ID = ${cpnyInfo_id}
-  and CPY_ID = '${cpnyId}'`, (err, result) => {
+  request.query(`select b.INFO_ID
+  from BF_JH_CPNYINFO a
+  left join BF_JH_CPNYINFO_CATEGORY b
+  on a.INFO_ID = b.INFO_ID
+  where b.ENTITY_NAME = '${entity_name}'
+  and a.CPY_ID = '${cpnyId}'`, (err, result) => {
     if(err){
       console.log(err)
       return
     }
-    const cpnyInfoCheck = result.recordset[0]
+    const cpnyInfo_id = result.recordset[0]['INFO_ID']
     
-    if(!cpnyInfoCheck){
+    if(!cpnyInfo_id){
       req.flash('error', '查無此資訊，請重新嘗試!')
       return res.redirect('/company')
     }else{
@@ -81,22 +90,25 @@ router.put('/:cpnyInfo_id/:cpnyId', (req, res) => {
 })
 
 // 顯示編輯公司資訊頁面
-router.get('/:cpnyInfo_id/:cpnyId/edit', (req, res) => {
-  const {cpnyInfo_id, cpnyId} = req.params
+router.get('/:entity_name/edit', (req, res) => {
+  const {entity_name} = req.params
+  const user = res.locals.user
+	const cpnyId = user.CPY_ID
+  const jh_edit_cpnyInfo = true
   const request = new sql.Request(pool)
 
-  request.query(`select a.INFO_DES as des, b.INFO_ID as id, b.INFO_NAME as name
+  request.query(`select a.INFO_DES as des, b.INFO_ID as id, b.INFO_NAME as name, b.ENTITY_NAME as entity_name
   from BF_JH_CPNYINFO a
   left join BF_JH_CPNYINFO_CATEGORY b
   on a.INFO_ID = b.INFO_ID
-  where a.INFO_ID = ${cpnyInfo_id}
+  where b.ENTITY_NAME = '${entity_name}'
   and a.CPY_ID = '${cpnyId}'`, (err, result) => {
     if(err){
       console.log(err)
       return
     }
     const cpnyInfo = result.recordset[0]
-    const jh_edit_cpnyInfo = true
+
     if(!cpnyInfo){
       req.flash('warning_msg', '查無此資訊資料，請重新嘗試!')
       return res.redirect('/company')
@@ -107,9 +119,10 @@ router.get('/:cpnyInfo_id/:cpnyId/edit', (req, res) => {
 })
 
 // 新增公司資訊
-router.post('/:cpnyId', (req, res) => {
-  const {cpnyId} = req.params
+router.post('/', (req, res) => {
   const {name, entity_name, des} = req.body
+  const user = res.locals.user
+	const cpnyId = user.CPY_ID
   const request = new sql.Request(pool)
   const warning = []
   const jh_new_position = true
@@ -207,8 +220,9 @@ router.post('/:cpnyId', (req, res) => {
 })
 
 // 顯示公司新增資訊頁面
-router.get('/:cpnyId/new', (req, res) => {
-  const {cpnyId} = req.params
+router.get('/new', (req, res) => {
+  const user = res.locals.user
+	const cpnyId = user.CPY_ID
   const jh_new_cpnyInfo = true
   res.render('index', {cpnyId, jh_new_cpnyInfo})
 })
@@ -221,7 +235,7 @@ router.get('/', (req, res) => {
   const warning = []
 
   // 抓取公司資訊
-  request.query(`select a.INFO_DES, b.INFO_NAME, b.INFO_ID
+  request.query(`select a.INFO_DES, b.INFO_NAME, b.INFO_ID, b.ENTITY_NAME
   from BF_JH_CPNYINFO a
   left join BF_JH_CPNYINFO_CATEGORY b
   on a.INFO_ID = b.INFO_ID
