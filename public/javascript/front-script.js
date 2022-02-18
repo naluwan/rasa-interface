@@ -3,6 +3,7 @@ const messageBlock = document.querySelector('#message-block')
 const csTrainBtn = document.querySelector('.cs-train-btn')
 const jhTrainBtn = document.querySelector('.jh-train-btn')
 const questionDes = document.querySelector('.question-description')
+const menu = document.querySelector('.menu')
 
 if(dataPanel){
 	dataPanel.addEventListener('click', event => {
@@ -13,7 +14,7 @@ if(dataPanel){
 			const deleteForm = document.querySelector('#delete-form')
 	
 			deletePosition.innerText = '「' + target.dataset.name + '」'
-			deleteForm.action = `/${target.dataset.category}/${target.dataset.id}/${target.dataset.cpnyid}?_method=DELETE`
+			deleteForm.action = `/${target.dataset.category}/${target.dataset.entity}?_method=DELETE`
 		}
 	
 		if(target.matches('#adminSearch-delete-btn')){
@@ -123,23 +124,24 @@ if(jhTrainBtn){
 	jhTrainBtn.addEventListener('click', e => {
 		const target = e.target
 		if(target.matches('.jh-train-btn')){
-			console.log('訓練中...')
+			// console.log('訓練中...')
 			jhTrainBtn.setAttribute('disabled', '')
 			jhTrainBtn.innerHTML = '<i class="fas fa-spinner fast-spin fa-2x"></i>'
-			messageBlock.innerHTML = `
-			<div class="alert alert-warning alert-dismissible fade show" role="alert">
-				訓練中.....
-				<button type="button" class="close" data-dismiss="alert" aria-label="Close">
-					<span aria-hidden="true">&times;</span>
-				</button>
-			</div>
-			`
+			// messageBlock.innerHTML = `
+			// <div class="alert alert-warning alert-dismissible fade show" role="alert">
+			// 	訓練中.....
+			// 	<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+			// 		<span aria-hidden="true">&times;</span>
+			// 	</button>
+			// </div>
+			// `
 			
-			fetch('http://localhost:3030/train/jh/trainingData')
+			fetch('http://192.168.11.80:3030/train/jh/trainingData')
 			.then(response => {
 				return response.json()
 			})
 			.then(data => {
+				console.log(data)
 				fetch('http://192.168.10.108:5005/model/train?save_to_default_model_directory=true&force_training=false',{
 					method: 'post',
 					body: JSON.stringify(data),
@@ -149,24 +151,21 @@ if(jhTrainBtn){
 					mode: 'no-cors',
 				})
 				.then(response => {
-					fetch('http://localhost:3030/train/trainingComplete')
+					fetch('http://192.168.11.80:3030/train/trainingComplete')
 					.then(response => {
 						return response.json()
 					})
 					.then(result => {
-						console.log(`功能訓練結果：` + result[1].functions)
-						console.log(`問答資訊訓練結果：` + result[0].question)
-						console.log('訓練完成!!')
 						jhTrainBtn.removeAttribute('disabled')
-						jhTrainBtn.innerText = 'Train'
-						messageBlock.innerHTML = `
-						<div class="alert alert-success alert-dismissible fade show" role="alert">
-							訓練完成!!
-							<button type="button" class="close" data-dismiss="alert" aria-label="Close">
-								<span aria-hidden="true">&times;</span>
-							</button>
-						</div>
-						`
+						jhTrainBtn.innerText = '執行訓練'
+						// messageBlock.innerHTML = `
+						// <div class="alert alert-success alert-dismissible fade show" role="alert">
+						// 	訓練完成!!
+						// 	<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+						// 		<span aria-hidden="true">&times;</span>
+						// 	</button>
+						// </div>
+						// `
 					})
 					.catch(err => console.log(err))
 				})
@@ -192,6 +191,26 @@ if(questionDes){
 		}
 	})
 }
+
+// if(menu){
+// 	menu.addEventListener('click', e => {
+// 		const target = e.target
+// 		// console.log(target.tagName)
+// 		if(target.tagName == 'BUTTON'){
+// 			// e.preventDefault()
+// 			fetch(`http://192.168.11.80:3030/${target.id}`,{
+// 				mode: 'no-cors',
+// 			})
+// 			.then(response => {
+// 				return response.json()
+// 			})
+// 			.then(data => {
+// 				console.log(data)
+// 			})
+// 			.catch(err => console.log(err))
+// 		}
+// 	})
+// }
 
 
 
