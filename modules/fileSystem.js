@@ -505,5 +505,131 @@ module.exports = {
         }
       })
     })
+  },
+  // 徵厲害新增補助津貼寫檔
+  fsWriteSubsidy: (subsidy_name, entity_name, request) => {
+    axios.get('http://localhost:3030/train/jh/trainingData')
+    .then(response => {
+      return response.data
+    })
+    .then(data => {
+      const nluData = data.nlu.zh.rasa_nlu_data.common_examples
+      const entity_1 = {
+        "text": `${subsidy_name}`,
+        "intent": "問補助資訊",
+        "entities": [
+          { "entity": `${entity_name}`, "value": `${subsidy_name}`, "start": 0, "end": subsidy_name.length}
+        ],
+        "metadata": { "language": "zh", "canonical": true }
+      }
+
+      const entity_2_text = `我想了解${subsidy_name}`
+      const entity_2 = {
+        "text": `${entity_2_text}`,
+        "intent": "問補助資訊",
+        "entities": [
+          { "entity": `${entity_name}`, "value": `${entity_2_text}`, "start": 0, "end": entity_2_text.length}
+        ],
+        "metadata": { "language": "zh", "canonical": true }
+      }
+
+      const entity_3_text = `我想知道${subsidy_name}的資訊`
+      const entity_3 = {
+        "text": `${entity_3_text}`,
+        "intent": "問補助資訊",
+        "entities": [
+          { "entity": `${entity_name}`, "value": `${entity_3_text}`, "start": 0, "end": entity_3_text.length}
+        ],
+        "metadata": { "language": "zh", "canonical": true }
+      }
+
+      const repeatText = nluData.filter(item => item.text == entity_1.text)
+      if(repeatText.length){
+        console.log(`已有訓練資料： ` + JSON.stringify(repeatText[0]))
+      }else{
+        nluData.push(entity_1, entity_2, entity_3)
+        data.nlu.zh.rasa_nlu_data.common_examples = nluData
+        try{
+          fs.writeFileSync(path.resolve(__dirname, '../public/trainData/nlu-json.json'), JSON.stringify(data.nlu.zh))
+        } catch(err){
+          console.log(err)
+        }
+      }
+      const newNluData =  yaml.load(fs.readFileSync(path.resolve(__dirname, '../public/trainData/nlu-json.json'), 'utf8'))
+      return JSON.stringify(newNluData)
+    })
+    .then(data => {
+      request.query(`update BF_JH_TRAINING_DATA
+      set DATA_CONTENT = '${data}'
+      where DATA_NAME = 'nlu-json'`, (err, result) => {
+        if(err){
+          console.log(err)
+          return
+        }
+      })
+    })
+  },
+    // 徵厲害新增假別寫檔
+  fsWriteLeave: (leave_name, entity_name, request) => {
+    axios.get('http://localhost:3030/train/jh/trainingData')
+    .then(response => {
+      return response.data
+    })
+    .then(data => {
+      const nluData = data.nlu.zh.rasa_nlu_data.common_examples
+      const entity_1 = {
+        "text": `${leave_name}`,
+        "intent": "問假別資訊",
+        "entities": [
+          { "entity": `${entity_name}`, "value": `${leave_name}`, "start": 0, "end": leave_name.length}
+        ],
+        "metadata": { "language": "zh", "canonical": true }
+      }
+
+      const entity_2_text = `我想了解${leave_name}`
+      const entity_2 = {
+        "text": `${entity_2_text}`,
+        "intent": "問假別資訊",
+        "entities": [
+          { "entity": `${entity_name}`, "value": `${entity_2_text}`, "start": 0, "end": entity_2_text.length}
+        ],
+        "metadata": { "language": "zh", "canonical": true }
+      }
+
+      const entity_3_text = `我想知道${leave_name}的資訊`
+      const entity_3 = {
+        "text": `${entity_3_text}`,
+        "intent": "問假別資訊",
+        "entities": [
+          { "entity": `${entity_name}`, "value": `${entity_3_text}`, "start": 0, "end": entity_3_text.length}
+        ],
+        "metadata": { "language": "zh", "canonical": true }
+      }
+
+      const repeatText = nluData.filter(item => item.text == entity_1.text)
+      if(repeatText.length){
+        console.log(`已有訓練資料： ` + JSON.stringify(repeatText[0]))
+      }else{
+        nluData.push(entity_1, entity_2, entity_3)
+        data.nlu.zh.rasa_nlu_data.common_examples = nluData
+        try{
+          fs.writeFileSync(path.resolve(__dirname, '../public/trainData/nlu-json.json'), JSON.stringify(data.nlu.zh))
+        } catch(err){
+          console.log(err)
+        }
+      }
+      const newNluData =  yaml.load(fs.readFileSync(path.resolve(__dirname, '../public/trainData/nlu-json.json'), 'utf8'))
+      return JSON.stringify(newNluData)
+    })
+    .then(data => {
+      request.query(`update BF_JH_TRAINING_DATA
+      set DATA_CONTENT = '${data}'
+      where DATA_NAME = 'nlu-json'`, (err, result) => {
+        if(err){
+          console.log(err)
+          return
+        }
+      })
+    })
   }
 }
