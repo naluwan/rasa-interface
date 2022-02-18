@@ -29,20 +29,20 @@ module.exports = {
     .catch(err => console.log(err))
   },
   // 新增公司資訊dict
-  setCpnyInfoDict: (cpnyInfo_name) => {
+  setInfoDict: (info_name) => {
     const regex = /\)|\>|\}|\]|」|\』|\】|\〕/g
     let regex_name = ''
-    if(regex.test(cpnyInfo_name)) {
+    if(regex.test(info_name)) {
       // 括弧在前方 ex.【CMO單位】專案經理
-      regex_name = cpnyInfo_name.slice(regex.lastIndex, cpnyInfo_name.length + 1)
+      regex_name = info_name.slice(regex.lastIndex, info_name.length + 1)
       if(regex_name == ''){
         // 括弧在後方 ex.專案經理【CMO單位】
         const regex =  /\(|\<|\{|\[|「|\『|\【|\〔/g
-        regex.test(cpnyInfo_name)
-        regex_name = cpnyInfo_name.slice(0, regex.lastIndex - 1)
+        regex.test(info_name)
+        regex_name = info_name.slice(0, regex.lastIndex - 1)
       }
     }
-    const url = encodeURI(`http://192.168.10.108:3040/setDict/jh/cpnyInfo?cpnyInfo_name=${cpnyInfo_name}&regex_name=${regex_name}`)
+    const url = encodeURI(`http://192.168.10.108:3040/setDict/jh/cpnyInfo?info_name=${info_name}&regex_name=${regex_name}`)
     const config = {
       method: 'post',
       url: url,

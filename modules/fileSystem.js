@@ -443,7 +443,7 @@ module.exports = {
     })
   },
   // 徵厲害新增公司資訊寫檔
-  fsJhWriteCpnyInfo: (cpny_name, entity_name, request) => {
+  fsJhWriteInfo: (info_name, entity_name, request) => {
     axios.get('http://localhost:3030/train/jh/trainingData')
     .then(response => {
       return response.data
@@ -452,15 +452,15 @@ module.exports = {
       // 新增cpnyInfo_category
       const nluData = data.nlu.zh.rasa_nlu_data.common_examples
       const entity_1 = {
-        "text": `${cpny_name}`,
+        "text": `${info_name}`,
         "intent": "問公司資訊",
         "entities": [
-          { "entity": `${entity_name}`, "value": `${cpny_name}`, "start": 0, "end": cpny_name.length}
+          { "entity": `${entity_name}`, "value": `${info_name}`, "start": 0, "end": info_name.length}
         ],
         "metadata": { "language": "zh", "canonical": true }
       }
 
-      const entity_2_text = `我想了解${cpny_name}`
+      const entity_2_text = `我想了解${info_name}`
       const entity_2 = {
         "text": `${entity_2_text}`,
         "intent": "問公司資訊",
@@ -470,7 +470,7 @@ module.exports = {
         "metadata": { "language": "zh", "canonical": true }
       }
 
-      const entity_3_text = `我想知道${cpny_name}的資訊`
+      const entity_3_text = `我想知道${info_name}的資訊`
       const entity_3 = {
         "text": `${entity_3_text}`,
         "intent": "問公司資訊",
