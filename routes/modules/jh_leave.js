@@ -4,8 +4,45 @@ const router = express.Router()
 const sql = require('mssql')
 const pool = require('../../config/connectPool')
 
-const {fsWriteSubsidy} = require('../../modules/fileSystem')
+const {fsWriteLeave} = require('../../modules/fileSystem')
 const {setInfoDict} = require('../../modules/setDict')
+
+// 刪除假別資訊
+router.delete('/:entity_name', (req, res) => {
+  const {entity_name} = req.params
+  const user = res.locals.user
+	const cpnyId = user.CPY_ID
+  const request = new sql.Request(pool)
+
+  request.query(`select b.LEAVE_ID
+  from BF_JH_LEAVE a
+  left join BF_JH_LEAVE_CATEGORY b
+  on a.LEAVE_ID = b.LEAVE_ID
+  where b.ENTITY_NAME = '${entity_name}'
+  and a.CPY_ID = '${cpnyId}'`, (err, result) => {
+    if(err){
+      console.log(err)
+      return
+    }
+
+    const leave_id = result.recordset[0]['LEAVE_ID']
+    if(!leave_id){
+      req.flash('error', '查無此假別，請重新嘗試!')
+      return res.redirect('/leave')
+    }else{
+      request.query(`delete from BF_JH_LEAVE
+      where LEAVE_ID = ${leave_id}
+      and CPY_ID = '${cpnyId}'`, (err, result) => {
+        if(err){
+          console.log(err)
+          return
+        }
+        req.flash('success_msg', '成功刪除假別資訊!')
+        res.redirect('/leave')
+      })
+    }
+  })
+})
 
 // 編輯假別資訊內容
 router.put('/:entity_name', (req, res) => {
@@ -195,7 +232,7 @@ router.get('/', (req, res) => {
   const warning = []
   const jh_leave = true
   
-  request.query(`select a.LEAVE_DES, b.LEAVE_ID, b.LEAVE_NAME
+  request.query(`select a.LEAVE_DES, b.LEAVE_ID, b.LEAVE_NAME, b.ENTITY_NAME
   from BF_JH_LEAVE a
   left join BF_JH_LEAVE_CATEGORY b
   on a.LEAVE_ID = b.LEAVE_ID
@@ -207,7 +244,7 @@ router.get('/', (req, res) => {
     }
     const leaveInfo = result.recordset
     if(!leaveInfo.length) warning.push({message: '還未新增假別資訊，請拉到下方點選按鈕新增假別資訊!!'})
-    res.render('index', {leaveInfo, cpnyId, warning, jh_leave})
+    res.render('index', {leaveInfo, warning, jh_leave})
   })
 })
 
