@@ -1,6 +1,8 @@
-<div class="row d-flex flex-column align-items-center all">
-  <h1 class="m-5">公司資訊</h1>
-  <div class="col-9 wrapper">
+{{#if jh_cpnyInfo}}
+<!-- jh_cpnyInfo -->
+<div>
+  <h1>公司資訊</h1>
+  <div>
     {{> message}}
     <div class="scroll-view">
       <ul class="list-group">
@@ -37,19 +39,9 @@
       </ul>
     </div>
   </div>
-  <div class="col-10 my-5 d-flex">
-    <div class="col-6">
-      <div class="row justify-content-center">
-        <a href="/company/{{cpnyId}}/new" class="btn btn-outline-warning col-8" id="create-btn"
-          style="font-size: 1.5rem;">新增資訊</a>
-      </div>
-    </div>
-    <div class="col-6">
-      <div class="row justify-content-center">
-        <a href="/" class="btn btn-outline-dark col-8" id="create-btn"
-          style="font-size: 1.5rem;">返回</a>
-      </div>
-    </div>
+  <div>
+    <a href="/company/{{cpnyId}}/new" class="btn btn-outline-warning col-5" id="create-btn" style="font-size: 1.5rem;">新增資訊</a>
+    <a href="/" class="btn btn-outline-dark col-5" id="create-btn" style="font-size: 1.5rem;">返回</a>
   </div>
 </div>
 
@@ -76,3 +68,4 @@
     </div>
   </div>
 </div>
+{{/if}}

@@ -1,26 +1,28 @@
-<div class="row m-5">
-  <div class="col-8 m-auto">
-    <div class="card card-body">
-      <h1 class="text-center mt-3">新增資訊</h1>
+{{#if jh_new_cpnyInfo}}
+<!-- jh_new_cpnyInfo -->
+<div>
+  <div>
+    <div>
+      <h1>新增資訊</h1>
       <form action="/company/{{cpnyId}}" method="POST">
         <div class="modal-body">
           {{> message}}
 
-          <div class="input-group pt-3">
+          <div class="input-group">
             <div class="input-group-prepend">
               <label for="name" class="input-group-text new-title">資訊名稱</label>
             </div>
             <input type="text" class="form-control new-des" name="name" id="name" placeholder="請輸入資訊名稱" value="{{name}}" required>
           </div>
 
-          <div class="input-group pt-3">
+          <div class="input-group">
             <div class="input-group-prepend">
               <label for="entity_name" class="input-group-text new-title">資訊英文名稱</label>
             </div>
             <input type="text" class="form-control new-des" name="entity_name" id="entity_name" placeholder="請輸入資訊英文名稱" value="{{entity_name}}" required>
           </div>
 
-          <div class="input-group pt-3">
+          <div class="input-group">
             <div class="input-group-prepend">
               <label for="des" class="input-group-text new-title">資訊內容</label>
             </div>
@@ -36,3 +38,4 @@
     </div>
   </div>
 </div>
+{{/if}}
