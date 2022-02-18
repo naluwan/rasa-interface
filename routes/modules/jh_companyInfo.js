@@ -64,8 +64,9 @@ router.put('/:cpnyInfo_id/:cpnyId', (req, res) => {
       req.flash('error', '查無此資訊，請重新嘗試!')
       return res.redirect('/company')
     }else{
-      request.query(`update BF_JH_CPNYINFO
-      set INFO_DES = '${des}'
+      request.input('des', sql.NVarChar(2000), des)
+      .query(`update BF_JH_CPNYINFO
+      set INFO_DES = @des
       where INFO_ID = ${cpnyInfo_id}
       and CPY_ID = '${cpnyId}'`, (err, result) => {
         if(err){
@@ -224,7 +225,8 @@ router.get('/', (req, res) => {
   from BF_JH_CPNYINFO a
   left join BF_JH_CPNYINFO_CATEGORY b
   on a.INFO_ID = b.INFO_ID
-  where CPY_ID = '${cpnyId}'`, (err, result) => {
+  where CPY_ID = '${cpnyId}'
+  order by b.INFO_ID ASC`, (err, result) => {
     if(err){
       console.log(err)
       return

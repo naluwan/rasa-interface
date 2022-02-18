@@ -67,8 +67,9 @@ router.put('/:position_id/:cpnyId', (req, res) => {
       req.flash('error', '查無此職缺，請重新嘗試!')
       return res.redirect('/position')
     }else{
-      request.query(`update BF_JH_POSITION
-      set POSITION_DES = '${des}'
+      request.input('des', sql.NVarChar(2000), des)
+      .query(`update BF_JH_POSITION
+      set POSITION_DES = @des
       where POSITION_ID = ${position_id}
       and CPY_ID = ${cpnyId}`, (err, result) => {
         if(err){
@@ -225,7 +226,8 @@ router.get('/', (req, res) => {
   from BF_JH_POSITION a
   left join BF_JH_POSITION_CATEGORY b
   on a.POSITION_ID = b.POSITION_ID
-  where CPY_ID = '${cpnyId}'`, (err, result) => {
+  where CPY_ID = '${cpnyId}'
+  order by b.POSITION_ID ASC`, (err, result) => {
     if(err){
       console.log(err)
       return
