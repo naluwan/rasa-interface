@@ -1,14 +1,14 @@
 {{#if jh_position}}
 <!-- jh_position -->
-<div class="row d-flex flex-column align-items-center all">
-  <h1 class="m-5">職缺資訊</h1>
-  <div class="col-9 wrapper">
+<div>
+  <h1>職缺資訊</h1>
+  <div>
     {{> message}}
-    <div class="scroll-view">
+    <div>
       <ul class="list-group">
-        <div class="row d-flex justify-content-center" id="data-panel">
+        <di id="data-panel">
           {{#each positionResult}}
-          <div class="col-12">
+          <div>
             <li class="list-group-item" id="record-item" style="border: none;">
               <div class="row">
                 <div class=" item-wrapper">
@@ -40,19 +40,8 @@
     </div>
   </div>
 
-  <div class="col-10 my-5 d-flex">
-    <div class="col-6">
-      <div class="row justify-content-center">
-        <a href="/position/{{cpnyId}}/new" class="btn btn-outline-warning col-8" id="create-btn"
-          style="font-size: 1.5rem;">新增職缺</a>
-      </div>
-    </div>
-    <div class="col-6">
-      <div class="row justify-content-center">
-        <a href="/" class="btn btn-outline-dark col-8" id="create-btn"
-          style="font-size: 1.5rem;">返回</a>
-      </div>
-    </div>
+  <div class="text-center">
+    <a href="/position/{{cpnyId}}/new" class="btn btn-outline-warning" id="create-btn">新增職缺</a>
   </div>
 </div>
 

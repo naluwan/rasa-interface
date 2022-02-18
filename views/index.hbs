@@ -1,218 +1,230 @@
-{{#if isAdmin}}
-  {{#is whichRole 'hire'}}
+<!--index.hbs-->
+<div data-func="index">
+  {{#if isAdmin}}
+    {{#is whichRole 'hire'}}
+    <div class="row">
+      <div class="col-10 mx-auto mt-3" id="message-block">
+      {{> message}}
+      </div>
+
+      <!-- admin jh 按鈕 -->
+      <span>
+        <div class="col-10 mx-auto mt-3">
+          <form action="/roleFilter?_method=PUT" method="POST">
+            <select name="roleFilter" id="roleFilter" onchange="submit()">
+              <option value="hire" {{#is whichRole 'hire'}} selected {{/is}}>徵厲Hire</option>
+              <option value="hr" {{#is whichRole 'hr'}} selected {{/is}}>棉花糖客服</option>
+            </select>
+          </form>
+        </div>
+        <!-- <a href="#" class="btn btn-dark active mx-3" role="button" id="train-btn">Train</a> -->
+        <button class="col btn btn-dark active mx-3 jh-train-btn" type="button">Train</button>
+        <div class="col-12 mx-auto home">
+          <div class="row col-6 d-flex mx-auto justify-content-center">
+            <div class="col-12 d-flex align-items-center justify-content-center">
+              <label>公司帳號資料:</label>
+              <a href="/adminCompany" class="btn btn-success" role="button">設定</a>
+            </div>
+          </div> 
+
+          <div class="row col-6 d-flex mx-auto justify-content-center">
+            <div class="col-12 d-flex align-items-center justify-content-center">
+              <label>公司資訊類別:</label>
+              <a href="/adminCompanyInfo" class="btn btn-success" role="button">設定</a>
+            </div>
+          </div> 
+
+          <div class="row col-6 d-flex mx-auto justify-content-center">
+            <div class="col-12 d-flex align-items-center justify-content-center" id="position-block">
+              <label>公司職缺類別:</label>
+              <a href="/adminPositionInfo" class="btn btn-success" role="button">設定</a>
+            </div>
+          </div>
+
+          <div class="row col-6 d-flex mx-auto justify-content-center">
+            <div class="col-12 d-flex align-items-center justify-content-center">
+              <label>公司產業類別:</label>
+              <a href="/adminIndustryInfo" class="btn btn-success" role="button">設定</a>
+            </div>
+          </div> 
+
+          <div class="row col-6 d-flex mx-auto justify-content-center">
+            <div class="col-12 d-flex align-items-center justify-content-center">
+              <label>公司假別類別:</label>
+              <a href="/adminLeaveInfo" class="btn btn-success" role="button">設定</a>
+            </div>
+          </div>
+
+          <div class="row col-6 d-flex mx-auto justify-content-center">
+            <div class="col-12 d-flex align-items-center justify-content-center">
+              <label>公司補助類別:</label>
+              <a href="/adminSubsidyInfo" class="btn btn-success" role="button">設定</a>
+            </div>
+          </div>
+
+          <div class="row col-12 d-flex mx-auto justify-content-start">
+            <div class="col-6 d-flex align-items-center justify-content-center">
+              <label>公司回覆查詢:</label>
+              <a href="/adminSearch" class="btn btn-success" role="button">設定</a>
+            </div>
+          </div> 
+        </div>
+      </span>
+
+      <!-- admin jh 右側顯示頁面 -->
+      <span>
+        {{> adminCompany}}
+      </span>
+    </div>
+    {{/is}}
+    {{#is whichRole 'hr'}}
+    <div class="row">
+      <div class="col-10 mx-auto mt-3" id="message-block">
+      {{> message}}
+      </div>
+
+      <!-- admin hr 按鈕 -->
+      <span>
+        <div class="col-10 mx-auto mt-3">
+          <form action="/roleFilter?_method=PUT" method="POST">
+            <select name="roleFilter" id="roleFilter" onchange="submit()">
+              <option value="hire" {{#is whichRole 'hire'}} selected {{/is}}>徵厲Hire</option>
+              <option value="hr" {{#is whichRole 'hr'}} selected {{/is}}>棉花糖客服</option>
+            </select>
+          </form>
+        </div>
+        <button class="col btn btn-dark active mx-3 cs-train-btn" type="button">Train</button>
+        <div class="col-12 mx-auto home">
+          <div class="row col-6 d-flex mx-auto justify-content-center">
+            <div class="col-12 d-flex align-items-center justify-content-center">
+              <label>Admin - 功能分類:</label>
+              <div class="function-detail-block">
+                  {{#if trainFunction}}<div><a href="/bf_cs/notTrainFunction" class="not-trained-block">功能未訓練：{{trainFunction}}</a></div>{{/if}}
+              </div>
+              <a href="/bf_cs/function" class="btn btn-success" role="button">設定</a>
+            </div>
+          </div> 
+
+          <div class="row col-6 d-flex mx-auto justify-content-center">
+            <div class="col-12 d-flex align-items-center justify-content-center">
+              <label>Admin - 問答分類:</label>
+              <div class="question-detail-block">
+                  {{#if trainQuestion}}<div><a href="/bf_cs/notTrainQuestion" class="not-trained-block">問答未訓練：{{trainQuestion}}</a></div>{{/if}}
+              </div>
+              <a href="/bf_cs/question" class="btn btn-success" role="button">設定</a>
+            </div>
+          </div> 
+        </div>
+      </span>
+
+      <!-- admin hr 右側顯示畫面 -->
+      <span>
+
+      </span>
+    </div>
+    {{/is}}
+  {{else if isHr}}
   <div class="row">
     <div class="col-10 mx-auto mt-3" id="message-block">
     {{> message}}
     </div>
-    <div class="col-10 mx-auto mt-3">
-      <form action="/roleFilter?_method=PUT" method="POST">
-        <select name="roleFilter" id="roleFilter" onchange="submit()">
-          <option value="hire" {{#is whichRole 'hire'}} selected {{/is}}>徵厲Hire</option>
-          <option value="hr" {{#is whichRole 'hr'}} selected {{/is}}>棉花糖客服</option>
-        </select>
-      </form>
-    </div>
-    {{!-- <a href="#" class="btn btn-dark active mx-3" role="button" id="train-btn">Train</a> --}}
-    <button class="col btn btn-dark active mx-3 jh-train-btn" type="button">Train</button>
-    <div class="col-12 mx-auto home">
-      <div class="row col-6 d-flex mx-auto justify-content-center">
-        {{!-- <button class=" btn btn-dark mx-2" style="font-size:medium; height:fit-content"
-          id="train-btn" data-toggle="modal" data-target="#trainModal">
-          訓練
-        </button> --}}
-        <div class="col-12 d-flex align-items-center justify-content-center">
-          <label class="m-5 label-title">公司帳號資料:</label>
-          <a href="/adminCompany" class="btn btn-success active col-3" role="button">設定</a>
-        </div>
-      </div> 
 
-      <div class="row col-6 d-flex mx-auto justify-content-center">
-        <div class="col-12 d-flex align-items-center justify-content-center">
-          <label class="m-5 label-title">公司資訊類別:</label>
-          <a href="/adminCompanyInfo" class="btn btn-success active col-3" role="button">設定</a>
-        </div>
-      </div> 
-
-      <div class="row col-6 d-flex mx-auto justify-content-center">
-        <div class="col-12 d-flex align-items-center justify-content-center" id="position-block">
-          <label class="m-5 label-title">公司職缺類別:</label>
-          <div class="position-detail-block">
-            {{#if notRead}}<div><a href="/adminPositionInfo/notRead" class="not-read-block">今日新增：{{notRead}}</a></div>{{/if}}
-            {{#if notTrained}}<div><a href="/adminPositionInfo/notTrained" class="not-trained-block">未訓練：{{notTrained}}</a></div>{{/if}}
+    <!-- user hr 按鈕 -->
+    <span>
+      <div class="col-12 mx-auto home">
+        <button id="train" class="btn btn-dark jh-train-btn" type="button">執行訓練</button>
+        <div class="row col-6 d-flex mx-auto justify-content-center">
+          <div class="col-12 d-flex align-items-center justify-content-center">
+            <label>功能分類:</label>
+            <a href="/bf_cs/function" class="btn btn-success" role="button">設定</a>
           </div>
-          <a href="/adminPositionInfo" class="btn btn-success active col-3" role="button">設定</a>
-        </div>
-      </div>
+        </div> 
 
-      <div class="row col-6 d-flex mx-auto justify-content-center">
-        <div class="col-12 d-flex align-items-center justify-content-center">
-          <label class="m-5 label-title">公司產業類別:</label>
-          <a href="/adminIndustryInfo" class="btn btn-success active col-3" role="button">設定</a>
-        </div>
-      </div> 
-
-      <div class="row col-6 d-flex mx-auto justify-content-center">
-        <div class="col-12 d-flex align-items-center justify-content-center">
-          <label class="m-5 label-title">公司假別類別:</label>
-          <a href="/adminLeaveInfo" class="btn btn-success active col-3" role="button">設定</a>
-        </div>
-      </div>
-
-      <div class="row col-6 d-flex mx-auto justify-content-center">
-        <div class="col-12 d-flex align-items-center justify-content-center">
-          <label class="m-5 label-title">公司補助類別:</label>
-          <a href="/adminSubsidyInfo" class="btn btn-success active col-3" role="button">設定</a>
-        </div>
-      </div>
-
-      <div class="row col-12 d-flex mx-auto justify-content-start">
-        <div class="col-6 d-flex align-items-center justify-content-center">
-          <label class="m-5 label-title">公司回覆查詢:</label>
-          <a href="/adminSearch" class="btn btn-success active col-3" role="button">設定</a>
-        </div>
-      </div> 
-
-    </div>
-  </div>
-  {{/is}}
-  {{#is whichRole 'hr'}}
-  <div class="row">
-    <div class="col-10 mx-auto mt-3" id="message-block">
-    {{> message}}
-    </div>
-    <div class="col-10 mx-auto mt-3">
-      <form action="/roleFilter?_method=PUT" method="POST">
-        <select name="roleFilter" id="roleFilter" onchange="submit()">
-          <option value="hire" {{#is whichRole 'hire'}} selected {{/is}}>徵厲Hire</option>
-          <option value="hr" {{#is whichRole 'hr'}} selected {{/is}}>棉花糖客服</option>
-        </select>
-      </form>
-    </div>
-    <button class="col btn btn-dark active mx-3 cs-train-btn" type="button">Train</button>
-    <div class="col-12 mx-auto home">
-      <div class="row col-6 d-flex mx-auto justify-content-center">
-        <div class="col-12 d-flex align-items-center justify-content-center">
-          <label class="m-5 label-title">Admin - 功能分類:</label>
-          <div class="function-detail-block">
-              {{#if trainFunction}}<div><a href="/bf_cs/notTrainFunction" class="not-trained-block">功能未訓練：{{trainFunction}}</a></div>{{/if}}
+        <div class="row col-6 d-flex mx-auto justify-content-center">
+          <div class="col-12 d-flex align-items-center justify-content-center">
+            <label>問答分類:</label>
+            <a href="/bf_cs/question" class="btn btn-success" role="button">設定</a>
           </div>
-          <a href="/bf_cs/function" class="btn btn-success active col-3" role="button">設定</a>
+        </div> 
+      </div>
+    </span>
+
+    <!-- user hr 右側畫面 -->
+    <span>
+
+    </span>
+  </div>
+  {{else}}
+  <div>
+    <div class="col-10 mx-auto mt-3" id="message-block"></div>
+
+    <!-- user jh 按鈕 -->
+    <span class="menu">
+      <button id="train" class="btn btn-dark jh-train-btn" type="button">執行訓練</button>
+      <div>
+        <label>公司資訊:</label>
+        <a href="/company" class="btn btn-success" role="button">設定</a>
+      </div>
+      <div>
+        <label>職缺設定:</label>
+        <a href="/position" class="btn btn-success" role="button">設定</a>
+      </div>
+      <div>
+        <label>補助津貼:</label>
+        <a href="/subsidy" class="btn btn-success" role="button">設定</a>
+      </div>
+      <div>
+        <label>假別設定:</label>
+        <a href="/leave" class="btn btn-success" role="button">設定</a>
+      </div>
+      {{!-- <div>
+        <label>通知問候:</label>
+          <a href="/greet" class="btn btn-primary" role="button">設定</a>
+      </div>
+      <div>
+        <label>預設回覆:</label>
+          <a href="/defaultRes" class="btn btn-primary" role="button">設定</a>
+      </div> --}}
+    </span>
+
+    <!-- user jh 右側畫面 -->
+    <span class="setting">
+      {{> jh_position}}
+      {{> jh_new_position}}
+      {{> jh_edit_position}}
+      {{> jh_cpnyInfo}}
+      {{> jh_new_cpnyInfo}}
+      {{> jh_edit_cpnyInfo}}
+      {{> jh_subsidy}}
+      {{> jh_new_subsidy}}
+      {{> jh_edit_subsidy}}
+      {{> jh_leave}}
+      {{> jh_new_leave}}
+      {{> jh_edit_leave}}
+    </span>
+  </div>
+  {{/if}}
+
+  <!-- Modal -->
+  <div class="modal fade" id="trainModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalScrollableTitle">資料訓練</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
         </div>
-      </div> 
-
-      <div class="row col-6 d-flex mx-auto justify-content-center">
-        <div class="col-12 d-flex align-items-center justify-content-center">
-          <label class="m-5 label-title">Admin - 問答分類:</label>
-          <div class="question-detail-block">
-              {{#if trainQuestion}}<div><a href="/bf_cs/notTrainQuestion" class="not-trained-block">問答未訓練：{{trainQuestion}}</a></div>{{/if}}
-          </div>
-          <a href="/bf_cs/question" class="btn btn-success active col-3" role="button">設定</a>
+        <div class="modal-body">
+          <strong>確定要開始訓練?</strong>
         </div>
-      </div> 
-    </div>
-  </div>
-  {{/is}}
-{{else if isHr}}
-<div class="row">
-  <div class="col-10 mx-auto mt-3" id="message-block">
-  {{> message}}
-  </div>
-  <div class="col-12 mx-auto home">
-    <div class="row col-6 d-flex mx-auto justify-content-center">
-      <div class="col-12 d-flex align-items-center justify-content-center">
-        <label class="m-5 label-title">功能分類:</label>
-        <div class="function-detail-block">
-            {{#if trainFunction}}<div><a href="/bf_cs/trainedFunction" class="trained-block">功能已完成訓練：{{trainFunction}}</a></div>{{/if}}
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+          <form action="/train" method="post" style="display:inline-block;" id="delete-form">
+            <button type="submit" class="btn btn-danger">訓練</button>
+          </form>
         </div>
-        <a href="/bf_cs/function" class="btn btn-success active col-3" role="button">設定</a>
-      </div>
-    </div> 
-
-    <div class="row col-6 d-flex mx-auto justify-content-center">
-      <div class="col-12 d-flex align-items-center justify-content-center">
-        <label class="m-5 label-title">問答分類:</label>
-        <div class="question-detail-block">
-            {{#if trainQuestion}}<div><a href="/bf_cs/trainedQuestion" class="trained-block">問答已完成訓練：{{trainQuestion}}</a></div>{{/if}}
-        </div>
-        <a href="/bf_cs/question" class="btn btn-success active col-3" role="button">設定</a>
-      </div>
-    </div> 
-
-  </div>
-</div>
-{{else}}
-<div class="row">
-  <div class="col-10 mx-auto mt-3" id="message-block">
-    {{> message}}
-  </div>
-  <div class="col-12 mx-auto d-flex justify-content-end">
-    <button class="btn btn-dark active mx-3 jh-train-btn" type="button">Train</button>
-  </div>
-  <div class="col-12 mx-auto home">
-    <div class="row col-6 d-flex mx-auto justify-content-center">
-      <div class="col-8 d-flex align-items-center justify-content-center">
-        <label class="m-5 label-title">公司資訊:</label>
-        <a href="/company" class="btn btn-success active col-3" role="button">設定</a>
-      </div>
-    </div> 
-
-    <div class="row col-6 d-flex mx-auto justify-content-center">
-      <div class="col-8 d-flex align-items-center justify-content-center">
-        <label class="m-5 label-title">職缺設定:</label>
-        <a href="/position" class="btn btn-success active col-3" role="button">設定</a>
-      </div>
-    </div>
-
-    <div class="row col-6 d-flex mx-auto justify-content-center">
-      <div class="col-8 d-flex align-items-center justify-content-center">
-        <label class="m-5 label-title">補助津貼:</label>
-        <a href="/subsidy" class="btn btn-success active col-3" role="button">設定</a>
-      </div>
-    </div>
-
-    <div class="row col-6 d-flex mx-auto justify-content-center">
-      <div class="col-8 d-flex align-items-center justify-content-center">
-        <label class="m-5 label-title">假別設定:</label>
-        <a href="/leave" class="btn btn-success active col-3" role="button">設定</a>
-      </div>
-    </div>
-
-    <div class="row col-6 d-flex mx-auto justify-content-center">
-      <div class="col-8 d-flex align-items-center justify-content-center">
-        <label class="m-5 label-title">通知問候:</label>
-        <a href="/greet" class="btn btn-primary active col-3" role="button">設定</a>
-      </div>
-    </div>
-
-    <div class="row col-6 d-flex mx-auto justify-content-center">
-      <div class="col-8 d-flex align-items-center justify-content-center">
-        <label class="m-5 label-title">預設回覆:</label>
-        <a href="/defaultRes" class="btn btn-primary active col-3" role="button">設定</a>
-      </div>
-    </div>
-  </div>
-</div>
-{{/if}}
-
-<!-- Modal -->
-<div class="modal fade" id="trainModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle"
-  aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalScrollableTitle">資料訓練</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <strong>確定要開始訓練?</strong>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
-        <form action="/train" method="post" style="display:inline-block;" id="delete-form">
-          <button type="submit" class="btn btn-danger">訓練</button>
-        </form>
       </div>
     </div>
   </div>

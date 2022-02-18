@@ -41,13 +41,13 @@ input:invalid {box-shadow: none;}
 .rw-conversation-container {height: 80vh;}
 
 /* 輪播圖subtitle */
-.rw-carousel-card-subtitle{height: 5rem;}
+.rw-carousel-card-subtitle{height: 5rem;} 
 
 .alert-danger,
 .alert-warning,
 .alert-success {font-size: 1rem;font-weight: bold;}
 
-.scroll-view{width: auto;height: 30vw;white-space: nowrap;overflow-y: auto;overflow-x: hidden;padding-left: 6px;}
+.scroll-view{width: auto;height: auto;white-space: nowrap;overflow-y: auto;overflow-x: hidden;padding-left: 6px;}
 .label-title {font-size: 20px;font-weight: bold; color: #111;padding: 1rem;}
 .label-des {font-size: 20px;font-weight: normal; color: #111;padding: 1rem;}
 
@@ -58,10 +58,10 @@ input:invalid {box-shadow: none;}
 
 .scroll-view::-webkit-scrollbar {width: 6px;}
 .scroll-view::-webkit-scrollbar-thumb {border-radius: 3px;background-color: rgba(0, 0, 0, 0.1);}
-.main-footer{width: 100%;padding: 10px;position: fixed;bottom: 0;background: #020202;}
-.footer-text{font-weight: normal;font-size: 12px;line-height: 22px;margin-bottom: 0;text-align: center;color: #fff;}
-.container {padding-bottom: 40px;}
-.item-wrapper{display: grid;grid-template-columns: repeat(4, 1fr);grid-template-rows: auto, auto;background: #fff;width:100%;border: 1px solid #111;border-radius: 15px;}
+.main-footer{width: 100%;padding: 10px;position: fixed;bottom: 0;/* background: #020202; */}
+.footer-text{font-weight: normal;font-size: 12px;line-height: 22px;margin-bottom: 0;text-align: center;color: #666;}
+.container {padding-bottom: 40px;max-width: inherit;padding-top: 20px;}
+.item-wrapper{display: grid;grid-template-columns: repeat(4, 1fr);background: #fff;width:100%;border-radius: 15px;box-shadow: 5px 5px 0px rgb(203 203 203);border: 1px solid #ccc;}
 
 .item-title,
 .item-des{grid-column-start: 1;grid-column-end: 4;}
@@ -99,17 +99,63 @@ input:invalid {box-shadow: none;}
 }
 
 /*mark*/
-.login body{font-family: 'Comfortaa','Noto Sans TC';font-weight: inherit;background: url(/images/robot.png) -35% center/auto 100% no-repeat,url(/images/bg.png) #f1f1f1;}
+body{font-family: 'Comfortaa','Noto Sans TC';font-weight: inherit;opacity:0;animation: fadein .5s .5s forwards;}
+.login body{background: url(/images/robot.png) -25% bottom/auto 100% no-repeat fixed,url(/images/bg1.png) 113% -41% no-repeat fixed,url(/images/bg2.png)  right bottom no-repeat fixed,url(/images/bg.png);}
 .login label{font-size: 16px;}
 .login input{border-radius:5px}
 .login button{border-radius:5px;font-size: 14px;letter-spacing: 1px;}
 .login h1{font-size: 45px;margin-bottom: 15px;text-transform: initial;color: #666;}
 .login .container{max-width: calc(100% - 20px);height: calc(100% - 42px);display: flex;padding: 0;justify-content: center;align-items: center;overflow: auto;}
 .login .container > div{width: 500px;overflow: auto;padding: 20px;max-height: 100%;}
-.login .loginForm{background: #fff;border-radius: 10px;padding: 20px;box-shadow: 5px 5px 10px #ccc;}
+.login .loginForm{background: #fff;border-radius: 10px;padding: 20px;box-shadow: 10px 10px 0px rgb(204 204 204);border: 1px solid #ccc;}
 .login .lead{font-weight:bold;font-size:18px;margin-top:30px}
 .login .btn{border-radius:5px;}
+.login #submit{}
+.login #forget{}
 .login .navbar{display:none;}
+
 .navbar{padding:10px;}
 .navbar .btn{padding:10px 20px;border-radius:5px;}
 .alert-dismissible .close{font-size: 24px;}
+
+:not(.login) body{background: url(/images/robot.png) 140% bottom no-repeat fixed,url(/images/bg2.png) left bottom no-repeat fixed,url(/images/bg.png);}
+
+:not(.login) .navbar,
+:not(.login) .main-footer{background: rgb(0 0 0 / 60%)!important;}
+
+:not(.login) .main-footer h3{color:#fff}
+
+
+.menu,
+.setting{display:inline-block;vertical-align: top;margin: 10px;box-shadow: 5px 5px 0px rgb(203 203 203);border: 1px solid #ccc;}
+
+.menu{width: 20%;background: rgba(255,255,255,.6);border-radius: 10px;padding: 20px;position: sticky;top: 10px;}
+.setting{width: calc(80% - 46px);background: rgba(255,255,255,.6);padding: 40px;border-radius: 10px;}
+
+.menu #train{width:100%;margin-bottom: 10px;font-size:18px;border-radius:5px;}
+
+.menu > div{padding: 20px 10px;border-bottom: 1px solid #ccc;}
+.menu > div > label{font-size: 18px;font-weight:bold;vertical-align: middle;display: inline-block;margin: 0 10px 0 0;}
+.menu > div > a{line-height:inherit;padding: 5px 20px;border-radius: 5px;vertical-align: middle;display: inline-block;font-size: 14px;}
+
+.index .input-group > div{width: 30%;}
+.index .input-group > div label{width:100%;}
+
+/*other*/
+.btn{border-radius:5px;font-size:16px;white-space: nowrap;}
+
+#create-btn,
+#confirm-create{margin:10px;font-size:16px;}
+
+@media screen and (max-width:1600px){
+  body{background: url(/images/robot.png) -50% bottom/auto 100% no-repeat fixed,url(/images/bg1.png) 120% -300px/600px no-repeat fixed,url(/images/bg2.png)  right bottom/50% no-repeat fixed,url(/images/bg.png);}
+  :not(.login) body{background: url(/images/robot.png) 120% bottom/auto 100% no-repeat,url(/images/bg2.png) left bottom/50% no-repeat,url(/images/bg.png);}
+}
+
+@media screen and (max-width:1100px){
+  body{background: url(/images/robot.png) center bottom/auto 100% no-repeat,url(/images/bg.png);}
+  :not(.login) body{background: url(/images/robot.png) 150% bottom/auto 100% no-repeat fixed,url(/images/bg2.png) left bottom/50% no-repeat fixed,url(/images/bg.png);}
+}
+
+
+@keyframes fadein {from {opacity: 0;}100% {opacity: 1;}}

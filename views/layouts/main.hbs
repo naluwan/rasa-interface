@@ -100,10 +100,8 @@
   {{!-- <script src="js/scripts.js"></script> --}}
 </body>
 <script>
-  if(location.pathname == "/"){
-    document.documentElement.setAttribute("class","index");
-  }else{
-    var pageName = location.pathname.replace("/","").replace(/\/[0-9]/g,"").replace(/[0-9]/g,"").replace(/\//g," ");
+  if(document.querySelector("[data-func]")){
+    var pageName = document.querySelector("[data-func]").getAttribute("data-func");
     document.documentElement.setAttribute("class",pageName);
   };
 
