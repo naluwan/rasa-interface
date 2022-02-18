@@ -68,15 +68,15 @@ router.put('/:entity_name', (req, res) => {
       return
     }
 
-    const leaveDesCheck = result.recordset[0]
-    if(!leaveDesCheck){
+    const leave_id = result.recordset[0]['LEAVE_ID']
+    if(!leave_id){
       req.flash('error', '查無此假別，請重新嘗試!')
       return res.redirect('/leave')
     }else{
       request.input('des', sql.NVarChar(2000), des)
       .query(`update BF_JH_LEAVE
       set LEAVE_DES = @des
-      where LEAVE_ID = ${leaveDesCheck.LEAVE_ID}
+      where LEAVE_ID = ${leave_id}
       and CPY_ID = '${cpnyId}'`, (err, result) => {
         if(err){
           console.log(err)
