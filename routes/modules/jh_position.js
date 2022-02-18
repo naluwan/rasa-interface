@@ -8,22 +8,24 @@ const {fsJhWritePosition, fsJhDeletePosition} = require('../../modules/fileSyste
 const {setPositionDict} = require('../../modules/setDict')
 
 // 刪除職缺
-router.delete('/:position_id/:cpnyId', (req, res) => {
-  const {position_id, cpnyId} = req.params
+router.delete('/:entity_name', (req, res) => {
+  const {entity_name} = req.params
+  const user = res.locals.user
+	const cpnyId = user.CPY_ID
   const request = new sql.Request(pool)
 
-  request.query(`select b.POSITION_NAME 
+  request.query(`select b.POSITION_ID
   from BF_JH_POSITION a
   left join BF_JH_POSITION_CATEGORY b
   on a.POSITION_ID = b.POSITION_ID
-  where a.POSITION_ID = ${position_id}
+  where b.ENTITY_NAME = '${entity_name}'
   and a.CPY_ID = '${cpnyId}'`, (err, result) => {
     if(err){
       console.log(err)
       return
     }
-    const positionDesCheck = result.recordset[0]
-    if(!positionDesCheck){
+    const position_id = result.recordset[0]['POSITION_ID']
+    if(!position_id){
       req.flash('error', '查無此職缺，請重新嘗試!')
       return res.redirect('/position')
     }else{
@@ -43,27 +45,31 @@ router.delete('/:position_id/:cpnyId', (req, res) => {
 })
 
 // 編輯職缺
-router.put('/:position_id/:cpnyId', (req, res) => {
-  const {position_id, cpnyId} = req.params
+router.put('/:entity_name', (req, res) => {
+  const {entity_name} = req.params
   const {des} = req.body
+  const user = res.locals.user
+	const cpnyId = user.CPY_ID
   const request = new sql.Request(pool)
 
   if(!des){
     req.flash('warning_msg', '職缺內容為必填欄位!!')
-    return res.redirect(`/position/${position_id}/${cpnyId}/edit`)
+    return res.redirect(`/position/${entity_name}/edit`)
   }
 
-  request.query(`select * 
-  from BF_JH_POSITION
-  where POSITION_ID = ${position_id}
-  and CPY_ID = '${cpnyId}'`, (err, result) => {
+  request.query(`select b.POSITION_ID
+  from BF_JH_POSITION a
+  left join BF_JH_POSITION_CATEGORY b
+  on a.POSITION_ID = b.POSITION_ID
+  where b.ENTITY_NAME = '${entity_name}'
+  and a.CPY_ID = '${cpnyId}'`, (err, result) => {
     if(err){
       console.log(err)
       return
     }
 
-    const positionDesCheck = result.recordset[0]
-    if(!positionDesCheck){
+    const position_id = result.recordset[0]['POSITION_ID']
+    if(!position_id){
       req.flash('error', '查無此職缺，請重新嘗試!')
       return res.redirect('/position')
     }else{
@@ -84,22 +90,25 @@ router.put('/:position_id/:cpnyId', (req, res) => {
 })
 
 // 顯示編輯職缺頁面
-router.get('/:position_id/:cpnyId/edit', (req, res) => {
-  const {position_id, cpnyId} = req.params
+router.get('/:entity_name/edit', (req, res) => {
+  const {entity_name} = req.params
+  const user = res.locals.user
+	const cpnyId = user.CPY_ID
+  const jh_edit_position = true
   const request = new sql.Request(pool)
 
-  request.query(`select b.POSITION_NAME as name, b.POSITION_ID as id, a.POSITION_DES as des 
+  request.query(`select b.POSITION_NAME as name, b.POSITION_ID as id, a.POSITION_DES as des, b.ENTITY_NAME as entity_name
   from BF_JH_POSITION a
   left join BF_JH_POSITION_CATEGORY b
   on a.POSITION_ID = b.POSITION_ID
-  where a.POSITION_ID = ${position_id}
+  where b.ENTITY_NAME = '${entity_name}'
   and a.CPY_ID = '${cpnyId}'`, (err, result) => {
     if(err){
       console.log(err)
       return
     }
     const positionInfo = result.recordset[0]
-    const jh_edit_position = true
+
     if(!positionInfo){
       req.flash('error', '查無此職缺，請重新嘗試!')
       return res.redirect('/position')
@@ -109,8 +118,9 @@ router.get('/:position_id/:cpnyId/edit', (req, res) => {
 })
 
 // 新增職缺資訊
-router.post('/:cpnyId', (req, res) => {
-  const {cpnyId} = req.params
+router.post('/', (req, res) => {
+  const user = res.locals.user
+	const cpnyId = user.CPY_ID
   const {name, entity_name, des} = req.body
   const request = new sql.Request(pool)
   const warning = []
@@ -208,8 +218,9 @@ router.post('/:cpnyId', (req, res) => {
 })
 
 // 顯示新增position頁面
-router.get('/:cpnyId/new', (req, res) => {
-  const {cpnyId} = req.params
+router.get('/new', (req, res) => {
+  const user = res.locals.user
+	const cpnyId = user.CPY_ID
   const jh_new_position = true
   res.render('index', {cpnyId, jh_new_position})
 })
@@ -222,7 +233,7 @@ router.get('/', (req, res) => {
   const request = new sql.Request(pool)
   const warning = []
 
-  request.query(`select a.POSITION_DES, b.POSITION_NAME, b.POSITION_ID
+  request.query(`select a.POSITION_DES, b.POSITION_NAME, b.POSITION_ID, b.ENTITY_NAME
   from BF_JH_POSITION a
   left join BF_JH_POSITION_CATEGORY b
   on a.POSITION_ID = b.POSITION_ID
