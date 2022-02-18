@@ -7,6 +7,81 @@ const pool = require('../../config/connectPool')
 const {fsWriteSubsidy} = require('../../modules/fileSystem')
 const {setInfoDict} = require('../../modules/setDict')
 
+// 編輯假別資訊內容
+router.put('/:entity_name', (req, res) => {
+  const {entity_name} = req.params
+  const {des} = req.body
+  const user = res.locals.user
+	const cpnyId = user.CPY_ID
+  const request = new sql.Request(pool)
+
+  if(!des){
+    req.flash('warning_msg', '假別內容為必填欄位!')
+    return res.redirect(`/leave/${entity_name}/edit`)
+  }
+  
+  request.query(`select b.LEAVE_ID
+  from BF_JH_LEAVE a
+  left join BF_JH_LEAVE_CATEGORY b
+  on a.LEAVE_ID = b.LEAVE_ID
+  where b.ENTITY_NAME = '${entity_name}'
+  and a.CPY_ID = '${cpnyId}'`, ( err, result) => {
+    if(err){
+      console.log(err)
+      return
+    }
+
+    const leaveDesCheck = result.recordset[0]
+    if(!leaveDesCheck){
+      req.flash('error', '查無此假別，請重新嘗試!')
+      return res.redirect('/leave')
+    }else{
+      request.input('des', sql.NVarChar(2000), des)
+      .query(`update BF_JH_LEAVE
+      set LEAVE_DES = @des
+      where LEAVE_ID = ${leaveDesCheck.LEAVE_ID}
+      and CPY_ID = '${cpnyId}'`, (err, result) => {
+        if(err){
+          console.log(err)
+          return
+        }
+        req.flash('success_msg', '更新假別內容成功!')
+        res.redirect('/leave')
+      })
+    }
+  })
+})
+
+// 顯示編輯假別資訊頁面
+router.get('/:entity_name/edit', (req, res) => {
+  const {entity_name} = req.params
+  const user = res.locals.user
+	const cpnyId = user.CPY_ID
+  const jh_edit_leave = true
+  const request = new sql.Request(pool)
+
+  request.query(`select a.LEAVE_DES as des, b.LEAVE_ID as id, b.LEAVE_NAME as name, b.ENTITY_NAME as entity_name
+  from BF_JH_LEAVE a
+  left join BF_JH_LEAVE_CATEGORY b
+  on a.LEAVE_ID = b.LEAVE_ID
+  where b.ENTITY_NAME = '${entity_name}'
+  and a.CPY_ID = '${cpnyId}'`, (err, result) => {
+    if(err){
+      console.log(err)
+      return
+    }
+
+    const leaveInfo = result.recordset[0]
+    if(!leaveInfo){
+      req.flash('warning_msg', '查無此假別資訊資料，請重新嘗試!')
+      return res.redirect('/leave')
+    }else{
+      res.render('index', {leaveInfo, jh_edit_leave})
+    }
+  })
+
+})
+
 // 新增假別資訊
 router.post('/', (req, res) => {
   const {name, entity_name, des} = req.body
