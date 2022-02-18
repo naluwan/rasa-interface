@@ -4,8 +4,8 @@ const router = express.Router()
 const sql = require('mssql')
 const pool = require('../../config/connectPool')
 
-const {fsJhWriteCpnyInfo} = require('../../modules/fileSystem')
-const {setCpnyInfoDict} = require('../../modules/setDict')
+const {fsJhWriteInfo} = require('../../modules/fileSystem')
+const {setInfoDict} = require('../../modules/setDict')
 
 // 刪除公司資訊
 router.delete('/:cpnyInfo_id/:cpnyId', (req, res) => {
@@ -95,12 +95,12 @@ router.get('/:cpnyInfo_id/:cpnyId/edit', (req, res) => {
       return
     }
     const cpnyInfo = result.recordset[0]
-
+    const jh_edit_cpnyInfo = true
     if(!cpnyInfo){
       req.flash('warning_msg', '查無此資訊資料，請重新嘗試!')
       return res.redirect('/company')
     }else{
-      res.render('jh_edit_cpnyInfo', {cpnyInfo, cpnyId})
+      res.render('index', {cpnyInfo, cpnyId, jh_edit_cpnyInfo})
     }
   })
 })
@@ -110,14 +110,14 @@ router.post('/:cpnyId', (req, res) => {
   const {cpnyId} = req.params
   const {name, entity_name, des} = req.body
   const request = new sql.Request(pool)
-  const errors = []
-
+  const warning = []
+  const jh_new_position = true
   if(!name || !entity_name || !des){
-    errors.push({message: '所有欄位都是必填的!'})
+    warning.push({message: '所有欄位都是必填的!'})
   }
 
-  if(errors.length){
-    res.render('jh_new_cpnyInfo', {name, entity_name, des, errors})
+  if(warning.length){
+    res.render('index', {name, entity_name, des, warning, jh_new_position})
   }else{
     // 驗證資料庫是否有資訊類別資料
     request.query(`select *
@@ -172,8 +172,8 @@ router.post('/:cpnyId', (req, res) => {
           }
           
           // 加入寫檔和設定dict module
-          fsJhWriteCpnyInfo(name, entity_name, request)
-          setCpnyInfoDict(name)
+          fsJhWriteInfo(name, entity_name, request)
+          setInfoDict(name)
 
           // 新增完資訊類別資料後，獲取cpnyInfo_id
           request.query(`select INFO_ID
@@ -195,6 +195,7 @@ router.post('/:cpnyId', (req, res) => {
                 console.log(err)
                 return
               }
+              req.flash('success_msg', '新增資訊成功!')
               res.redirect('/company')
             })
           })
@@ -207,7 +208,8 @@ router.post('/:cpnyId', (req, res) => {
 // 顯示公司新增資訊頁面
 router.get('/:cpnyId/new', (req, res) => {
   const {cpnyId} = req.params
-  res.render('jh_new_cpnyInfo', {cpnyId})
+  const jh_new_cpnyInfo = true
+  res.render('index', {cpnyId, jh_new_cpnyInfo})
 })
 
 // 顯示公司資訊頁面
@@ -228,24 +230,12 @@ router.get('/', (req, res) => {
       return
     }
     const cpnyInfo = result.recordset
-
-		if(cpnyInfo.length == 0){
-      // request.input('cpnyId', sql.NVarChar(30), cpnyId)
-      // .input('tel', sql.Int, 1)
-      // .input('address', sql.Int, 2)
-      // .input('introduction', sql.Int, 3)
-      // .query(`insert into BF_JH_CPNYINFO(CPY_ID, INFO_ID, INFO_DES)
-      // values (@cpnyId, @tel, ''), (@cpnyId, @address, ''), (@cpnyId, @introduction, '')`, (err, result) => {
-      //   if(err){
-      //     console.log(err)
-      //     return
-      //   }
-      // })
-      // return res.redirect('/company')
+    const jh_cpnyInfo = true
+		if(!cpnyInfo.length){
       warning.push({message: '還未新增公司資訊，請拉到下方點選按鈕新增公司資訊!!'})
       warning.push({message: 'ex.地址、電話、簡介、福利、上班時間等公司相關資訊!!'})
     }
-    res.render('jh_cpnyInfo', {cpnyInfo, cpnyId, warning})
+    res.render('index', {cpnyInfo, cpnyId, warning, jh_cpnyInfo})
     
   })
 })

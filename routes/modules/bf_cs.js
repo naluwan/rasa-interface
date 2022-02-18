@@ -246,85 +246,85 @@ router.get('/notTrainFunction', (req, res) => {
 })
 
 // admin trained function
-router.put('/functionTrained/:category_id/:function_id', (req, res) => {
-  const {category_id, function_id} = req.params
-  const request = new sql.Request(pool)
+// router.put('/functionTrained/:category_id/:function_id', (req, res) => {
+//   const {category_id, function_id} = req.params
+//   const request = new sql.Request(pool)
 
-  // 驗證功能是否存在
-  request.query(`select *
-  from BF_CS_FUNCTION
-  where CATEGORY_ID = ${category_id}
-  and FUNCTION_ID = ${function_id}`, (err, result) => {
-    if(err){
-      console.log(err)
-      return
-    }
-    const functionCheck = result.recordset[0]
-    if(!functionCheck){
-      req.flash('error', '查無此分類的功能，請重新嘗試!!')
-      return res.redirect(`/bf_cs/function/filter?category=${category_id}&search=`)
-    }else{
-      // 更新
-      request.query(`update BF_CS_FUNCTION
-      set TRAINED = 1, SHOW = 1
-      where CATEGORY_ID = ${category_id}
-      and FUNCTION_ID = ${function_id}`, (err, result) => {
-        if(err){
-          console.log(err)
-          return
-        }
-        req.flash('success_msg', '功能訓練完成!!')
-        return res.redirect(`/bf_cs/notTrainFunction`)
-      })
-    }
-  })
-})
+//   // 驗證功能是否存在
+//   request.query(`select *
+//   from BF_CS_FUNCTION
+//   where CATEGORY_ID = ${category_id}
+//   and FUNCTION_ID = ${function_id}`, (err, result) => {
+//     if(err){
+//       console.log(err)
+//       return
+//     }
+//     const functionCheck = result.recordset[0]
+//     if(!functionCheck){
+//       req.flash('error', '查無此分類的功能，請重新嘗試!!')
+//       return res.redirect(`/bf_cs/function/filter?category=${category_id}&search=`)
+//     }else{
+//       // 更新
+//       request.query(`update BF_CS_FUNCTION
+//       set TRAINED = 1, SHOW = 1
+//       where CATEGORY_ID = ${category_id}
+//       and FUNCTION_ID = ${function_id}`, (err, result) => {
+//         if(err){
+//           console.log(err)
+//           return
+//         }
+//         req.flash('success_msg', '功能訓練完成!!')
+//         return res.redirect(`/bf_cs/notTrainFunction`)
+//       })
+//     }
+//   })
+// })
 
 // ↓ question 問答相關router ↓
 
 // 顯示已完成訓練的問答資訊
-router.get('/trainedQuestion', (req, res) => {
-  const request = new sql.Request(pool)
+// router.get('/trainedQuestion', (req, res) => {
+//   const request = new sql.Request(pool)
 
-  // 抓取類別資訊
-  request.query(`select *
-  from BF_CS_CATEGORY`, (err, result) => {
-    if(err){
-      console.log(err)
-      return
-    }
-    const categoryInfo = result.recordset
-    // 抓取已訓練完成的問答資訊
-    request.query(`select *
-    from BF_CS_QUESTION
-    where TRAINED = 1
-    and SHOW = 1`, (err, result) => {
-      if(err){
-        console.log(err)
-        return
-      }
-      const questionInfo = result.recordset
-      if(questionInfo.length == 0){
-        req.flash('warning_msg', '查無已完成訓練問答資訊!!')
-        return res.redirect('/bf_cs/question')
-      }else{
-        // 將已訓練完成的問答資訊改為已讀(不再顯示在已完成訓練中)
-        questionInfo.filter(question => {
-          request.query(`update BF_CS_QUESTION
-          set SHOW = 0
-          where QUESTION_ID = ${question.QUESTION_ID}
-          and FUNCTION_ID = ${question.FUNCTION_ID}`, (err, result => {
-            if(err){
-              console.log(err)
-              return
-            }
-          }))
-        })
-        return res.render('cs_question', {questionInfo, categoryInfo})
-      }
-    })
-  })
-})
+//   // 抓取類別資訊
+//   request.query(`select *
+//   from BF_CS_CATEGORY`, (err, result) => {
+//     if(err){
+//       console.log(err)
+//       return
+//     }
+//     const categoryInfo = result.recordset
+//     // 抓取已訓練完成的問答資訊
+//     request.query(`select *
+//     from BF_CS_QUESTION
+//     where TRAINED = 1
+//     and SHOW = 1`, (err, result) => {
+//       if(err){
+//         console.log(err)
+//         return
+//       }
+//       const questionInfo = result.recordset
+//       if(questionInfo.length == 0){
+//         req.flash('warning_msg', '查無已完成訓練問答資訊!!')
+//         return res.redirect('/bf_cs/question')
+//       }else{
+//         // 將已訓練完成的問答資訊改為已讀(不再顯示在已完成訓練中)
+//         questionInfo.filter(question => {
+//           request.query(`update BF_CS_QUESTION
+//           set SHOW = 0
+//           where QUESTION_ID = ${question.QUESTION_ID}
+//           and FUNCTION_ID = ${question.FUNCTION_ID}`, (err, result => {
+//             if(err){
+//               console.log(err)
+//               return
+//             }
+//           }))
+//         })
+//         return res.render('cs_question', {questionInfo, categoryInfo})
+//       }
+//     })
+//   })
+// })
 
 // 刪除問答資訊
 router.delete('/question/:question_id/:function_id/:category_id', (req, res) => {
@@ -833,49 +833,49 @@ router.get('/question', (req, res) => {
 // ↓ function 功能相關router ↓
 
 // 使用者頁面顯示已完成訓練清單
-router.get('/trainedFunction', (req, res) => {
-  const request = new sql.Request(pool)
+// router.get('/trainedFunction', (req, res) => {
+//   const request = new sql.Request(pool)
 
-  // 抓取類別資料
-  request.query(`select *
-  from BF_CS_CATEGORY`, (err, result) => {
-    if(err){
-      console.log(err)
-      return
-    }
-    const categoryInfo = result.recordset
+//   // 抓取類別資料
+//   request.query(`select *
+//   from BF_CS_CATEGORY`, (err, result) => {
+//     if(err){
+//       console.log(err)
+//       return
+//     }
+//     const categoryInfo = result.recordset
     
-    // 抓取訓練完成功能
-    request.query(`select *
-    from BF_CS_FUNCTION
-    where TRAINED = 1
-    and SHOW = 1`, (err, result) => {
-      if(err){
-        console.log(err)
-        return
-      }
-      const functionInfo = result.recordset
-      if(functionInfo.length == 0){
-        req.flash('warning_msg', '查無已完成訓練的資料!!')
-        return res.redirect('/bf_cs/function')
-      }else{
-        // 將訓練完成的功能狀態改為已讀(不再顯示訓練完成或在訓練完成清單中)
-        functionInfo.filter(item => {
-          request.query(`update BF_CS_FUNCTION
-          set SHOW = 0
-          where FUNCTION_ID = ${item.FUNCTION_ID}
-          and CATEGORY_ID = ${item.CATEGORY_ID}`, (err, result) => {
-            if(err){
-              console.log(err)
-              return
-            }
-          })
-        })
-        return res.render('cs_function', {categoryInfo, functionInfo})
-      }
-    })
-  })
-})
+//     // 抓取訓練完成功能
+//     request.query(`select *
+//     from BF_CS_FUNCTION
+//     where TRAINED = 1
+//     and SHOW = 1`, (err, result) => {
+//       if(err){
+//         console.log(err)
+//         return
+//       }
+//       const functionInfo = result.recordset
+//       if(functionInfo.length == 0){
+//         req.flash('warning_msg', '查無已完成訓練的資料!!')
+//         return res.redirect('/bf_cs/function')
+//       }else{
+//         // 將訓練完成的功能狀態改為已讀(不再顯示訓練完成或在訓練完成清單中)
+//         functionInfo.filter(item => {
+//           request.query(`update BF_CS_FUNCTION
+//           set SHOW = 0
+//           where FUNCTION_ID = ${item.FUNCTION_ID}
+//           and CATEGORY_ID = ${item.CATEGORY_ID}`, (err, result) => {
+//             if(err){
+//               console.log(err)
+//               return
+//             }
+//           })
+//         })
+//         return res.render('cs_function', {categoryInfo, functionInfo})
+//       }
+//     })
+//   })
+// })
 
 // 刪除功能
 router.delete('/function/:function_id/:category_id', (req, res) => {

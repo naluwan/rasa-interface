@@ -98,11 +98,12 @@ router.get('/:position_id/:cpnyId/edit', (req, res) => {
       return
     }
     const positionInfo = result.recordset[0]
+    const jh_edit_position = true
     if(!positionInfo){
       req.flash('error', '查無此職缺，請重新嘗試!')
       return res.redirect('/position')
     }
-    res.render('jh_edit_position', {positionInfo, cpnyId})
+    res.render('index', {positionInfo, cpnyId, jh_edit_position})
   })
 })
 
@@ -111,14 +112,15 @@ router.post('/:cpnyId', (req, res) => {
   const {cpnyId} = req.params
   const {name, entity_name, des} = req.body
   const request = new sql.Request(pool)
-  const errors = []
+  const warning = []
 
   if(!name || !entity_name || !des){
-    errors.push({message: '所有欄位都是必填的!'})
+    warning.push({message: '所有欄位都是必填的!'})
   }
 
-  if(errors.length){
-    return res.render('jh_new_position', {name, entity_name, des, errors})
+  if(warning.length){
+    const jh_new_position = true
+    return res.render('index', {name, entity_name, des, warning, jh_new_position})
   }else{
     // 驗證資料庫是否有職缺類別資料
     request.query(`select * 
@@ -194,6 +196,7 @@ router.post('/:cpnyId', (req, res) => {
                 console.log(err)
                 return
               }
+              req.flash('success_msg', '新增職缺成功!')
               res.redirect('/position')
             })
           })
@@ -206,7 +209,8 @@ router.post('/:cpnyId', (req, res) => {
 // 顯示新增position頁面
 router.get('/:cpnyId/new', (req, res) => {
   const {cpnyId} = req.params
-  res.render('jh_new_position', {cpnyId})
+  const jh_new_position = true
+  res.render('index', {cpnyId, jh_new_position})
 })
 
 
@@ -228,9 +232,10 @@ router.get('/', (req, res) => {
     }
 
     const positionResult = result.recordset
+    const jh_position = true
+		if(!positionResult.length) warning.push({message: '還未新增職缺，請拉到下方點選按鈕新增職缺!!'})
 
-		if(positionResult.length == 0) warning.push({message: '還未新增職缺，請拉到下方點選按鈕新增職缺!!'})
-		return res.render('jh_position', {positionResult, warning, cpnyId})
+		return res.render('index', {positionResult, warning, cpnyId, jh_position})
   })
 })
 
