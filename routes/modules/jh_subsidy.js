@@ -4,10 +4,107 @@ const router = express.Router()
 const sql = require('mssql')
 const pool = require('../../config/connectPool')
 
-const {fsJhWriteInfo} = require('../../modules/fileSystem')
+const {fsWriteSubsidy} = require('../../modules/fileSystem')
 const {setInfoDict} = require('../../modules/setDict')
 
+// 刪除補助津貼資訊
+router.delete('/:subsidy_id/:cpnyId', (req, res) => {
+  const {subsidy_id, cpnyId} = req.params
+  const request = new sql.Request(pool)
 
+  request.query(`select * 
+  from BF_JH_SUBSIDY
+  where SUBSIDY_ID = ${subsidy_id}
+  and CPY_ID = '${cpnyId}'`, (err, result) => {
+    if(err){
+      console.log(err)
+      return
+    }
+    const subsidyInfoCheck = result.recordset[0]
+
+    if(!subsidyInfoCheck){
+      req.flash('warning_msg', '查無此補助津貼資料，請重新嘗試!')
+      return res.redirect('/subsidy')
+    }else{
+      request.query(`delete from BF_JH_SUBSIDY
+      where SUBSIDY_ID = ${subsidy_id}
+      and CPY_ID = '${cpnyId}'`, (err, result) => {
+        if(err){
+          console.log(err)
+          return
+        }
+        req.flash('success_msg', '成功刪除補助津貼資訊!')
+        res.redirect('/subsidy')
+      })
+    }
+  })
+})
+
+// 編輯補助津貼內容
+router.put('/:subsidy_id/:cpnyId', (req, res) => {
+  const {subsidy_id, cpnyId} = req.params
+  const {des} = req.body
+  const jh_edit_subsidy = true
+  const request = new sql.Request(pool)
+
+  if(!des) return res.redirect(`/subsidy/${subsidyInfo.id}/${cpnyId}/edit`)
+
+  request.query(`select * 
+  from BF_JH_SUBSIDY
+  where SUBSIDY_ID = ${subsidy_id}
+  and CPY_ID = '${cpnyId}'`, (err, result) => {
+    if(err){
+      console.log(err)
+      return
+    }
+    const subsidyInfoCheck = result.recordset[0]
+
+    if(!subsidyInfoCheck){
+      req.flash('warning_msg', '查無此補助津貼資料，請重新嘗試!')
+      return res.redirect('/subsidy')
+    }else{
+      request.input('des', sql.NVarChar(2000), des)
+      .query(`update BF_JH_SUBSIDY
+      set SUBSIDY_DES = @des
+      where SUBSIDY_ID = ${subsidy_id}
+      and CPY_ID = '${cpnyId}'`, (err, result) => {
+        if(err){
+          console.log(err)
+          return
+        }
+        req.flash('success_msg', '更新補助津貼內容成功!')
+        res.redirect('/subsidy')
+      })
+    }
+  })
+})
+
+// 顯示補助津貼內容頁面
+router.get('/:subsidy_id/:cpnyId/edit', (req, res) => {
+  const {subsidy_id, cpnyId} = req.params
+  const jh_edit_subsidy = true
+  const request = new sql.Request(pool)
+
+  request.query(`select a.SUBSIDY_DES as des, b.SUBSIDY_ID as id, b.SUBSIDY_NAME as name
+  from BF_JH_SUBSIDY a
+  left join BF_JH_SUBSIDY_CATEGORY b
+  on a.SUBSIDY_ID = b.SUBSIDY_ID
+  where a.SUBSIDY_ID = ${subsidy_id}
+  and a.CPY_ID = '${cpnyId}'`, (err, result) => {
+    if(err){
+      console.log(err)
+      return
+    }
+    const subsidyInfo = result.recordset[0]
+
+    if(!subsidyInfo){
+      req.flash('warning_msg', '查無此補助津貼資料，請重新嘗試!')
+      return res.redirect('/subsidy')
+    }else{
+      res.render('index', {subsidyInfo, cpnyId, jh_edit_subsidy})
+    }
+  })
+})
 
 // 新增補助津貼資訊
 router.post('/:cpnyId', (req, res) => {
@@ -71,7 +168,7 @@ router.post('/:cpnyId', (req, res) => {
           }
 
           // 寫檔及寫入dict
-          fsJhWriteInfo(name, entity_name, request)
+          fsWriteSubsidy(name, entity_name, request)
           setInfoDict(name)
 
           // 獲取剛新增的subsidy id
@@ -124,7 +221,8 @@ router.get('/', (req, res) => {
   from BF_JH_SUBSIDY a
   left join BF_JH_SUBSIDY_CATEGORY b
   on a.SUBSIDY_ID = b.SUBSIDY_ID
-  where CPY_ID = '${cpnyId}'`, (err, result) => {
+  where CPY_ID = '${cpnyId}'
+  order by b.SUBSIDY_ID ASC`, (err, result) => {
     if(err){
       console.log(err)
       return
