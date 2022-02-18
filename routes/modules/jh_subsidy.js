@@ -8,21 +8,25 @@ const {fsWriteSubsidy} = require('../../modules/fileSystem')
 const {setInfoDict} = require('../../modules/setDict')
 
 // 刪除補助津貼資訊
-router.delete('/:subsidy_id/:cpnyId', (req, res) => {
-  const {subsidy_id, cpnyId} = req.params
+router.delete('/:entity_name', (req, res) => {
+  const {entity_name} = req.params
+  const user = res.locals.user
+	const cpnyId = user.CPY_ID
   const request = new sql.Request(pool)
 
-  request.query(`select * 
-  from BF_JH_SUBSIDY
-  where SUBSIDY_ID = ${subsidy_id}
-  and CPY_ID = '${cpnyId}'`, (err, result) => {
+  request.query(`select b.SUBSIDY_ID
+  from BF_JH_SUBSIDY a
+  left join BF_JH_SUBSIDY_CATEGORY b
+  on a.SUBSIDY_ID = b.SUBSIDY_ID
+  where b.ENTITY_NAME = '${entity_name}'
+  and a.CPY_ID = '${cpnyId}'`, (err, result) => {
     if(err){
       console.log(err)
       return
     }
-    const subsidyInfoCheck = result.recordset[0]
+    const subsidy_id = result.recordset[0]['SUBSIDY_ID']
 
-    if(!subsidyInfoCheck){
+    if(!subsidy_id){
       req.flash('warning_msg', '查無此補助津貼資料，請重新嘗試!')
       return res.redirect('/subsidy')
     }else{
@@ -41,25 +45,28 @@ router.delete('/:subsidy_id/:cpnyId', (req, res) => {
 })
 
 // 編輯補助津貼內容
-router.put('/:subsidy_id/:cpnyId', (req, res) => {
-  const {subsidy_id, cpnyId} = req.params
+router.put('/:entity_name', (req, res) => {
+  const {entity_name} = req.params
   const {des} = req.body
-  const jh_edit_subsidy = true
+  const user = res.locals.user
+	const cpnyId = user.CPY_ID
   const request = new sql.Request(pool)
 
-  if(!des) return res.redirect(`/subsidy/${subsidyInfo.id}/${cpnyId}/edit`)
+  if(!des) return res.redirect(`/subsidy/${entity_name}/edit`)
 
-  request.query(`select * 
-  from BF_JH_SUBSIDY
-  where SUBSIDY_ID = ${subsidy_id}
-  and CPY_ID = '${cpnyId}'`, (err, result) => {
+  request.query(`select b.SUBSIDY_ID
+  from BF_JH_SUBSIDY a
+  left join BF_JH_SUBSIDY_CATEGORY b
+  on a.SUBSIDY_ID = b.SUBSIDY_ID
+  where b.ENTITY_NAME = '${entity_name}'
+  and a.CPY_ID = '${cpnyId}'`, (err, result) => {
     if(err){
       console.log(err)
       return
     }
-    const subsidyInfoCheck = result.recordset[0]
+    const subsidy_id = result.recordset[0]['SUBSIDY_ID']
 
-    if(!subsidyInfoCheck){
+    if(!subsidy_id){
       req.flash('warning_msg', '查無此補助津貼資料，請重新嘗試!')
       return res.redirect('/subsidy')
     }else{
@@ -80,16 +87,18 @@ router.put('/:subsidy_id/:cpnyId', (req, res) => {
 })
 
 // 顯示補助津貼內容頁面
-router.get('/:subsidy_id/:cpnyId/edit', (req, res) => {
-  const {subsidy_id, cpnyId} = req.params
+router.get('/:entity_name/edit', (req, res) => {
+  const {entity_name} = req.params
+  const user = res.locals.user
+	const cpnyId = user.CPY_ID
   const jh_edit_subsidy = true
   const request = new sql.Request(pool)
 
-  request.query(`select a.SUBSIDY_DES as des, b.SUBSIDY_ID as id, b.SUBSIDY_NAME as name
+  request.query(`select a.SUBSIDY_DES as des, b.SUBSIDY_ID as id, b.SUBSIDY_NAME as name, b.ENTITY_NAME as entity_name
   from BF_JH_SUBSIDY a
   left join BF_JH_SUBSIDY_CATEGORY b
   on a.SUBSIDY_ID = b.SUBSIDY_ID
-  where a.SUBSIDY_ID = ${subsidy_id}
+  where b.ENTITY_NAME = '${entity_name}'
   and a.CPY_ID = '${cpnyId}'`, (err, result) => {
     if(err){
       console.log(err)
@@ -107,12 +116,14 @@ router.get('/:subsidy_id/:cpnyId/edit', (req, res) => {
 })
 
 // 新增補助津貼資訊
-router.post('/:cpnyId', (req, res) => {
-  const {cpnyId} = req.params
+router.post('/', (req, res) => {
   const {name, entity_name, des} = req.body
+  const user = res.locals.user
+	const cpnyId = user.CPY_ID
   const request = new sql.Request(pool)
   const warning = []
   const jh_new_subsidy = true
+
   if(!name | !entity_name | !des) warning.push({message: '所有欄位都是必填的!'})
   if(warning.length){
     return res.render('index', {name, entity_name, des, warning, jh_new_subsidy})
@@ -152,6 +163,7 @@ router.post('/:cpnyId', (req, res) => {
                 console.log(err)
                 return
               }
+              req.flash('success_msg', '新增補助津貼成功!')
               res.redirect('/subsidy')
             })
           }
@@ -204,8 +216,9 @@ router.post('/:cpnyId', (req, res) => {
 })
 
 // 顯示新增津貼補助畫面
-router.get('/:cpnyId/new', (req, res) => {
-  const {cpnyId} = req.params
+router.get('/new', (req, res) => {
+  const user = res.locals.user
+	const cpnyId = user.CPY_ID
   const jh_new_subsidy = true
   res.render('index', {cpnyId, jh_new_subsidy})
 })
@@ -217,7 +230,7 @@ router.get('/', (req, res) => {
   const request = new sql.Request(pool)
   const warning = []
 
-  request.query(`select a.SUBSIDY_DES, b.SUBSIDY_NAME, b.SUBSIDY_ID
+  request.query(`select a.SUBSIDY_DES, b.SUBSIDY_NAME, b.SUBSIDY_ID, b.ENTITY_NAME
   from BF_JH_SUBSIDY a
   left join BF_JH_SUBSIDY_CATEGORY b
   on a.SUBSIDY_ID = b.SUBSIDY_ID

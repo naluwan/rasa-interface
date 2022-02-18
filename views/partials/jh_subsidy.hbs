@@ -1,14 +1,14 @@
 {{#if jh_subsidy}}
 <!-- jh_subsidy -->
-<div class="row d-flex flex-column align-items-center all">
+<diV>
   <h1>補助津貼</h1>
-  <div class="col-9 wrapper">
+  <div>
     {{> message}}
-    <div class="scroll-view">
+    <div>
       <ul class="list-group">
-        <div class="row d-flex justify-content-center" id="data-panel">
+        <di id="data-panel">  
           {{#each subsidyInfo}}
-          <div class="col-12">
+          <div>
             <li class="list-group-item" id="record-item" style="border: none;">
               <div class="row">
                 <div class=" item-wrapper">
@@ -21,12 +21,11 @@
                     <p class="des-text">{{ this.SUBSIDY_DES }}</p>
                   </div>
                   <div class="d-flex justify-content-center item-buttons">
-                    <a href="/subsidy/{{ this.SUBSIDY_ID}}/{{ ../cpnyId }}/edit" class="btn btn-primary mx-2" style="font-size: 1rem; height:fit-content;">
+                    <a href="/subsidy/{{ this.ENTITY_NAME}}/edit" class="btn btn-primary mx-2" style="font-size: 1rem; height:fit-content;">
                         編輯
                     </a>
                     <button class=" btn btn-danger mx-2" style="font-size:medium; height:fit-content"
-                        id="delete-btn" data-toggle="modal" data-target="#deleteModal" data-id="{{ this.SUBSIDY_ID }}"
-                        data-name="{{ this.SUBSIDY_NAME }}" data-cpnyid="{{ ../cpnyId }}" data-category="subsidy">
+                        id="delete-btn" data-toggle="modal" data-target="#deleteModal" data-name="{{ this.SUBSIDY_NAME }}" data-entity="{{ this.ENTITY_NAME }}" data-category="subsidy">
                         刪除
                     </button>
                   </div>
@@ -40,7 +39,7 @@
     </div>
   </div>
   <div class="text-center">
-    <a href="/subsidy/{{ cpnyId }}/new" class="btn btn-outline-warning" id="create-btn">新增補助津貼</a>
+    <a href="/subsidy/new" class="btn btn-outline-warning" id="create-btn">新增補助津貼</a>
   </div>
 </div>
 
