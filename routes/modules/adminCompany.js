@@ -7,13 +7,14 @@ const {isAdmin} = require('../../middleware/auth')
 const sql = require('mssql')
 const pool = require('../../config/connectPool')
 
-router.delete('/:CPY_ID', (req, res) => {
-  const {CPY_ID} = req.params
+router.delete('/:name/:cpnyId', (req, res) => {
+  const {name, cpnyId} = req.params
   const request = new sql.Request(pool)
 
   request.query(`select *
   from BOTFRONT_USERS_INFO
-  where CPY_ID = '${CPY_ID}'`, (err, result) => {
+  where CPY_NAME = '${name}'
+  and CPY_ID = '${cpnyId}'`, (err, result) => {
     if(err){
       console.log(err)
       return
@@ -24,20 +25,14 @@ router.delete('/:CPY_ID', (req, res) => {
       return res.redirect('/adminCompany')
     }
     request.query(`delete BOTFRONT_USERS_INFO
-    where CPY_ID = '${CPY_ID}'`, (err, result) => {
+    where CPY_NAME = '${name}'
+    and CPY_ID = '${cpnyId}'`, (err, result) => {
       if(err){
         console.log(err)
         return
       }
-      request.query(`delete BOTFRONT_TYPE_OF_INDUSTRY
-      where INDUSTRY_ID = '${companyCheck.INDUSTRY_NO}'`, (err, result) => {
-        if(err){
-          console.log(err)
-          return
-        }
         req.flash('success_msg', '刪除成功!!')
         res.redirect('/adminCompany')
-      })
     })
   })
 })
@@ -69,8 +64,8 @@ router.put('/password/:CPY_ID', (req, res) => {
     if(!adminCompanyInfo){
       req.flash('error', '查無此公司，請重新嘗試!!')
       return res.redirect('/adminCompany')
-    }
-    return bcrypt
+    }else{
+      return bcrypt
       .genSalt(10)
       .then(salt => bcrypt.hash(password, salt))
       .then(hash => {
@@ -88,6 +83,7 @@ router.put('/password/:CPY_ID', (req, res) => {
         return res.redirect('/adminCompany')
       })
       .catch(err => console.log(err))
+    }
   })
 })
 
@@ -359,7 +355,7 @@ router.get('/', (req, res) => {
       return
     }
     const adminCompanyInfo = result.recordset
-    res.render('adminCompany', {adminCompanyInfo})
+    res.render('index', {adminCompanyInfo})
   })
 })
 

@@ -59,6 +59,14 @@ if(dataPanel){
 			})
 			deleteForm.action = `/${target.dataset.category}/${target.dataset.id}/${target.dataset.functionid}?_method=DELETE`
 		}
+
+		if(target.matches('#admin-delete-user-btn')){
+			const deleteUser = document.querySelector('#delete-position')
+			const deleteForm = document.querySelector('#delete-form')
+
+			deleteUser.innerText = `「${target.dataset.name}」`
+			deleteForm.action = `/${target.dataset.category}/${target.dataset.name}/${target.dataset.id}?_method=DELETE`
+		}
 	})
 }
 
