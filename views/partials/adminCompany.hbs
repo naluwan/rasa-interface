@@ -1,10 +1,10 @@
 {{#if adminCompanyInfo}}
 <!-- adminCompanyInfo -->
-<div class="row d-flex flex-column align-items-center all">
-  <h1 class="m-5">公司資訊</h1>
-  <div class="col-9 wrapper">
+<div class="adminCompanyInfo">
+  <h1>公司資訊</h1>
+  <div>
     {{> message}}
-    <div class="scroll-view">
+    <div>
       <ul class="list-group">
         <div class="row d-flex justify-content-center" id="data-panel">
           {{#each adminCompanyInfo}}
@@ -35,7 +35,7 @@
                     </a>
             
                     <button class=" btn btn-danger mx-2" style="font-size:medium; height:fit-content"
-                      id="delete-btn" data-toggle="modal" data-target="#deleteModal" data-id="{{ this.CPY_ID }}"
+                      id="admin-delete-user-btn" data-toggle="modal" data-target="#deleteModal" data-id="{{ this.CPY_ID }}"
                       data-name="{{ this.CPY_NAME }}" data-category="adminCompany">
                       刪除
                     </button>
@@ -50,20 +50,11 @@
       </ul>
     </div>
   </div>
-  <div class="col-10 my-5 d-flex">
-    <div class="col-6">
-      <div class="row justify-content-center">
-        <a href="/adminCompany/new" class="btn btn-outline-warning col-8" id="create-btn"
-          style="font-size: 1.5rem;">新增資訊</a>
-      </div>
+    
+   <div class="text-center">
+      <a href="/adminCompany/new" class="btn btn-outline-warning" id="create-btn">新增資訊</a>
+      <a href="/" class="btn btn-outline-dark" id="create-btn">返回</a>
     </div>
-    <div class="col-6">
-      <div class="row justify-content-center">
-        <a href="/" class="btn btn-outline-dark col-8" id="create-btn"
-          style="font-size: 1.5rem;">返回</a>
-      </div>
-    </div>
-  </div>
 </div>
 
 <!-- Modal -->

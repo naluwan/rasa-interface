@@ -8,71 +8,47 @@
       </div>
 
       <!-- admin jh 按鈕 -->
-      <span>
-        <div class="col-10 mx-auto mt-3">
-          <form action="/roleFilter?_method=PUT" method="POST">
-            <select name="roleFilter" id="roleFilter" onchange="submit()">
-              <option value="hire" {{#is whichRole 'hire'}} selected {{/is}}>徵厲Hire</option>
-              <option value="hr" {{#is whichRole 'hr'}} selected {{/is}}>棉花糖客服</option>
-            </select>
-          </form>
-        </div>
+      <span  class="menu">
+        <form action="/roleFilter?_method=PUT" method="POST">
+          <select name="roleFilter" id="roleFilter" onchange="submit()">
+            <option value="hire" {{#is whichRole 'hire'}} selected {{/is}}>徵厲Hire</option>
+            <option value="hr" {{#is whichRole 'hr'}} selected {{/is}}>棉花糖客服</option>
+          </select>
+        </form>
         <!-- <a href="#" class="btn btn-dark active mx-3" role="button" id="train-btn">Train</a> -->
-        <button class="col btn btn-dark active mx-3 jh-train-btn" type="button">Train</button>
-        <div class="col-12 mx-auto home">
-          <div class="row col-6 d-flex mx-auto justify-content-center">
-            <div class="col-12 d-flex align-items-center justify-content-center">
-              <label>公司帳號資料:</label>
-              <a href="/adminCompany" class="btn btn-success" role="button">設定</a>
-            </div>
-          </div> 
-
-          <div class="row col-6 d-flex mx-auto justify-content-center">
-            <div class="col-12 d-flex align-items-center justify-content-center">
-              <label>公司資訊類別:</label>
-              <a href="/adminCompanyInfo" class="btn btn-success" role="button">設定</a>
-            </div>
-          </div> 
-
-          <div class="row col-6 d-flex mx-auto justify-content-center">
-            <div class="col-12 d-flex align-items-center justify-content-center" id="position-block">
-              <label>公司職缺類別:</label>
-              <a href="/adminPositionInfo" class="btn btn-success" role="button">設定</a>
-            </div>
-          </div>
-
-          <div class="row col-6 d-flex mx-auto justify-content-center">
-            <div class="col-12 d-flex align-items-center justify-content-center">
-              <label>公司產業類別:</label>
-              <a href="/adminIndustryInfo" class="btn btn-success" role="button">設定</a>
-            </div>
-          </div> 
-
-          <div class="row col-6 d-flex mx-auto justify-content-center">
-            <div class="col-12 d-flex align-items-center justify-content-center">
-              <label>公司假別類別:</label>
-              <a href="/adminLeaveInfo" class="btn btn-success" role="button">設定</a>
-            </div>
-          </div>
-
-          <div class="row col-6 d-flex mx-auto justify-content-center">
-            <div class="col-12 d-flex align-items-center justify-content-center">
-              <label>公司補助類別:</label>
-              <a href="/adminSubsidyInfo" class="btn btn-success" role="button">設定</a>
-            </div>
-          </div>
-
-          <div class="row col-12 d-flex mx-auto justify-content-start">
-            <div class="col-6 d-flex align-items-center justify-content-center">
-              <label>公司回覆查詢:</label>
-              <a href="/adminSearch" class="btn btn-success" role="button">設定</a>
-            </div>
-          </div> 
+        <button class="col btn btn-dark active jh-train-btn" type="button">Train</button>
+        <div>
+          <label>公司帳號資料:</label>
+          <a href="/adminCompany" class="btn btn-success" role="button">設定</a>
+        </div> 
+        <div>
+          <label>公司資訊類別:</label>
+          <a href="/adminCompanyInfo" class="btn btn-success" role="button">設定</a>
+        </div> 
+        <div>
+          <label>公司職缺類別:</label>
+          <a href="/adminPositionInfo" class="btn btn-success" role="button">設定</a>
         </div>
+        <div>
+          <label>公司產業類別:</label>
+          <a href="/adminIndustryInfo" class="btn btn-success" role="button">設定</a>
+        </div> 
+        <div>
+          <label>公司假別類別:</label>
+          <a href="/adminLeaveInfo" class="btn btn-success" role="button">設定</a>
+        </div>
+        <div>
+          <label>公司補助類別:</label>
+          <a href="/adminSubsidyInfo" class="btn btn-success" role="button">設定</a>
+        </div>
+        <div>
+          <label>公司回覆查詢:</label>
+          <a href="/adminSearch" class="btn btn-success" role="button">設定</a>
+        </div> 
       </span>
 
       <!-- admin jh 右側顯示頁面 -->
-      <span>
+      <span class="setting">
         {{> adminCompany}}
       </span>
     </div>
@@ -84,8 +60,8 @@
       </div>
 
       <!-- admin hr 按鈕 -->
-      <span>
-        <div class="col-10 mx-auto mt-3">
+      <span class="menu">
+        <div>
           <form action="/roleFilter?_method=PUT" method="POST">
             <select name="roleFilter" id="roleFilter" onchange="submit()">
               <option value="hire" {{#is whichRole 'hire'}} selected {{/is}}>徵厲Hire</option>
@@ -93,32 +69,30 @@
             </select>
           </form>
         </div>
-        <button class="col btn btn-dark active mx-3 cs-train-btn" type="button">Train</button>
-        <div class="col-12 mx-auto home">
-          <div class="row col-6 d-flex mx-auto justify-content-center">
-            <div class="col-12 d-flex align-items-center justify-content-center">
-              <label>Admin - 功能分類:</label>
-              <div class="function-detail-block">
-                  {{#if trainFunction}}<div><a href="/bf_cs/notTrainFunction" class="not-trained-block">功能未訓練：{{trainFunction}}</a></div>{{/if}}
-              </div>
-              <a href="/bf_cs/function" class="btn btn-success" role="button">設定</a>
+        <button id="train" class="btn btn-dark jh-train-btn" type="button">執行訓練</button>
+        <div>
+          <div>
+            <label>Admin - 功能分類:</label>
+            <div class="function-detail-block">
+                {{#if trainFunction}}<div><a href="/bf_cs/notTrainFunction" class="not-trained-block">功能未訓練：{{trainFunction}}</a></div>{{/if}}
             </div>
-          </div> 
+            <a href="/bf_cs/function" class="btn btn-success" role="button">設定</a>
+          </div>
+        </div> 
 
-          <div class="row col-6 d-flex mx-auto justify-content-center">
-            <div class="col-12 d-flex align-items-center justify-content-center">
-              <label>Admin - 問答分類:</label>
-              <div class="question-detail-block">
-                  {{#if trainQuestion}}<div><a href="/bf_cs/notTrainQuestion" class="not-trained-block">問答未訓練：{{trainQuestion}}</a></div>{{/if}}
-              </div>
-              <a href="/bf_cs/question" class="btn btn-success" role="button">設定</a>
+        <div>
+          <div>
+            <label>Admin - 問答分類:</label>
+            <div class="question-detail-block">
+                {{#if trainQuestion}}<div><a href="/bf_cs/notTrainQuestion" class="not-trained-block">問答未訓練：{{trainQuestion}}</a></div>{{/if}}
             </div>
-          </div> 
-        </div>
+            <a href="/bf_cs/question" class="btn btn-success" role="button">設定</a>
+          </div>
+        </div> 
       </span>
 
       <!-- admin hr 右側顯示畫面 -->
-      <span>
+      <span class="setting">
 
       </span>
     </div>
@@ -133,15 +107,15 @@
     <span>
       <div class="col-12 mx-auto home">
         <button id="train" class="btn btn-dark cs-train-btn" type="button">執行訓練</button>
-        <div class="row col-6 d-flex mx-auto justify-content-center">
-          <div class="col-12 d-flex align-items-center justify-content-center">
+        <div>
+          <div>
             <label>功能分類:</label>
             <a href="/bf_cs/function" class="btn btn-success" role="button">設定</a>
           </div>
         </div> 
 
-        <div class="row col-6 d-flex mx-auto justify-content-center">
-          <div class="col-12 d-flex align-items-center justify-content-center">
+        <div>
+          <div>
             <label>問答分類:</label>
             <a href="/bf_cs/question" class="btn btn-success" role="button">設定</a>
           </div>

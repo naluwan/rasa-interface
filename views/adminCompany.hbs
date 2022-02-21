@@ -1,40 +1,37 @@
-<div class="row d-flex flex-column align-items-center all">
+<!--addminCompany-->
+<div class="addminCompany">
   <h1 class="m-5">公司資訊</h1>
-  <div class="col-9 wrapper">
+  <div>
     {{> message}}
-    <div class="scroll-view">
+    <div>
       <ul class="list-group">
         <div class="row d-flex justify-content-center" id="data-panel">
           {{#each adminCompanyInfo}}
-          <div class="col-12">
+          <div>
             <li class="list-group-item" id="record-item" style="border: none;">
               <div class="row">
                 <div class=" item-wrapper">
                   <div class=" my-2 item-title">
-                    <div class="label-title">
-                      {{this.CPY_NAME}}
-                    </div>
+                    {{this.CPY_NAME}}
                   </div>
                   <div class="item-des">
-                    <p class="des-text">公司代碼(公司統編)：{{ this.CPY_ID}}</p>
-                    <p class="des-text">EMAIL(登入帳號)：{{ this.EMAIL }}</p>
-                    <p class="des-text">產業類別：{{ this.INDUSTRY_NAME }}</p>
-                    <p class="des-text">客服使用者：{{#if this.ISHR}}是{{else}}否{{/if}}</p>
-                    <p class="des-text">管理員權限：{{#if this.ISADMIN }}管理者{{else}}一般使用者{{/if}}</p>
+                    <div class="des-text">公司代碼(公司統編)：{{ this.CPY_ID}}</div>
+                    <div class="des-text">EMAIL(登入帳號)：{{ this.EMAIL }}</div>
+                    <div class="des-text">產業類別：{{ this.INDUSTRY_NAME }}</div>
+                    <div class="des-text">客服使用者：{{#if this.ISHR}}是{{else}}否{{/if}}</p>
+                    <div class="des-text">管理員權限：{{#if this.ISADMIN }}管理者{{else}}一般使用者{{/if}}</div>
                   </div>
                   <div class="d-flex flex-column justify-content-around align-items-stretch item-buttons">
       
-                    <a href="/adminCompany/{{ this.CPY_ID}}/edit" class="btn btn-primary mx-2" style="font-size: 1rem; height:fit-content;">
+                    <a href="/adminCompany/{{ this.CPY_ID}}/edit" class="btn btn-primary">
                       編輯
                     </a>
                   
-                    <a href="/adminCompany/{{ this.CPY_ID}}/edit/password" class="btn btn-info mx-2" style="font-size: 1rem; height:fit-content;">
+                    <a href="/adminCompany/{{ this.CPY_ID}}/edit/password" class="btn btn-info">
                       修改密碼
                     </a>
             
-                    <button class=" btn btn-danger mx-2" style="font-size:medium; height:fit-content"
-                      id="delete-btn" data-toggle="modal" data-target="#deleteModal" data-id="{{ this.CPY_ID }}"
-                      data-name="{{ this.CPY_NAME }}" data-category="adminCompany">
+                    <button class=" btn btn-danger " id="delete-btn" data-toggle="modal" data-target="#deleteModal" data-id="{{ this.CPY_ID }}" data-name="{{ this.CPY_NAME }}" data-category="adminCompany">
                       刪除
                     </button>
     
@@ -48,19 +45,9 @@
       </ul>
     </div>
   </div>
-  <div class="col-10 my-5 d-flex">
-    <div class="col-6">
-      <div class="row justify-content-center">
-        <a href="/adminCompany/new" class="btn btn-outline-warning col-8" id="create-btn"
-          style="font-size: 1.5rem;">新增資訊</a>
-      </div>
-    </div>
-    <div class="col-6">
-      <div class="row justify-content-center">
-        <a href="/" class="btn btn-outline-dark col-8" id="create-btn"
-          style="font-size: 1.5rem;">返回</a>
-      </div>
-    </div>
+  <div class="d-flex">
+    <a href="/adminCompany/new" class="btn btn-outline-warning" id="create-btn">新增資訊</a>
+    <a href="/" class="btn btn-outline-dark" id="create-btn">返回</a>
   </div>
 </div>
 

@@ -1,4 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@300&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@300&Luckiest+Guy&display=swap');
+
+@import url('https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap');
 
 /* reset css */
 * {box-sizing: border-box;}
@@ -73,7 +75,6 @@ input:invalid {box-shadow: none;}
 .admin-search-wrapper,
 .cs-search-wrapper{width: 100%;font-size: 1.5rem;display: flex;}
 
-#roleFilter{font-size: 1.5rem;}
 #position-block{position: relative;}
 
 .not-read-block,
@@ -100,25 +101,31 @@ input:invalid {box-shadow: none;}
 
 /*mark*/
 body{font-family: 'Comfortaa','Noto Sans TC';font-weight: inherit;opacity:0;animation: fadein .5s .5s forwards;}
-.login body{background: url(/images/robot.png) -25% bottom/auto 100% no-repeat fixed,url(/images/bg1.png) 113% -41% no-repeat fixed,url(/images/bg2.png)  right bottom no-repeat fixed,url(/images/bg.png);}
+
+input,
+select,
+.container button,
+.alert{border-radius: 5px!important;}
+
+body{background: url(/images/bg.png),url(/images/robot.png) -25% bottom/auto 100% no-repeat fixed,url(/images/bg1.png) 113% -41% no-repeat fixed,url(/images/bg2.png)  right bottom no-repeat fixed;}
+
+:not(.login) body{background: url(/images/bg3.png),url(/images/robot.png) -25% bottom/auto 100% no-repeat fixed,url(/images/bg1.png) 113% -41% no-repeat fixed,url(/images/bg2.png)  right bottom no-repeat fixed;}
+
+
 .login label{font-size: 16px;}
-.login input{border-radius:5px}
 .login button{border-radius:5px;font-size: 14px;letter-spacing: 1px;}
-.login h1{font-size: 45px;margin-bottom: 15px;text-transform: initial;color: #666;}
+.login h1{font-size: 70px;margin-bottom: 18px;text-transform: initial;color: #979797;font-family: 'Luckiest Guy', cursive;text-shadow: 5px 5px 0 #e5e3e3;}
 .login .container{max-width: calc(100% - 20px);height: calc(100% - 42px);display: flex;padding: 0;justify-content: center;align-items: center;overflow: auto;}
-.login .container > div{width: 500px;overflow: auto;padding: 20px;max-height: 100%;}
-.login .loginForm{background: #fff;border-radius: 10px;padding: 20px;box-shadow: 10px 10px 0px rgb(204 204 204);border: 1px solid #ccc;}
-.login .lead{font-weight:bold;font-size:18px;margin-top:30px}
-.login .btn{border-radius:5px;}
+.login .container > div{width: 500px;overflow: auto;padding: 20px;max-height: 100%;background: #fff;border-radius: 10px;padding: 20px;box-shadow: 10px 10px 0px rgb(0 0 0 / 10%);border: 1px solid #ccc;}
+.login .btn{border-radius: 10px;}
 .login #submit{}
 .login #forget{}
 .login .navbar{display:none;}
 
 .navbar{padding:10px;}
-.navbar .btn{padding:10px 20px;border-radius:5px;}
+.navbar .btn{padding:10px 20px;border-radius: 10px;}
 .alert-dismissible .close{font-size: 24px;}
 
-:not(.login) body{background: url(/images/robot.png) 140% bottom no-repeat fixed,url(/images/bg2.png) left bottom no-repeat fixed,url(/images/bg.png);}
 
 :not(.login) .navbar,
 :not(.login) .main-footer{background: rgb(0 0 0 / 60%)!important;}
@@ -127,34 +134,43 @@ body{font-family: 'Comfortaa','Noto Sans TC';font-weight: inherit;opacity:0;anim
 
 
 .menu,
-.setting{display:inline-block;vertical-align: top;margin: 10px;box-shadow: 5px 5px 0px rgb(203 203 203);border: 1px solid #ccc;}
+.setting{display:inline-block;vertical-align: top;margin: 10px;box-shadow: 10px 10px 0px rgb(0 0 0 / 10%);border: 1px solid #ccc;}
 
-.menu{width: 20%;background: rgba(255,255,255,.6);border-radius: 10px;padding: 20px;position: sticky;top: 10px;}
-.setting{width: calc(80% - 46px);background: rgba(255,255,255,.6);padding: 40px;border-radius: 10px;}
+.menu{width: 20%;background: #fff;border-radius: 10px;padding: 20px;position: sticky;top: 10px;}
+.setting{width: calc(80% - 46px);background: #fff;padding: 40px;border-radius: 10px;}
 
-.menu #train{width:100%;margin-bottom: 10px;font-size:18px;border-radius:5px;}
+.menu #train{width:100%;margin-bottom: 10px;font-size:18px;border-radius: 10px;}
 
 .menu > div{padding: 20px 10px;border-bottom: 1px solid #ccc;}
+.menu > div:last-of-type{border:none;}
 .menu > div > label{font-size: 18px;font-weight:bold;vertical-align: middle;display: inline-block;margin: 0 10px 0 0;}
-.menu > div > a{line-height:inherit;padding: 5px 20px;border-radius: 5px;vertical-align: middle;display: inline-block;font-size: 14px;}
+.menu > div > a{line-height:inherit;padding: 5px 20px;border-radius: 10px;vertical-align: middle;display: inline-block;font-size: 14px;}
 
 .index .input-group > div{width: 30%;}
 .index .input-group > div label{width:100%;}
+.index #roleFilter{font-size: 18px;width:100%;margin-bottom:15px;padding:5px;border:1px solid #999;}
+
+.register .container{max-width: calc(100% - 20px);height: calc(100% - 62px);display: flex;padding: 0;justify-content: center;align-items: center;overflow: auto;}
+.register .container > div{width: 500px;overflow: auto;max-height: calc(100% - 100px);background: #fff;border-radius: 10px;padding: 20px;box-shadow: 10px 10px 0px rgb(204 204 204);border: 1px solid #ccc;margin-bottom: 60px;}
+
+
+#rasaWebchatPro h4{color:#fff;font-size:16px;width: calc(100% - 120px);text-align:left;text-overflow: ellipsis;overflow: hidden;white-space: nowrap;}
 
 /*other*/
 .btn{border-radius:5px;font-size:16px;white-space: nowrap;}
+.lead{font-weight:bold;font-size:18px;margin-top:30px}
 
 #create-btn,
 #confirm-create{margin:10px;font-size:16px;}
 
 @media screen and (max-width:1600px){
-  body{background: url(/images/robot.png) -50% bottom/auto 100% no-repeat fixed,url(/images/bg1.png) 120% -300px/600px no-repeat fixed,url(/images/bg2.png)  right bottom/50% no-repeat fixed,url(/images/bg.png);}
-  :not(.login) body{background: url(/images/robot.png) 120% bottom/auto 100% no-repeat,url(/images/bg2.png) left bottom/50% no-repeat,url(/images/bg.png);}
+  body{background: url(/images/bg.png),url(/images/robot.png) -20% bottom/auto 100% no-repeat fixed,url(/images/bg1.png) 120% -300px/600px no-repeat fixed,url(/images/bg2.png)  right bottom/50% no-repeat fixed;}
 }
 
 @media screen and (max-width:1100px){
-  body{background: url(/images/robot.png) center bottom/auto 100% no-repeat,url(/images/bg.png);}
-  :not(.login) body{background: url(/images/robot.png) 150% bottom/auto 100% no-repeat fixed,url(/images/bg2.png) left bottom/50% no-repeat fixed,url(/images/bg.png);}
+  body{background: url(/images/bg.png);}
+  .menu{display:block;width: auto;background: #fff;border-radius: 10px;padding: 20px;position: relative;top: 0;margin: 20px 0;}
+  .setting{display:block;width: auto;background: #fff;padding: 40px;border-radius: 10px;margin: 20px 0;}
 }
 
 
