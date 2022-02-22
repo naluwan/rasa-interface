@@ -15,6 +15,13 @@
 
       <div class="input-group">
         <div class="input-group-prepend">
+          <label for="position_des" class="input-group-text new-title">英文名稱</label>
+        </div>
+        <input class="form-control new-des" name="des" id="des" placeholder="請輸入英文名稱" rows="5" value="{{cpnyInfo.entity_name}}" required disabled>
+      </div>
+
+      <div class="input-group">
+        <div class="input-group-prepend">
           <label for="position_des" class="input-group-text new-title">資訊內容</label>
         </div>
         <textarea class="form-control new-des" name="des" id="des" placeholder="請輸入資訊內容" rows="5" required>{{cpnyInfo.des}}</textarea>
