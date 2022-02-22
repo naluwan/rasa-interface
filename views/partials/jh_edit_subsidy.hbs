@@ -15,6 +15,13 @@
 
       <div class="input-group">
         <div class="input-group-prepend">
+          <label for="name" class="input-group-text new-title">英文名稱</label>
+        </div>
+        <input type="text" class="form-control new-des" name="entity_name" id="entity_name" placeholder="請輸入英文名稱" value="{{subsidyInfo.entity_name}}" disabled>
+      </div>
+
+      <div class="input-group">
+        <div class="input-group-prepend">
           <label for="position_des" class="input-group-text new-title">補助津貼內容</label>
         </div>
         <textarea class="form-control new-des" name="des" id="des" placeholder="請輸入補助津貼內容" rows="5" required>{{subsidyInfo.des}}</textarea>
