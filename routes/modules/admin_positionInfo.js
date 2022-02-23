@@ -268,7 +268,8 @@ router.get('/', (req, res) => {
           return
         }
         const adminPositionInfo = result.recordset
-        return res.render('index', {adminPositionInfo, admin_positionInfo})
+        if(!adminPositionInfo.length) warning.push({message: '查無此職缺!'})
+        return res.render('index', {adminPositionInfo, admin_positionInfo, warning})
       })
     }
 })

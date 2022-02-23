@@ -123,7 +123,7 @@ router.get('/', (req, res) => {
         return
       }
       const adminLeaveInfo = result.recordset
-      if(!adminLeaveInfo.length) warning.push({message: '還未新增過此公司假別!'})
+      if(!adminLeaveInfo.length) warning.push({message: '查無此假別!'})
       res.render('index', {adminLeaveInfo, warning, search, admin_leaveInfo})
     })
   }

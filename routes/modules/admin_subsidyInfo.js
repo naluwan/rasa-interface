@@ -126,7 +126,7 @@ router.get('/', (req, res) => {
         return
       }
       const adminSubsidyInfo = result.recordset
-      if(!adminSubsidyInfo.length) warning.push({message: '還未新增過此公司補助類別!'})
+      if(!adminSubsidyInfo.length) warning.push({message: '查無此補助!'})
       res.render('index', {adminSubsidyInfo, warning, search, admin_subsidyInfo})
     })
   }
