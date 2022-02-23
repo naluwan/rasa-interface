@@ -94,6 +94,7 @@ router.post('/register', (req, res) => {
 
   const request = new sql.Request(pool)
   const errors = []
+  const warning = []
   
 
   // isadmin沒有要給使用者設定，故在這設預設值如果沒有收到值就給0
@@ -101,17 +102,16 @@ router.post('/register', (req, res) => {
 
   // 由於0 = false，如果這邊設定檢覈的話，會一直false
   if(!cpy_no || !cpy_name || !email || !password || !confirmPassword){
-    errors.push({message: '所有欄位都是必填的!'})
+    warning.push({message: '所有欄位都是必填的!'})
   }
 
   if(password !== confirmPassword){
-    errors.push({message: '密碼和確認密碼不相符!'})
+    warning.push({message: '密碼和確認密碼不相符!'})
   }
 
-  if(errors.length){
+  if(warning.length){
       return res.render('register', {
-        industryInfo,
-        errors,
+        warning,
         cpy_no,
         cpy_name,
         email,
@@ -129,51 +129,23 @@ router.post('/register', (req, res) => {
         const user = result.recordset[0]
         // console.log(user)
         if(user){
-          if(user.EMAIL == email){
-            errors.push({message: `此 Email 已經註冊過了!!`})
-            return res.render('register', {
-            errors,
-            cpy_no,
-            cpy_name,
-            industry_no,
-            email,
-            isadmin,
-            password,
-            confirmPassword,
-            industryInfo
-            })
-          }
+          if(user.EMAIL == email) errors.push({message: `此「Email」已經註冊過了!!`})
 
-          if(user.CPY_ID == cpy_no){
-            errors.push({message: `此 公司代號 已經註冊過了!!`})
-            return res.render('register', {
-            errors,
-            cpy_no,
-            cpy_name,
-            industry_no,
-            email,
-            isadmin,
-            password,
-            confirmPassword,
-            industryInfo
-            })
-          }
+          if(user.CPY_ID == cpy_no) errors.push({message: `此「公司代號」已經註冊過了!!`})
 
-          if(user.CPY_NAME == cpy_name){
-            errors.push({message: `此 公司名稱 已經註冊過了!!`})
+          if(user.CPY_NAME == cpy_name) errors.push({message: `此「公司名稱」已經註冊過了!!`})
+
+          if(errors.length){
             return res.render('register', {
-            errors,
-            cpy_no,
-            cpy_name,
-            industry_no,
-            email,
-            isadmin,
-            password,
-            confirmPassword,
-            industryInfo
+              errors,
+              cpy_no,
+              cpy_name,
+              email,
+              isadmin,
+              password,
+              confirmPassword,
             })
           }
-          
         }else{
           return bcrypt
           .genSalt(10)
