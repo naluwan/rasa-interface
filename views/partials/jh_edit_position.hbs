@@ -1,36 +1,27 @@
 {{#if jh_edit_position}}
 <!-- jh_edit_position -->
 <div>
-  <h1 class="text-center">編輯職缺</h1>
-  <form action="/position/{{positionInfo.entity_name}}?_method=PUT" method="POST">
-    <div class="modal-body">
+  <h1>編輯職缺</h1>
+  <form action="/jh_position/{{positionInfo.entity_name}}?_method=PUT" method="POST">
       {{> message}}
-
-      <div class="input-group">
-        <div class="input-group-prepend">
-          <label for="name" class="input-group-text new-title">職缺名稱</label>
-        </div>
-        <input type="text" class="form-control new-des" name="name" id="name" placeholder="請輸入職缺名稱" value="{{positionInfo.name}}" disabled>
+      <div>
+        <label for="name">職缺名稱</label>
+        <input type="text" class="form-control" name="name" id="name" placeholder="請輸入職缺名稱" value="{{positionInfo.name}}" disabled>
       </div>
 
-      <div class="input-group">
-        <div class="input-group-prepend">
-          <label for="name" class="input-group-text new-title">英文名稱</label>
-        </div>
-        <input type="text" class="form-control new-des" name="entity_name" id="entity_name" placeholder="請輸入英文名稱" value="{{positionInfo.entity_name}}" disabled>
+      <div>
+        <label for="name">職缺英文名稱</label>
+        <input type="text" class="form-control" name="entity_name" id="entity_name" placeholder="請輸入英文名稱" value="{{positionInfo.entity_name}}" disabled>
       </div>
 
-      <div class="input-group">
-        <div class="input-group-prepend">
-          <label for="position_des" class="input-group-text new-title">職缺內容</label>
-        </div>
-        <textarea class="form-control new-des" name="des" id="des" placeholder="請輸入職缺內容" rows="5" required>{{positionInfo.des}}</textarea>
+      <div>
+        <label for="position_des">職缺內容</label>
+        <textarea class="form-control" name="des" id="des" placeholder="請輸入職缺內容" rows="5" required>{{positionInfo.des}}</textarea>
       </div>
-
     </div>
-    <div class="text-center">
-      <a href="/position" class="btn btn-outline-info">取消</a>
-      <button type="submit" class="btn btn-primary confirm-btn" id="confirm-create">儲存</button>
+    <div class="text-center mt-3">
+      <a href="/jh_position" class="btn btn-primary">取消</a>
+      <button type="submit" class="btn btn-info">儲存</button>
     </div>
   </form>
 </div>

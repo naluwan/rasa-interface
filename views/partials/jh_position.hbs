@@ -1,46 +1,35 @@
 {{#if jh_position}}
 <!-- jh_position -->
-<div>
+<div class="jh_position">
   <h1>職缺資訊</h1>
-  <div>
     {{> message}}
-    <div>
-      <ul class="list-group">
-        <di id="data-panel">
-          {{#each positionResult}}
+    <div id="data-panel">
+      {{#each positionResult}}
+      <div>
+        <span>
           <div>
-            <li class="list-group-item" id="record-item" style="border: none;">
-              <div class="row">
-                <div class=" item-wrapper">
-                  <div class=" my-2 item-title">
-                    <div class="label-title">
-                      {{this.POSITION_NAME}} {{this.ENTITY_NAME}}
-                    </div>
-                  </div>
-                  <div class="item-des">
-                    <p class="des-text">{{ this.POSITION_DES }}</p>
-                  </div>
-                  <div class="d-flex justify-content-center item-buttons">
-                    <a href="/position/{{ this.ENTITY_NAME}}/edit" class="btn btn-primary mx-2" style="font-size: 1rem; height:fit-content;">
-                        編輯
-                    </a>
-                    <button class=" btn btn-danger mx-2" style="font-size:medium; height:fit-content"
-                        id="delete-btn" data-toggle="modal" data-target="#deleteModal" data-name="{{ this.POSITION_NAME }}" data-entity="{{ this.ENTITY_NAME }}" data-category="position">
-                        刪除
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </li>
+            <span>職缺名稱：</span>
+            <span title="{{this.POSITION_NAME}}">{{this.POSITION_NAME}}</span>
           </div>
-          {{/each}}
-        </div>
-      </ul>
-    </div>
+          <div>
+            <span>英文名稱：</span>
+            <span title="{{this.ENTITY_NAME}}">{{this.ENTITY_NAME}}</span>
+          </div>
+          <div>
+            <span>職缺內容：</span>
+            <span title="{{ this.POSITION_DES }}">{{ this.POSITION_DES }}</span>
+          </div>
+        </span>
+        <span>
+          <a href="/jh_position/{{ this.ENTITY_NAME}}/edit" class="btn btn-primary">編輯</a>
+          <button class=" btn btn-danger" id="delete-btn" data-toggle="modal" data-target="#deleteModal" data-name="{{ this.POSITION_NAME }}" data-entity="{{ this.ENTITY_NAME }}" data-category="jh_position">刪除</button>
+        </span>
+      </div>
+      {{/each}}
   </div>
 
   <div class="text-center footButton">
-    <a href="/position/new" class="btn btn-warning" id="create-btn">新增職缺</a>
+    <a href="/jh_position/new" class="btn btn-warning" id="create-btn">新增職缺</a>
   </div>
 </div>
 
@@ -60,7 +49,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
-        <form action="/position/{{ this.POSITION_ID }}" method="post" style="display:inline-block;" id="delete-form">
+        <form action="/jh_position/{{ this.POSITION_ID }}" method="post" style="display:inline-block;" id="delete-form">
           <button type="submit" class="btn btn-danger">確定</button>
         </form>
       </div>

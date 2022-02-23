@@ -1,36 +1,29 @@
 {{#if jh_edit_cpnyInfo}}
 <!-- jh_edit_cpnyInfo -->
-<div>
-  <h1 class="text-center mt-3">編輯資訊</h1>
-  <form action="/company/{{cpnyInfo.entity_name}}?_method=PUT" method="POST">
-    <div class="modal-body">
+<div class="jh_edit_cpnyInfo">
+  <h1>編輯資訊</h1>
+  <form action="/jh_cpnyInfo/{{cpnyInfo.entity_name}}?_method=PUT" method="POST">
       {{> message}}
-
-      <div class="input-group">
-        <div class="input-group-prepend">
-          <label for="name" class="input-group-text new-title">資訊名稱</label>
+      <div>
+        <div>
+          <label for="name">資訊名稱</label>
+          <input type="text" class="form-control" name="name" id="name" placeholder="請輸入資訊名稱" value="{{cpnyInfo.name}}" disabled>
         </div>
-        <input type="text" class="form-control new-des" name="name" id="name" placeholder="請輸入資訊名稱" value="{{cpnyInfo.name}}" disabled>
-      </div>
 
-      <div class="input-group">
-        <div class="input-group-prepend">
-          <label for="position_des" class="input-group-text new-title">英文名稱</label>
+        <div>
+          <label for="position_des">資訊英文名稱</label>
+          <input class="form-control" name="entity_name" id="entity_name" placeholder="請輸入英文名稱" rows="5" value="{{cpnyInfo.entity_name}}" required disabled>
         </div>
-        <input class="form-control new-des" name="entity_name" id="entity_name" placeholder="請輸入英文名稱" rows="5" value="{{cpnyInfo.entity_name}}" required disabled>
-      </div>
 
-      <div class="input-group">
-        <div class="input-group-prepend">
-          <label for="position_des" class="input-group-text new-title">資訊內容</label>
+        <div>
+          <label for="position_des">資訊內容</label>
+          <textarea class="form-control" name="des" id="des" placeholder="請輸入資訊內容" rows="5" required>{{cpnyInfo.des}}</textarea>
         </div>
-        <textarea class="form-control new-des" name="des" id="des" placeholder="請輸入資訊內容" rows="5" required>{{cpnyInfo.des}}</textarea>
-      </div>
 
     </div>
-    <div class="text-center">
-      <a href="/company" class="btn btn-outline-info">取消</a>
-      <button type="submit" class="btn btn-primary confirm-btn" id="confirm-create">儲存</button>
+    <div class="text-center mt-3">
+      <a href="/jh_cpnyInfo" class="btn btn-primary">取消</a>
+      <button type="submit" class="btn btn-info">儲存</button>
     </div>
   </form>
 </div>

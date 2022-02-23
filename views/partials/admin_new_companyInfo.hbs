@@ -1,0 +1,24 @@
+<!-- admin_new_companyInfo -->
+{{#if admin_new_companyInfo}}
+<div class="admin_new_companyInfo">
+  <h1 class="text-center mt-3">新增資訊類別</h1>
+  <form action="/admin_companyInfo" method="POST">
+    <div>
+      {{> message}}
+      <div>
+        <label>資訊名稱</label>
+        <input type="text" class="form-control" name="info_name" placeholder="請輸入資訊名稱" value="{{info_name}}" required>
+      </div>
+
+      <div>
+        <label>資訊英文名稱</label>
+        <input type="text" class="form-control" name="entity_name" placeholder="請輸入資訊英文名稱" value="{{entity_name}}" required>
+      </div>
+    </div>
+    <div class="text-center mt-3">
+      <a href="/admin_companyInfo" class="btn btn-primary">取消</a>
+      <button type="submit" class="btn btn-info confirm-btn">新增</button>
+    </div>
+  </form>
+</div>
+{{/if}}

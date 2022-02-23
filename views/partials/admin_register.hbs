@@ -1,23 +1,26 @@
-<!-- register -->
-<div data-func="register">
-
-  <h1 class="text-center">註冊帳號</h1>
+<!-- admin_register -->
+{{#if admin_register}}
+<div class="admin_register">
+  <h1>註冊帳號</h1>
   {{> message}}
-  <form {{#if isAdmin}}action="/adminCompany/new"{{else}}action="/users/register"{{/if}} method="post">
-    <div class="form-group">
+  <form {{#if isAdmin}}action="/admin_company/new"{{else}}action="/users/register"{{/if}} method="post">
+    <div>
+      <label for="cpy_no">公司統編</label>
       <input type="text" id="cpy_no" name="cpy_no" class="form-control" placeholder="請輸入公司統編" value="{{ cpy_no }}" required>
     </div>
 
-    <div class="form-group">
+    <div>
+      <label for="cpy_name">公司名稱</label>
       <input type="text" id="cpy_name" name="cpy_name" class="form-control" placeholder="請輸入公司名稱" value="{{ cpy_name }}" required>
     </div>
 
-    <div class="form-group">
+    <div>
+      <label for="email">信箱</label>
       <input type="email" id="email" name="email" class="form-control" placeholder="請輸入信箱" value="{{ email }}" required>
     </div>
 
 <!--
-    <div class="form-group">
+    <div>
       <label for="industry_no">產業類別</label>
       <select name="industry_no" id="industry_no" class="form-control" required>
         <option value="" selected hidden>請選擇</option>
@@ -32,7 +35,7 @@
 -->
 
     {{#if isAdmin}}
-    <div class="form-group">
+    <div>
       <label for="ishr">客服使用者</label>
       <select name="ishr" id="ishr" class="form-control" required>
         <option value="" selected hidden>請選擇</option>
@@ -41,7 +44,8 @@
       </select>
     </div>
 
-    <div class="form-group">
+    <div>
+      <label for="ishr">權限</label>
       <select name="isadmin" id="isadmin" class="form-control" required>
         <option value="" selected hidden>請選擇</option>
         <option value="1" {{#is isadmin '1'}} selected {{/is}}>管理員</option>
@@ -50,30 +54,23 @@
     </div>
     {{/if}}
 
-    <div class="form-group">
-      <input type="password" id="password" name="password" class="form-control" placeholder="請輸入密碼"
-        value="{{ password }}" required>
+    <div>
+      <label>輸入密碼</label>
+      <input type="password" id="password" name="password" class="form-control" placeholder="請輸入密碼" value="{{ password }}" required>
     </div>
 
-    <div class="form-group">
-      <input type="password" id="confirmPassword" name="confirmPassword" class="form-control"
-        placeholder="請再次輸入密碼" value="{{ confirmPassword }}" required>
+    <div>
+      <label>確認密碼</label>
+      <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" placeholder="請再次輸入密碼" value="{{ confirmPassword }}" required>
     </div>
 
-    <div class="text-center">
-      
-      <a href="/" class="btn btn-primary" role="button">返回</a>
-      <button type="submit" class="btn btn-info">註冊</button>
-      
-      <div class="lead">
-        已經有帳號了?
-        <a href="/users/login" style="color: blue;">登入</a>
+    <div class="text-center mt-3">
+      <a href="/admin_company" class="btn btn-primary" role="button">返回</a>
+      <button type="submit" class="btn btn-info">註冊</button><br>
     </div>
-
-    </div>
-    
   </form>
   {{#unless isAdmin}}
   
   {{/unless}}
 </div>
+{{/if}}

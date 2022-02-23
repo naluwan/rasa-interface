@@ -1,0 +1,81 @@
+<!--adminPositionInfo-->
+{{#if admin_positionInfo}}
+<div class="adminPositionInfo">
+  <h1>公司職缺類別</h1>
+  <form action="/admin_positionInfo" class="searchBar">
+    <input type="text" name="search" id="search" value="{{search}}" placeholder="搜尋關鍵字">
+    <button type="submit" class=" btn btn-info">查詢</button>
+  </form> 
+  <div>
+    {{> message}}
+    <div>
+        <div id="data-panel">
+          
+          {{#each adminPositionInfo}}
+          <div>
+            <span>
+              <!--
+              <div>
+                <span>產業類別：</span>
+                <span title="{{this.INDUSTRY_NAME}}">{{this.INDUSTRY_NAME}}</span>
+              </div>
+              <div>
+                -->
+              <div>
+                <span>職缺名稱：</span>
+                <span title="{{this.POSITION_NAME}}">{{this.POSITION_NAME}}</span>
+              </div>
+              <div>
+                <span>英文名稱：</span>
+                <span title="{{this.ENTITY_NAME}}">{{this.ENTITY_NAME}}</span>
+              </div>
+            </span>
+
+            <span>
+              <!--
+              {{#unless this.TRAINED}}
+              <form action="/adminPositionInfo/trained/{{this.POSITION_ID}}?_method=PUT" method="POST">
+                <button class="btn btn-warning mx-2" style="font-size:medium; height:fit-content">
+                  訓練完成
+                </button>
+              </form>
+              {{/unless}}
+              -->
+              <button class=" btn btn-danger" id="delete-btn" data-toggle="modal" data-target="#deleteModal" data-id="{{ this.POSITION_ID }}" data-name="{{ this.POSITION_NAME }}" data-category="admin_positionInfo">
+                  刪除
+              </button>
+            </span>
+          </div>
+          {{/each}}
+
+    </div>
+  </div>
+  <div class="text-center footButton">
+    <a href="/admin_positionInfo/new" class="btn btn-warning" id="create-btn">新增資訊</a>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalScrollableTitle">刪除資訊</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>確定要刪除<strong id="delete-position">{{ this.POSITION_NAME }}</strong>?</p> 
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+        <form action="/company/{{ this.POSITION_ID }}" method="post" style="display:inline-block;" id="delete-form">
+          <button type="submit" class="btn btn-danger">確定</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{{/if}}

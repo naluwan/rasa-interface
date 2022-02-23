@@ -1,46 +1,36 @@
 {{#if jh_leave}}
 <!-- jh_leave -->
-<div>
+<div class="jh_leave">
   <h1>假別資訊</h1>
   <div>
     {{> message}}
-    <div class="scroll-view">
-      <ul class="list-group">
-        <div class="row d-flex justify-content-center" id="data-panel">
-          {{#each leaveInfo}}
-          <div class="col-12">
-            <li class="list-group-item" id="record-item" style="border: none;">
-              <div class="row">
-                <div class=" item-wrapper">
-                  <div class=" my-2 item-title">
-                    <div class="label-title">
-                      {{this.LEAVE_NAME}} {{this.ENTITY_NAME}}
-                    </div>
-                  </div>
-                  <div class="item-des">
-                    <p class="des-text">{{ this.LEAVE_DES }}</p>
-                  </div>
-                  <div class="d-flex justify-content-center item-buttons">
-                    <a href="/leave/{{ this.ENTITY_NAME}}/edit" class="btn btn-primary mx-2" style="font-size: 1rem; height:fit-content;">
-                        編輯
-                    </a>
-                    <button class=" btn btn-danger mx-2" style="font-size:medium; height:fit-content"
-                        id="delete-btn" data-toggle="modal" data-target="#deleteModal" data-name="{{ this.LEAVE_NAME }}" data-entity="{{ this.ENTITY_NAME }}" data-category="leave">
-                        刪除
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </li>
+    <div id="data-panel">
+      {{#each leaveInfo}}
+      <div>
+        <span>
+          <div>
+            <span>假別名稱：</span>
+            <span title="{{this.LEAVE_NAME}}">{{this.LEAVE_NAME}}</span>
           </div>
-          {{/each}}
-        </div>
-      </ul>
+          <div>
+            <span>英文名稱：</span>
+            <span title="{{this.ENTITY_NAME}}">{{this.ENTITY_NAME}}</span>
+          </div>
+          <div>
+            <span>假別內容：</span>
+            <span title="{{ this.LEAVE_DES }}">{{ this.LEAVE_DES }}</span>
+          </div>
+        </span>
+        <span>
+          <a href="/jh_leave/{{ this.ENTITY_NAME}}/edit" class="btn btn-primary">編輯</a>
+          <button class=" btn btn-danger" id="delete-btn" data-toggle="modal" data-target="#deleteModal" data-name="{{ this.LEAVE_NAME }}" data-entity="{{ this.ENTITY_NAME }}" data-category="jh_leave">刪除</button>
+        </span>
+      </div>                  
+      {{/each}}d
     </div>
-  </div>
-  <div class="text-center footButton">
-      <a href="/leave/new" class="btn btn-warning" id="create-btn">新增假別資訊</a>
-  </div>
+    <div class="text-center footButton">
+        <a href="/jh_leave/new" class="btn btn-warning" id="create-btn">新增假別資訊</a>
+    </div>
 </div>
 
 <!-- Modal -->
@@ -59,7 +49,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
-        <form action="/subsidy/{{ this.LEAVE_ID }}" method="post" style="display:inline-block;" id="delete-form">
+        <form action="/jh_leave/{{ this.LEAVE_ID }}" method="post" style="display:inline-block;" id="delete-form">
           <button type="submit" class="btn btn-danger">確定</button>
         </form>
       </div>

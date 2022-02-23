@@ -1,24 +1,24 @@
 <div data-func="login">
   <!--login.hbs-->
-  <div class="loginForm">
-    <h1 class="text-center">Chat Bot</h1>
+  <div>
+    <h1 class="text-center mb-4">Chat Bot</h1>
     {{> message}}
-      <form action="/users/login" method="post">
-        <div class="form-group">
-          <input type="email" id="email" name="email" class="form-control" placeholder="請輸入E-mail" required>
-        </div>
-        <div class="form-group">
-          <input type="password" id="password" name="password" class="form-control" placeholder="請輸入密碼" required>
-        </div>
-        <div class="text-center">
-          <button type="submit" class="btn btn-primary" id="submit">Login</button>
-          <button type="button" class="btn btn-info" id="forget" data-toggle="modal" data-target="#resetModal">忘記密碼</button>
-          <p class="lead">
-            還沒有帳號?
-            <a href="/users/register" style="color: blue;">註冊</a>
-          </p>
-        </div>
-      </form>
+    <form action="/users/login" method="post">
+      <div class="mt-3">
+        <input type="email" id="email" name="email" class="form-control" placeholder="請輸入E-mail" required>
+      </div>
+      <div class="mt-4">
+        <input type="password" id="password" name="password" class="form-control" placeholder="請輸入密碼" required>
+      </div>
+      <div class="text-center mt-4">
+        <button type="button" class="btn btn-primary" id="forget" data-toggle="modal" data-target="#resetModal">忘記密碼</button>
+        <button type="submit" class="btn btn-info" id="submit">登入</button>
+      </div>
+      <div class="account  mt-4">
+        還沒有帳號?
+        <a href="/users/register">註冊</a>
+      </div>
+    </form>
   </div>
 
   <!-- Modal -->
@@ -43,8 +43,8 @@
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
-            <button type="submit" class="btn btn-primary">送出</button>
+            <button type="button" class="btn btn-primary" data-dismiss="modal">取消</button>
+            <button type="submit" class="btn btn-info">送出</button>
           </div>
         </form>
       </div>

@@ -1,0 +1,23 @@
+<!--admin_new_leaveInfo-->
+{{#if admin_new_leaveInfo}}
+<div class="admin_new_leaveInfo">
+  <h1>新增假別資訊</h1>
+  <form action="/admin_leaveInfo" method="POST">
+    <div>
+      {{> message}}
+      <div>
+        <label>假別名稱</label>
+        <input type="text" class="form-control" name="name" placeholder="請輸入假別名稱" value="{{name}}" required>
+      </div>
+      <div>
+        <label>假別英文名稱</label>
+        <input type="text" class="form-control" name="entity_name" placeholder="請輸入假別英文名稱" value="{{entity_name}}" required>
+      </div>
+    </div>
+    <div class="text-center mt-3">
+      <a href="/admin_leaveInfo" class="btn btn-primary">取消</a>
+      <button type="submit" class="btn btn-info">新增</button>
+    </div>
+  </form>
+</div>
+{{/if}}

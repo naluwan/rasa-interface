@@ -1,36 +1,29 @@
 {{#if jh_new_leave}}
 <!-- jh_new_leave -->
-<div data-func="jh_new_leave">
-  <h1 class="text-center">新增假別資訊</h1>
-  <form action="/leave" method="POST">
-    <div class="modal-body">
+<div class="jh_new_leave">
+  <h1>新增假別資訊</h1>
+  <form action="/jh_leave" method="POST">
+    <div>
       {{> message}}
-
-      <div class="input-group">
-        <div class="input-group-prepend">
-          <label for="name" class="input-group-text new-title">假別名稱</label>
-        </div>
-        <input type="text" class="form-control new-des" name="name" id="name" placeholder="請輸入假別名稱" value="{{name}}" required>
+      <div>
+        <label for="name">假別名稱</label>
+        <input type="text" class="form-control" name="name" id="name" placeholder="請輸入假別名稱" value="{{name}}" required>
       </div>
 
-      <div class="input-group">
-        <div class="input-group-prepend">
-          <label for="entity_name" class="input-group-text new-title">假別英文名稱</label>
-        </div>
-        <input type="text" class="form-control new-des" name="entity_name" id="entity_name" placeholder="請輸入假別英文名稱" value="{{entity_name}}" required>
+      <div>
+        <label for="entity_name">英文假別</label>
+        <input type="text" class="form-control" name="entity_name" id="entity_name" placeholder="請輸入英文假別" value="{{entity_name}}" required>
       </div>
 
-      <div class="input-group">
-        <div class="input-group-prepend">
-          <label for="des" class="input-group-text new-title">假別內容</label>
-        </div>
-        <textarea class="form-control new-des" name="des" id="des" placeholder="請輸入假別內容" rows="5" required>{{des}}</textarea>
+      <div>
+        <label for="des">假別內容</label>
+        <textarea class="form-control" name="des" id="des" placeholder="請輸入假別內容" rows="5" required>{{des}}</textarea>
       </div>
 
     </div>
-    <div class="text-center">
-      <a href="/leave" class="btn btn-outline-info">取消</a>
-      <button type="submit" class="btn btn-primary confirm-btn" id="confirm-create">新增</button>
+    <div class="text-center mt-3">
+      <a href="/jh_leave" class="btn btn-primary">取消</a>
+      <button type="submit" class="btn btn-info" id="confirm-create">新增</button>
     </div>
   </form>
 </div>

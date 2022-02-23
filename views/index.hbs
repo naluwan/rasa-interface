@@ -2,163 +2,193 @@
 <div data-func="index">
   {{#if isAdmin}}
     {{#is whichRole 'hire'}}
-    <div class="row">
-      <div class="col-10 mx-auto mt-3" id="message-block">
-      {{> message}}
-      </div>
+    <div>
+      <div class="mx-auto" id="message-block"></div>
 
       <!-- admin jh 按鈕 -->
-      <span  class="menu">
+      <span class="menu">
         <form action="/roleFilter?_method=PUT" method="POST">
-          <select name="roleFilter" id="roleFilter" onchange="submit()">
+          <select class="form-control" name="roleFilter" id="roleFilter" onchange="submit()">
             <option value="hire" {{#is whichRole 'hire'}} selected {{/is}}>徵厲Hire</option>
             <option value="hr" {{#is whichRole 'hr'}} selected {{/is}}>棉花糖客服</option>
           </select>
         </form>
         <!-- <a href="#" class="btn btn-dark active mx-3" role="button" id="train-btn">Train</a> -->
-        <button class="col btn btn-dark active jh-train-btn" type="button">Train</button>
+        <button  id="train" class="btn btn-dark jh-train-btn" type="button">TRAIN</button>
         <div>
-          <label>公司帳號資料:</label>
-          <a href="/adminCompany" class="btn btn-success" role="button">設定</a>
-        </div> 
-        <div>
-          <label>公司資訊類別:</label>
-          <a href="/adminCompanyInfo" class="btn btn-success" role="button">設定</a>
-        </div> 
-        <div>
-          <label>公司職缺類別:</label>
-          <a href="/adminPositionInfo" class="btn btn-success" role="button">設定</a>
+          <div>
+            <label>公司帳號資料:</label>
+            <a href="/admin_company" class="btn btn-success" role="button">設定</a>
+          </div> 
+          <div>
+            <label>公司資訊類別:</label>
+            <a href="/admin_companyInfo" class="btn btn-success" role="button">設定</a>
+          </div> 
+          <div>
+            <label>公司職缺類別:</label>
+            <a href="/admin_positionInfo" class="btn btn-success" role="button">設定</a>
+          </div>
+          <!--
+          <div>
+            <label>公司產業類別:</label>
+            <a href="/adminIndustryInfo" class="btn btn-success" role="button">設定</a>
+          </div>
+          --> 
+          <div>
+            <label>公司假別類別:</label>
+            <a href="/admin_leaveInfo" class="btn btn-success" role="button">設定</a>
+          </div>
+          <div>
+            <label>公司補助類別:</label>
+            <a href="/admin_subsidyInfo" class="btn btn-success" role="button">設定</a>
+          </div>
+          <div>
+            <label>公司回覆查詢:</label>
+            <a href="/admin_search" class="btn btn-success" role="button">設定</a>
+          </div>
         </div>
-        <div>
-          <label>公司產業類別:</label>
-          <a href="/adminIndustryInfo" class="btn btn-success" role="button">設定</a>
-        </div> 
-        <div>
-          <label>公司假別類別:</label>
-          <a href="/adminLeaveInfo" class="btn btn-success" role="button">設定</a>
-        </div>
-        <div>
-          <label>公司補助類別:</label>
-          <a href="/adminSubsidyInfo" class="btn btn-success" role="button">設定</a>
-        </div>
-        <div>
-          <label>公司回覆查詢:</label>
-          <a href="/adminSearch" class="btn btn-success" role="button">設定</a>
-        </div> 
       </span>
 
       <!-- admin jh 右側顯示頁面 -->
       <span class="setting">
-        {{> adminCompany}}
+        {{> admin_register}}
+        {{> admin_company}}
+        {{> admin_edit_company}}
+        {{> admin_edit_pwd}}
+        {{> admin_companyInfo}}
+        {{> admin_new_companyInfo}}
+        {{> admin_positionInfo}}
+        {{> admin_new_positionInfo}}
+        {{> admin_subsidyInfo}}
+        {{> admin_new_subsidyInfo}}
+        {{> admin_leaveInfo}}
+        {{> admin_new_leaveInfo}}
+        {{> admin_search}}
+        {{> admin_new_search}}
+        {{> admin_edit_search}}
       </span>
+
     </div>
     {{/is}}
-    {{#is whichRole 'hr'}}
-    <div class="row">
-      <div class="col-10 mx-auto mt-3" id="message-block">
-      {{> message}}
-      </div>
 
+    {{#is whichRole 'hr'}}
+    <div>
+      {{> message}}
+    </div>
+
+    <div>
       <!-- admin hr 按鈕 -->
       <span class="menu">
-        <div>
-          <form action="/roleFilter?_method=PUT" method="POST">
-            <select name="roleFilter" id="roleFilter" onchange="submit()">
-              <option value="hire" {{#is whichRole 'hire'}} selected {{/is}}>徵厲Hire</option>
-              <option value="hr" {{#is whichRole 'hr'}} selected {{/is}}>棉花糖客服</option>
-            </select>
-          </form>
-        </div>
-        <button id="train" class="btn btn-dark jh-train-btn" type="button">執行訓練</button>
+
+        <form action="/roleFilter?_method=PUT" method="POST">
+          <select class="form-control" name="roleFilter" id="roleFilter" onchange="submit()">
+            <option value="hire" {{#is whichRole 'hire'}} selected {{/is}}>徵厲Hire</option>
+            <option value="hr" {{#is whichRole 'hr'}} selected {{/is}}>棉花糖客服</option>
+          </select>
+        </form>
+
+        <button id="train" class="btn btn-dark cs-train-btn" type="button">TRAIN</button>
         <div>
           <div>
             <label>Admin - 功能分類:</label>
-            <div class="function-detail-block">
-                {{#if trainFunction}}<div><a href="/bf_cs/notTrainFunction" class="not-trained-block">功能未訓練：{{trainFunction}}</a></div>{{/if}}
-            </div>
+
+            {{#if trainFunction}}
+            <a href="/bf_cs/notTrainFunction" class="not-trained-block">功能未訓練：{{trainFunction}}</a>
+            {{/if}}
+
             <a href="/bf_cs/function" class="btn btn-success" role="button">設定</a>
           </div>
-        </div> 
+        
 
-        <div>
           <div>
             <label>Admin - 問答分類:</label>
-            <div class="question-detail-block">
-                {{#if trainQuestion}}<div><a href="/bf_cs/notTrainQuestion" class="not-trained-block">問答未訓練：{{trainQuestion}}</a></div>{{/if}}
-            </div>
-            <a href="/bf_cs/question" class="btn btn-success" role="button">設定</a>
+
+              {{#if trainQuestion}}
+              <div>
+                <a href="/bf_cs/notTrainQuestion" class="not-trained-block">問答未訓練：{{trainQuestion}}</a>
+              </div>
+              {{/if}}
+
+              <a href="/bf_cs/question" class="btn btn-success" role="button">設定</a>
           </div>
-        </div> 
+
+        </div>
       </span>
 
       <!-- admin hr 右側顯示畫面 -->
-      <span class="setting">
+      <span class="setting"> </span>
 
-      </span>
     </div>
+
     {{/is}}
   {{else if isHr}}
-  <div class="row">
-    <div class="col-10 mx-auto mt-3" id="message-block">
+  <div>
     {{> message}}
-    </div>
+  </div>
 
+  <div>
     <!-- user hr 按鈕 -->
-    <span>
-      <div class="col-12 mx-auto home">
-        <button id="train" class="btn btn-dark cs-train-btn" type="button">執行訓練</button>
+    <span class="menu">
+        <button id="train" class="btn btn-dark cs-train-btn" type="button">TRAIN</button>
         <div>
           <div>
-            <label>功能分類:</label>
-            <a href="/bf_cs/function" class="btn btn-success" role="button">設定</a>
-          </div>
-        </div> 
+            <div>
+              <label>功能分類:</label>
+              <a href="/bf_cs/function" class="btn btn-success" role="button">設定</a>
+            </div> 
 
-        <div>
-          <div>
-            <label>問答分類:</label>
-            <a href="/bf_cs/question" class="btn btn-success" role="button">設定</a>
+            <div>
+              <label>問答分類:</label>
+              <a href="/bf_cs/question" class="btn btn-success" role="button">設定</a>
+            </div>
+
           </div>
-        </div> 
-      </div>
+        </div>
     </span>
 
     <!-- user hr 右側畫面 -->
-    <span>
-
-    </span>
+    <span class="setting"></span>
   </div>
+
   {{else}}
+
   <div>
-    <div class="col-10 mx-auto mt-3" id="message-block"></div>
+    <div class="mx-auto" id="message-block"></div>
 
     <!-- user jh 按鈕 -->
     <span class="menu">
-      <button id="train" class="btn btn-dark jh-train-btn" type="button">執行訓練</button>
-      <div>
-        <label>公司資訊:</label>
-        <a href="/company" class="btn btn-success" role="button">設定</a>
-      </div>
-      <div>
-        <label>職缺設定:</label>
-        <a href="/position" class="btn btn-success" role="button">設定</a>
-      </div>
-      <div>
-        <label>補助津貼:</label>
-        <a href="/subsidy" class="btn btn-success" role="button">設定</a>
-      </div>
-      <div>
-        <label>假別設定:</label>
-        <a href="/leave" class="btn btn-success" role="button">設定</a>
-      </div>
-      {{!-- <div>
-        <label>通知問候:</label>
-          <a href="/greet" class="btn btn-primary" role="button">設定</a>
-      </div>
-      <div>
-        <label>預設回覆:</label>
-          <a href="/defaultRes" class="btn btn-primary" role="button">設定</a>
-      </div> --}}
+      <button id="train" class="btn btn-dark jh-train-btn" type="button">TRAIN</button>
+        <div>
+          <div>
+            <label>公司資訊:</label>
+            <a href="/jh_cpnyInfo" class="btn btn-success" role="button">設定</a>
+          </div>
+
+          <div>
+            <label>職缺設定:</label>
+            <a href="/jh_position" class="btn btn-success" role="button">設定</a>
+          </div>
+
+          <div>
+            <label>補助津貼:</label>
+            <a href="/jh_subsidy" class="btn btn-success" role="button">設定</a>
+          </div>
+
+          <div>
+            <label>假別設定:</label>
+            <a href="/jh_leave" class="btn btn-success" role="button">設定</a>
+          </div>
+
+          {{!-- <div>
+            <label>通知問候:</label>
+              <a href="/greet" class="btn btn-primary" role="button">設定</a>
+          </div>
+          <div>
+            <label>預設回覆:</label>
+              <a href="/defaultRes" class="btn btn-primary" role="button">設定</a>
+          </div> --}}
+        </div>
+
     </span>
 
     <!-- user jh 右側畫面 -->
@@ -193,7 +223,7 @@
         <div class="modal-body">
           <strong>確定要開始訓練?</strong>
         </div>
-        <div class="modal-footer">
+        <div class="text-center">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
           <form action="/train" method="post" style="display:inline-block;" id="delete-form">
             <button type="submit" class="btn btn-danger">訓練</button>

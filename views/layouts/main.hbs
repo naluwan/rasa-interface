@@ -59,8 +59,8 @@
   {{/if}}
   <!-- Navigation-->
   <header>
-    <nav class="navbar navbar-dark bg-primary" style="font-weight:bold;">
-      <a class="navbar-brand" href="/">
+    <nav>
+      <a href="/">
         設定
         {{#if isAuthenticated}}
         {{user.CPY_NAME}}
@@ -78,8 +78,8 @@
     {{{body}}}
   </div>
   <!-- Footer-->
-  <footer class="main-footer">
-    <h3 class="footer-text">Internet Information Co., Ltd All Rights Reserve</h3>
+  <footer>
+    Internet Information Co., Ltd All Rights Reserve
   </footer>
 
   <!-- 導入webchat最新版本 -->
@@ -88,13 +88,14 @@
   <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+  <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
   <script src="/javascript/front-script.js"></script>
   <script src="/javascript/search.js"></script>
   <script src="/javascript/adminSearch-new.js"></script>
   <script src="/javascript/bf_cs_question.js"></script>
+  <script src="/javascript/jquery-handlebars-1.1.4.min.js"></script>
+
   {{!-- <script data-main="front-script" src="javascript/require.js"></script> --}}
   <!-- Core theme JS-->
   {{!-- <script src="js/scripts.js"></script> --}}

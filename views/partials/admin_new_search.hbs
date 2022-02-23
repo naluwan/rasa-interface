@@ -1,0 +1,74 @@
+<!--admin_new_search-->
+{{#if admin_new_search}}
+<div class="admin_new_search">
+      <h1>新增</h1>
+      <form action="/admin_search" method="POST">
+      <div>
+          {{> message}}
+            <div>
+              <label>公司類別</label>
+              <select name="companyFilter" id="companyFilter" class="form-control" required>
+                <option value="" selected hidden>請選擇</option>
+                {{#each adminCompany}}
+                {{#isnt this.CPY_NAME 'Admin'}}
+                <option value="{{this.CPY_ID}}" {{#is this.CPY_ID ../companyFilter}} selected {{/is}}>
+                {{this.CPY_NAME}}
+                </option>
+                {{/isnt}}
+              {{/each}}
+            </select>
+          </div>
+
+          <div>
+            <label>資訊類別</label>
+            <select name="tableFilter" id="tableFilter" class="form-control" required>
+              <option value="" selected hidden>請選擇</option>
+              <option value="CPNYINFO">公司資訊</option>
+              <option value="POSITION">職缺資訊</option>
+              <option value="SUBSIDY">補助資訊</option>
+              <option value="LEAVE">假別資訊</option>
+              <!-- <option value="GREET">問候資訊</option>
+              <option value="DEFAULT">預設回覆</option> -->
+            </select>
+          </div>
+
+          <!-- 選完公司後，產業類別直接由API帶入 -->
+          <!--
+          <div>
+            <label>產業類別</label>
+            <select name="industry_select" id="industry_select" class="form-control">
+              <option value="" selected hidden>請選擇</option>
+              {{#each industryInfo}}
+              <option value="{{this.INDUSTRY_ID}}" {{#is this.INDUSTRY_NAME 'Admin'}} hidden {{/is}} 
+              {{#is ../adminCompany.INDUSTRY_NO this.INDUSTRY_ID}} selected {{/is}}>
+              {{this.INDUSTRY_NAME}}
+              </option>
+              {{/each}}
+            </select>
+          </div>
+          -->
+
+          <div id="adminSearch-block">
+            <label>資訊名稱</label>
+            <input type="text" class="form-control" name="adminSearch_name" placeholder="請輸資料名稱" value="{{adminSearch_name}}" required>
+          </div>
+
+          <div id="adminSearch-block">
+            <label>英文名稱</label>
+            <input type="text" class="form-control" name="adminSearch_entity_name" placeholder="請輸資料英文名稱" value="{{adminSearch_entity_name}}" required>
+          </div>
+          
+
+          <div>
+            <label>資訊內容</label>
+            <textarea type="text" class="form-control" name="adminSearch_des" rows="10" placeholder="請輸入回覆內容" required>{{adminSearch_des}}</textarea>
+          </div>
+
+        </div>
+        <div class="text-center mt-3">
+          <a href="/admin_search" class="btn btn-primary">取消</a>
+          <button type="submit" class="btn btn-info">新增</button>
+        </div>
+  </div>
+</div>
+{{/if}}

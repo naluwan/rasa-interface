@@ -1,0 +1,87 @@
+<!--admin_search-->
+{{#if admin_search}}
+<div class="admin_search">
+  <h1>查詢各公司回覆資料</h1>
+  <form action="/admin_search/filter" class="searchBar">
+    <label for="companyFilter">公司：</label>
+    <select name="companyFilter" id="companyFilter">
+      <option value="" selected hidden>請選擇</option>
+      {{#each adminCompany}}
+      {{#isnt this.CPY_NAME 'Admin'}}
+      <option value="{{this.CPY_ID}}" {{#is this.CPY_ID ../companyFilter}} selected {{/is}}>{{this.CPY_NAME}}</option>
+      {{/isnt}}
+      {{/each}}
+    </select>
+
+    <label for="tableFilter">類別：</label>
+    <select name="tableFilter" id="tableFilter">
+      <option value="" selected hidden>請選擇</option>
+      <option value="CPNYINFO" {{#is tableFilter 'CPNYINFO'}} selected {{/is}}>公司資訊</option>
+      <option value="POSITION" {{#is tableFilter 'POSITION'}} selected {{/is}}>職缺資訊</option>
+      <option value="SUBSIDY" {{#is tableFilter 'SUBSIDY'}} selected {{/is}}>補助資訊</option>
+      <option value="LEAVE" {{#is tableFilter 'LEAVE'}} selected {{/is}}>假別資訊</option>
+      <!-- <option value="GREET" {{#is tableFilter 'GREET'}} selected {{/is}}>問候資訊</option>
+      <option value="DEFAULT" {{#is tableFilter 'DEFAULT'}} selected {{/is}}>預設回覆</option> -->
+    </select>
+
+    <label for="search">搜尋：</label>
+    <input type="text" name="search" id="search" value="{{search}}" placeholder="搜尋關鍵字(可空白)">
+  
+    <button type="submit" class=" btn btn-info">查詢</button>
+  </form> 
+  {{> message}}
+  <div id="data-panel">
+    {{#each adminSearchInfo}}
+    <div>
+      <span>
+        <div>
+          <span>資訊名稱：</span>
+          <span title="{{this.adminSearch_name}}">{{this.adminSearch_name}}</span>
+        </div>
+        <div>
+          <span>英文名稱：</span>
+          <span title="{{this.adminSearch_entity_name}}">{{this.adminSearch_entity_name}}</span>
+        </div>
+        <div>
+          <span>資訊內容：</span>
+          <span title="{{this.adminSearch_des}}">{{this.adminSearch_des}}</span>
+        </div>
+      </span>
+
+      <span>
+        <a href="/admin_search/{{this.CPY_ID}}/{{../tableFilter}}/{{ this.adminSearch_id}}/edit" class="btn btn-primary">編輯</a>
+        {{!-- 設置data名稱，在資料傳遞時都會把名稱轉成全部小寫，所以設定名稱時，全部小寫就好 --}}
+        <button class=" btn btn-danger" id="adminSearch-delete-btn" data-toggle="modal" data-target="#deleteModal" data-id="{{ this.adminSearch_id }}" data-name="{{ this.adminSearch_name }}" data-cpnyid="{{this.CPY_ID}}" data-table="{{../tableFilter}}" data-cpyname="{{this.CPY_NAME}}" data-category="admin_search">刪除</button>
+      </span>
+    </div>
+    {{/each}}
+  </div>
+  <div class="text-center footButton">
+    <a href="/admin_search/new" class="btn btn-warning" id="create-btn">新增資訊</a>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalScrollableTitle">刪除資訊</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>確定要刪除<strong id="delete-position">{{ this.adminSearch_name }}</strong>?</p> 
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+        <form action="/admin_search/{{ this.adminSearch_id }}" method="post" style="display:inline-block;" id="delete-form">
+          <button type="submit" class="btn btn-danger">確定</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{{/if}}

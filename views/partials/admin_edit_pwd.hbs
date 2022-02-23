@@ -1,0 +1,25 @@
+<!-- admin_edit_pwd -->
+{{#if admin_edit_pwd}}
+<div class="admin_edit_pwd">
+  <div>
+    <h1 class="text-center mt-3">修改{{adminCompanyInfo.CPY_NAME}}密碼</h1>
+    {{> message}}
+    <form action="/admin_company/password/{{adminCompanyInfo.CPY_ID}}?_method=PUT" method="POST">
+      <div>
+        <label for="password">新密碼</label>
+        <input type="password" id="password" name="password" class="form-control" placeholder="請輸入密碼" required>
+      </div>
+
+      <div>
+        <label for="confirmPassword">再次輸入密碼</label>
+        <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" placeholder="請再次輸入密碼" required>
+      </div>
+
+      <div class="text-center footButton">
+        <a href="/admin_company" class="btn btn-primary">取消</a>
+        <button type="submit" class="btn btn-info" id="confirm-create">儲存</button>
+      </div>
+    </form>
+  </div>
+</div>
+{{/if}}

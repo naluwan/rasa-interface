@@ -1,37 +1,28 @@
 {{#if jh_new_position}}
 <!-- jh_new_position -->
-<div data-func="jh_new_position">
-      <h1 class="text-center">新增職缺</h1>
-      <form action="/position" method="POST">
-        <div class="modal-body">
+<div class="jh_new_position">
+      <h1>新增職缺</h1>
+      <form action="/jh_position" method="POST">
           {{> message}}
-
-          <div class="input-group">
-            <div class="input-group-prepend">
-              <label for="name" class="input-group-text new-title">職缺名稱</label>
-            </div>
-            <input type="text" class="form-control new-des" name="name" id="name" placeholder="請輸入職缺名稱" value="{{name}}" required>
+          <div>
+            <label for="name">職缺名稱</label>
+            <input type="text" class="form-control" name="name" id="name" placeholder="請輸入職缺名稱" value="{{name}}" required>
           </div>
 
-          <div class="input-group">
-            <div class="input-group-prepend">
-              <label for="entity_name" class="input-group-text new-title">職缺英文名稱</label>
-            </div>
-            <input type="text" class="form-control new-des" name="entity_name" id="entity_name" placeholder="請輸入職缺英文名稱" value="{{entity_name}}" required>
+          <div>
+            <label for="entity_name">英文名稱</label>
+            <input type="text" class="form-control" name="entity_name" id="entity_name" placeholder="請輸入職缺英文名稱" value="{{entity_name}}" required>
           </div>
 
-          <div class="input-group">
-            <div class="input-group-prepend">
-              <label for="des" class="input-group-text new-title">職缺內容</label>
-            </div>
-            <textarea class="form-control new-des" name="des" id="des" placeholder="請輸入職缺內容" rows="5" required>{{des}}</textarea>
+          <div>
+            <label for="des">職缺內容</label>
+            <textarea class="form-control" name="des" id="des" placeholder="請輸入職缺內容" rows="5" required>{{des}}</textarea>
           </div>
 
-        </div>
-        <div class="text-center">
-          <a href="/position" class="btn btn-outline-info">取消</a>
-          <button type="submit" class="btn btn-primary confirm-btn" id="confirm-create">新增</button>
+        <div class="text-center mt-3">
+          <a href="/jh_position" class="btn btn-primary">取消</a>
+          <button type="submit" class="btn btn-info" id="confirm-create">新增</button>
         </div>
       </form>
-    </div>
+</div>
 {{/if}}

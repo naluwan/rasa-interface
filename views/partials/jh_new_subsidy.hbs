@@ -1,36 +1,28 @@
 {{#if jh_new_subsidy}}
 <!-- jh_new_subsidy -->
-<div data-func="jh_new_subsidy">
-  <h1 class="text-center">新增補助津貼資訊</h1>
-  <form action="/subsidy" method="POST">
-    <div class="modal-body">
-      {{> message}}
+<div class="jh_new_subsidy">
+  <h1>新增補助津貼資訊</h1>
+  <form action="/jh_subsidy" method="POST">
+    {{> message}}
 
-      <div class="input-group">
-        <div class="input-group-prepend">
-          <label for="name" class="input-group-text new-title">補助津貼名稱</label>
-        </div>
-        <input type="text" class="form-control new-des" name="name" id="name" placeholder="請輸入津貼名稱" value="{{name}}" required>
-      </div>
-
-      <div class="input-group">
-        <div class="input-group-prepend">
-          <label for="entity_name" class="input-group-text new-title">補助津貼英文名稱</label>
-        </div>
-        <input type="text" class="form-control new-des" name="entity_name" id="entity_name" placeholder="請輸入補助津貼英文名稱" value="{{entity_name}}" required>
-      </div>
-
-      <div class="input-group">
-        <div class="input-group-prepend">
-          <label for="des" class="input-group-text new-title">補助津貼內容</label>
-        </div>
-        <textarea class="form-control new-des" name="des" id="des" placeholder="請輸入補助津貼內容" rows="5" required>{{des}}</textarea>
-      </div>
-
+    <div>
+      <label>補助名稱</label>
+      <input type="text" class="form-control" name="name" id="name" placeholder="請輸入津貼名稱" value="{{name}}" required>
     </div>
-    <div class="text-center">
-      <a href="/subsidy" class="btn btn-outline-info">取消</a>
-      <button type="submit" class="btn btn-primary confirm-btn" id="confirm-create">新增</button>
+
+    <div>
+      <label for="entity_name">英文名稱</label>
+      <input type="text" class="form-control" name="entity_name" id="entity_name" placeholder="請輸入補助津貼英文名稱" value="{{entity_name}}" required>
+    </div>
+
+    <div>
+      <label for="des">補助內容</label>
+      <textarea class="form-control" name="des" id="des" placeholder="請輸入補助津貼內容" rows="5" required>{{des}}</textarea>
+    </div>
+
+    <div class="text-center mt-3">
+      <a href="/jh_subsidy" class="btn btn-primary">取消</a>
+      <button type="submit" class="btn btn-info">新增</button>
     </div>
   </form>
 </div>

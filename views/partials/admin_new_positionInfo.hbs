@@ -1,0 +1,21 @@
+<!--admin_new_positionInfo-->
+{{#if admin_new_positionInfo}}
+<div class="admin_new_positionInfo">
+  <h1>新增職缺類別</h1>
+  <form action="/adminPositionInfo" method="POST">
+      {{> message}}
+      <div>
+        <label>職缺名稱</label>
+        <input type="text" class="form-control" name="name" placeholder="請輸入職缺名稱" value="{{name}}" required>
+      </div>
+      <div>
+        <label>職缺英文名稱</label>
+        <input type="text" class="form-control" name="entity_name" placeholder="請輸入職缺英文名稱" value="{{entity_name}}" required>
+    </div>
+    <div class="text-center mt-3">
+      <a href="/admin_positionInfo" class="btn btn-info">取消</a>
+      <button type="submit" class="btn btn-primary">新增</button>
+    </div>
+  </form>
+</div>
+{{/if}}
