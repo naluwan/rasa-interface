@@ -24,21 +24,21 @@ router.delete('/:entity_name', (req, res) => {
       console.log(err)
       return
     }
-    const subsidy_id = result.recordset[0]['SUBSIDY_ID']
+    const subsidy_id = result.recordset[0]
 
     if(!subsidy_id){
       req.flash('warning_msg', '查無此補助津貼資料，請重新嘗試!')
-      return res.redirect('/subsidy')
+      return res.redirect('/jh_subsidy')
     }else{
       request.query(`delete from BF_JH_SUBSIDY
-      where SUBSIDY_ID = ${subsidy_id}
+      where SUBSIDY_ID = ${subsidy_id.SUBSIDY_ID}
       and CPY_ID = '${cpnyId}'`, (err, result) => {
         if(err){
           console.log(err)
           return
         }
         req.flash('success_msg', '成功刪除補助津貼資訊!')
-        res.redirect('/subsidy')
+        res.redirect('/jh_subsidy')
       })
     }
   })
@@ -52,7 +52,7 @@ router.put('/:entity_name', (req, res) => {
 	const cpnyId = user.CPY_ID
   const request = new sql.Request(pool)
 
-  if(!des) return res.redirect(`/subsidy/${entity_name}/edit`)
+  if(!des) return res.redirect(`/jh_subsidy/${entity_name}/edit`)
 
   request.query(`select b.SUBSIDY_ID
   from BF_JH_SUBSIDY a
@@ -64,23 +64,23 @@ router.put('/:entity_name', (req, res) => {
       console.log(err)
       return
     }
-    const subsidy_id = result.recordset[0]['SUBSIDY_ID']
+    const subsidy_id = result.recordset[0]
 
     if(!subsidy_id){
       req.flash('warning_msg', '查無此補助津貼資料，請重新嘗試!')
-      return res.redirect('/subsidy')
+      return res.redirect('/jh_subsidy')
     }else{
       request.input('des', sql.NVarChar(2000), des)
       .query(`update BF_JH_SUBSIDY
       set SUBSIDY_DES = @des
-      where SUBSIDY_ID = ${subsidy_id}
+      where SUBSIDY_ID = ${subsidy_id.SUBSIDY_ID}
       and CPY_ID = '${cpnyId}'`, (err, result) => {
         if(err){
           console.log(err)
           return
         }
         req.flash('success_msg', '更新補助津貼內容成功!')
-        res.redirect('/subsidy')
+        res.redirect('/jh_subsidy')
       })
     }
   })
@@ -108,7 +108,7 @@ router.get('/:entity_name/edit', (req, res) => {
 
     if(!subsidyInfo){
       req.flash('warning_msg', '查無此補助津貼資料，請重新嘗試!')
-      return res.redirect('/subsidy')
+      return res.redirect('/jh_subsidy')
     }else{
       res.render('index', {subsidyInfo, cpnyId, jh_edit_subsidy})
     }
@@ -152,7 +152,7 @@ router.post('/', (req, res) => {
 
           if(subsidyDesCheck){
             req.flash('warning_msg', '已新增過此補助津貼資訊，如要修改補助津貼內容請使用編輯功能!')
-            return res.redirect('/subsidy')
+            return res.redirect('/jh_subsidy')
           }else{
             request.input('cpnyId', sql.NVarChar(30), cpnyId)
             .input('subsidy_id', sql.Int, subsidy_id)
@@ -164,7 +164,7 @@ router.post('/', (req, res) => {
                 return
               }
               req.flash('success_msg', '新增補助津貼成功!')
-              res.redirect('/subsidy')
+              res.redirect('/jh_subsidy')
             })
           }
         })
@@ -193,11 +193,11 @@ router.post('/', (req, res) => {
               return
             }
 
-            const subsidy_id = result.recordset[0]['SUBSIDY_ID']
+            const subsidy_id = result.recordset[0]
 
             // 新增補助津貼內容
             request.input('cpnyId', sql.NVarChar(30), cpnyId)
-            .input('subsidy_id', sql.Int, subsidy_id)
+            .input('subsidy_id', sql.Int, subsidy_id.SUBSIDY_ID)
             .input('des', sql.NVarChar(2000), des)
             .query(`insert into BF_JH_SUBSIDY (CPY_ID, SUBSIDY_ID, SUBSIDY_DES) 
             values (@cpnyId, @subsidy_id, @des)`, (err, result) => {
@@ -206,7 +206,7 @@ router.post('/', (req, res) => {
                 return
               }
               req.flash('success_msg', '新增補助津貼成功!')
-              res.redirect('/subsidy')
+              res.redirect('/jh_subsidy')
             })
           })
         })

@@ -25,20 +25,20 @@ router.delete('/:entity_name', (req, res) => {
       return
     }
 
-    const leave_id = result.recordset[0]['LEAVE_ID']
+    const leave_id = result.recordset[0]
     if(!leave_id){
       req.flash('error', '查無此假別，請重新嘗試!')
-      return res.redirect('/leave')
+      return res.redirect('/jh_leave')
     }else{
       request.query(`delete from BF_JH_LEAVE
-      where LEAVE_ID = ${leave_id}
+      where LEAVE_ID = ${leave_id.LEAVE_ID}
       and CPY_ID = '${cpnyId}'`, (err, result) => {
         if(err){
           console.log(err)
           return
         }
         req.flash('success_msg', '成功刪除假別資訊!')
-        res.redirect('/leave')
+        res.redirect('/jh_leave')
       })
     }
   })
@@ -54,7 +54,7 @@ router.put('/:entity_name', (req, res) => {
 
   if(!des){
     req.flash('warning_msg', '假別內容為必填欄位!')
-    return res.redirect(`/leave/${entity_name}/edit`)
+    return res.redirect(`/jh_leave/${entity_name}/edit`)
   }
   
   request.query(`select b.LEAVE_ID
@@ -68,22 +68,22 @@ router.put('/:entity_name', (req, res) => {
       return
     }
 
-    const leave_id = result.recordset[0]['LEAVE_ID']
+    const leave_id = result.recordset[0]
     if(!leave_id){
       req.flash('error', '查無此假別，請重新嘗試!')
-      return res.redirect('/leave')
+      return res.redirect('/jh_leave')
     }else{
       request.input('des', sql.NVarChar(2000), des)
       .query(`update BF_JH_LEAVE
       set LEAVE_DES = @des
-      where LEAVE_ID = ${leave_id}
+      where LEAVE_ID = ${leave_id.LEAVE_ID}
       and CPY_ID = '${cpnyId}'`, (err, result) => {
         if(err){
           console.log(err)
           return
         }
         req.flash('success_msg', '更新假別內容成功!')
-        res.redirect('/leave')
+        res.redirect('/jh_leave')
       })
     }
   })
@@ -111,7 +111,7 @@ router.get('/:entity_name/edit', (req, res) => {
     const leaveInfo = result.recordset[0]
     if(!leaveInfo){
       req.flash('warning_msg', '查無此假別資訊資料，請重新嘗試!')
-      return res.redirect('/leave')
+      return res.redirect('/jh_leave')
     }else{
       res.render('index', {leaveInfo, jh_edit_leave})
     }
@@ -155,7 +155,7 @@ router.post('/', (req, res) => {
           const leaveInfoCheck = result.recordset[0]
           if(leaveInfoCheck){
             req.flash('warning_msg', '已新增過此假別資訊，如要修改假別資訊內容請使用編輯功能!')
-            return res.redirect('/leave')
+            return res.redirect('/jh_leave')
           }else{
             request.input('cpnyId', sql.NVarChar(30), cpnyId)
             .input('leave_id', sql.Int, leave_id)
@@ -167,7 +167,7 @@ router.post('/', (req, res) => {
                 return
               }
               req.flash('success_msg', '新增假別資訊成功!')
-              res.redirect('/leave')
+              res.redirect('/jh_leave')
             })
           }
         })
@@ -194,10 +194,10 @@ router.post('/', (req, res) => {
               console.log(err)
               return
             }
-            const leave_id = result.recordset[0]['LEAVE_ID']
+            const leave_id = result.recordset[0]
             // 新增假別資訊內容
             request.input('cpnyId', sql.NVarChar(200), cpnyId)
-            .input('leave_id', sql.Int, leave_id)
+            .input('leave_id', sql.Int, leave_id.LEAVE_ID)
             .input('des', sql.NVarChar(2000), des)
             .query(`insert into BF_JH_LEAVE (CPY_ID, LEAVE_ID, LEAVE_DES) 
             values (@cpnyId, @leave_id, @des)`, (err, resul) => {
@@ -206,7 +206,7 @@ router.post('/', (req, res) => {
                 return
               }
               req.flash('success_msg', '新增假別資訊成功!')
-              res.redirect('/leave')
+              res.redirect('/jh_leave')
             })
           })
         })
@@ -217,11 +217,9 @@ router.post('/', (req, res) => {
 
 // 顯示新增假別頁面
 router.get('/new', (req, res) => {
-  const user = res.locals.user
-	const cpnyId = user.CPY_ID
   const jh_new_leave = true
 
-  res.render('index', {cpnyId, jh_new_leave})
+  res.render('index', {jh_new_leave})
 })
 
 // 顯示假別資訊頁面

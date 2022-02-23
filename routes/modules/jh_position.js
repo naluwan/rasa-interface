@@ -24,13 +24,13 @@ router.delete('/:entity_name', (req, res) => {
       console.log(err)
       return
     }
-    const position_id = result.recordset[0]['POSITION_ID']
+    const position_id = result.recordset[0]
     if(!position_id){
       req.flash('error', '查無此職缺，請重新嘗試!')
-      return res.redirect('/position')
+      return res.redirect('/jh_position')
     }else{
       request.query(`delete from BF_JH_POSITION
-      where POSITION_ID = ${position_id}
+      where POSITION_ID = ${position_id.POSITION_ID}
       and CPY_ID = '${cpnyId}'`, (err, result) => {
         if(err){
           console.log(err)
@@ -38,7 +38,7 @@ router.delete('/:entity_name', (req, res) => {
         }
         // fsJhDeletePosition(positionDesCheck, request)
         req.flash('success_msg', '成功刪除職缺!')
-        res.redirect('/position')
+        res.redirect('/jh_position')
       })
     }
   })
@@ -54,7 +54,7 @@ router.put('/:entity_name', (req, res) => {
 
   if(!des){
     req.flash('warning_msg', '職缺內容為必填欄位!!')
-    return res.redirect(`/position/${entity_name}/edit`)
+    return res.redirect(`/jh_position/${entity_name}/edit`)
   }
 
   request.query(`select b.POSITION_ID
@@ -68,22 +68,22 @@ router.put('/:entity_name', (req, res) => {
       return
     }
 
-    const position_id = result.recordset[0]['POSITION_ID']
+    const position_id = result.recordset[0]
     if(!position_id){
       req.flash('error', '查無此職缺，請重新嘗試!')
-      return res.redirect('/position')
+      return res.redirect('/jh_position')
     }else{
       request.input('des', sql.NVarChar(2000), des)
       .query(`update BF_JH_POSITION
       set POSITION_DES = @des
-      where POSITION_ID = ${position_id}
+      where POSITION_ID = ${position_id.POSITION_ID}
       and CPY_ID = ${cpnyId}`, (err, result) => {
         if(err){
           console.log(err)
           return
         }
         req.flash('success_msg', '更新職缺內容成功!')
-        res.redirect('/position')
+        res.redirect('/jh_position')
       })
     }
   })
@@ -111,7 +111,7 @@ router.get('/:entity_name/edit', (req, res) => {
 
     if(!positionInfo){
       req.flash('error', '查無此職缺，請重新嘗試!')
-      return res.redirect('/position')
+      return res.redirect('/jh_position')
     }
     res.render('index', {positionInfo, cpnyId, jh_edit_position})
   })
@@ -159,7 +159,7 @@ router.post('/', (req, res) => {
 
           if(positionDesCheck){
             req.flash('warning_msg', '已新增過此職缺資訊，如要修改職缺內容請使用編輯功能!')
-            return res.redirect('/position')
+            return res.redirect('/jh_position')
           }else{
             request.input('cpnyId', sql.NVarChar(30), cpnyId)
             .input('position_id', sql.Int, position_id)
@@ -170,7 +170,8 @@ router.post('/', (req, res) => {
                 console.log(err)
                 return
               }
-              res.redirect('/position')
+              req.flash('success_msg', '新增職缺資訊成功!')
+              res.redirect('/jh_position')
             })
           }
         })
@@ -208,7 +209,7 @@ router.post('/', (req, res) => {
                 return
               }
               req.flash('success_msg', '新增職缺成功!')
-              res.redirect('/position')
+              res.redirect('/jh_position')
             })
           })
         })
