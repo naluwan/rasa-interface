@@ -15,8 +15,8 @@ router.delete('/:name/:info_id', (req, res) => {
   const request = new sql.Request(pool)
   request.query(`select *
   from BF_JH_CPNYINFO_CATEGORY
-  where INFO_ID = ${info_id}
-  and INFO_NAME = '${name}'`, (err, result) => {
+  where CPNYINFO_ID = ${info_id}
+  and CPNYINFO_NAME = '${name}'`, (err, result) => {
     if(err){
       console.log(err)
       return
@@ -28,8 +28,8 @@ router.delete('/:name/:info_id', (req, res) => {
     }
     request.query(`delete 
     from BF_JH_CPNYINFO_CATEGORY
-    where INFO_ID = ${info_id}
-    and INFO_NAME = '${name}'`, (err, result) => {
+    where CPNYINFO_ID = ${info_id}
+    and CPNYINFO_NAME = '${name}'`, (err, result) => {
       if(err){
         console.log(err)
         return
@@ -53,7 +53,7 @@ router.post('/', (req, res) => {
 
   request.query(`select *
   from BF_JH_CPNYINFO_CATEGORY
-  where INFO_NAME = '${info_name}'`, (err, result) => {
+  where CPNYINFO_NAME = '${info_name}'`, (err, result) => {
     if(err){
       console.log(err)
       return
@@ -70,7 +70,7 @@ router.post('/', (req, res) => {
     }else{
       request.input('info_name', sql.NVarChar(200), info_name)
       .input('entity_name', sql.NVarChar(200), entity_name)
-      .query(`insert into BF_JH_CPNYINFO_CATEGORY (INFO_NAME, ENTITY_NAME)
+      .query(`insert into BF_JH_CPNYINFO_CATEGORY (CPNYINFO_NAME, ENTITY_NAME)
       values (@info_name, @entity_name)`, (err, result) => {
         if(err){
           console.log(err)
@@ -107,7 +107,7 @@ router.get('/', (req, res) => {
         return
       }
       const adminCompanyInfo = result.recordset
-      if(!adminCompanyInfo || adminCompanyInfo == '') warning.push({message: '查無公司資訊類別，請拉到下方新增公司資訊類別!'})
+      if(!adminCompanyInfo.length) warning.push({message: '查無公司資訊類別，請拉到下方新增公司資訊類別!'})
       res.render('index', {adminCompanyInfo, warning, admin_companyInfo})
     })
   }else{
@@ -119,13 +119,13 @@ router.get('/', (req, res) => {
 
     request.query(`select *
     from BF_JH_CPNYINFO_CATEGORY
-    where INFO_NAME like '%%${search}%%'`, (err, result) => {
+    where CPNYINFO_NAME like '%%${search}%%'`, (err, result) => {
       if(err){
         console.log(err)
         return
       }
       const adminCompanyInfo = result.recordset
-      if(!adminCompanyInfo) warning.push({message: '還未新增過此公司資訊類別!'})
+      if(!adminCompanyInfo.length) warning.push({message: '查無此資訊!'})
       res.render('index', {adminCompanyInfo, warning, search, admin_companyInfo})
     })
   }
