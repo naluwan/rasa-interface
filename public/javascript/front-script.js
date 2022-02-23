@@ -22,7 +22,7 @@ if(dataPanel){
 			const deleteForm = document.querySelector('#delete-form')
 	
 			deletePosition.innerText = '「' + target.dataset.cpyname + '的' + target.dataset.name + '」'
-			deleteForm.action = `/${target.dataset.category}/${target.dataset.cpyno}/${target.dataset.table}/${target.dataset.id}?_method=DELETE`
+			deleteForm.action = `/${target.dataset.category}/${target.dataset.cpnyid}/${target.dataset.table}/${target.dataset.id}?_method=DELETE`
 		}
 
 		if(target.matches('#delete-function-btn')){
@@ -67,6 +67,14 @@ if(dataPanel){
 			deleteUser.innerText = `「${target.dataset.name}」`
 			deleteForm.action = `/${target.dataset.category}/${target.dataset.name}/${target.dataset.id}?_method=DELETE`
 		}
+
+		// if(target.matches('#delete-cpnyInfo-admin-btn')){
+		// 	const deleteContent = document.querySelector('#delete-position')
+		// 	const deleteForm = document.querySelector('#delete-form')
+
+		// 	deleteContent.innerText = `「${target.dataset.name}」`
+		// 	deleteForm.action = `/${target.dataset.category}/${target.dataset.name}/${target.dataset.id}?_method=DELETE`
+		// }
 	})
 }
 
