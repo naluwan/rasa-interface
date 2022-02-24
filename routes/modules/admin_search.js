@@ -326,6 +326,7 @@ router.get('/:cpnyId/:table/:adminSearch_id/edit', (req, res) => {
       return
     }
     const adminSearchInfo = result.recordset[0]
+    adminSearchInfo.adminSearch_des = adminSearchInfo.adminSearch_des.replace(/\r\n/g, "\r")
     if(!adminSearchInfo){
       req.flash('warning_msg', '查無此筆資料，請重新嘗試!!')
       return res.redirect(`/admin_search/filter?companyFilter=${cpnyId}&tableFilter=${table}&search=`)
@@ -386,6 +387,9 @@ router.get('/filter', (req, res) => {
         return
       }
       const adminSearchInfo = result.recordset
+      adminSearchInfo.forEach(search => {
+        search.adminSearch_des = search.adminSearch_des.replace(/\r\n/g, "\r")
+      })
       if(!adminSearchInfo.length){
         warning.push({message: '尚無此回覆資訊，請重新查詢!'})
         return res.render('index', { adminCompany, companyFilter, tableFilter, search, warning, admin_search})

@@ -108,7 +108,8 @@ router.get('/:entity_name/edit', (req, res) => {
       return
     }
     const cpnyInfo = result.recordset[0]
-
+    cpnyInfo.des = cpnyInfo.des.replace(/\r\n/g,"\r")
+    console.log(cpnyInfo)
     if(!cpnyInfo){
       req.flash('warning_msg', '查無此資訊資料，請重新嘗試!')
       return res.redirect('/jh_cpnyInfo')
@@ -246,6 +247,9 @@ router.get('/', (req, res) => {
       return
     }
     const cpnyInfo = result.recordset
+    cpnyInfo.forEach(info => {
+      info.CPNYINFO_DES = info.CPNYINFO_DES.replace(/\r\n/g, "\r")
+    })
     const jh_cpnyInfo = true
 		if(!cpnyInfo.length){
       warning.push({message: '還未新增公司資訊，請拉到下方點選按鈕新增公司資訊!!'})

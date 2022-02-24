@@ -109,6 +109,7 @@ router.get('/:entity_name/edit', (req, res) => {
     }
 
     const leaveInfo = result.recordset[0]
+    leaveInfo.des = leaveInfo.des.replace(/\r\n/g, "\r")
     if(!leaveInfo){
       req.flash('warning_msg', '查無此假別資訊資料，請重新嘗試!')
       return res.redirect('/jh_leave')
@@ -241,6 +242,9 @@ router.get('/', (req, res) => {
       return
     }
     const leaveInfo = result.recordset
+    leaveInfo.forEach(info => {
+      info.LEAVE_DES = info.LEAVE_DES.replace(/\r\n/g, "\r")
+    })
     if(!leaveInfo.length) warning.push({message: '還未新增假別資訊，請拉到下方點選按鈕新增假別資訊!!'})
     res.render('index', {leaveInfo, warning, jh_leave})
   })

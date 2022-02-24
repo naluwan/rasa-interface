@@ -105,7 +105,7 @@ router.get('/:entity_name/edit', (req, res) => {
       return
     }
     const subsidyInfo = result.recordset[0]
-
+    subsidyInfo.des = subsidyInfo.des.replace(/\r\n/g, "\r")
     if(!subsidyInfo){
       req.flash('warning_msg', '查無此補助津貼資料，請重新嘗試!')
       return res.redirect('/jh_subsidy')
@@ -241,6 +241,9 @@ router.get('/', (req, res) => {
       return
     }
     const subsidyInfo = result.recordset
+    subsidyInfo.forEach(info => {
+      info.SUBSIDY_DES = info.SUBSIDY_DES.replace(/\r\n/g, "\r")
+    })
     const jh_subsidy = true
     if(!subsidyInfo.length) warning.push({message: '還未新增補助津貼，請拉到下方點選按鈕新增補助津貼!!'})
     res.render('index', {subsidyInfo, jh_subsidy, warning, cpnyId})

@@ -108,7 +108,7 @@ router.get('/:entity_name/edit', (req, res) => {
       return
     }
     const positionInfo = result.recordset[0]
-
+    positionInfo.des = positionInfo.des.replace(/\r\n/g, "\r")
     if(!positionInfo){
       req.flash('error', '查無此職缺，請重新嘗試!')
       return res.redirect('/jh_position')
@@ -245,11 +245,14 @@ router.get('/', (req, res) => {
       return
     }
 
-    const positionResult = result.recordset
+    const positionInfo = result.recordset
+    positionInfo.forEach(info => {
+      info.POSITION_DES = info.POSITION_DES.replace(/\r\n/g, "\r")
+    })
     const jh_position = true
-		if(!positionResult.length) warning.push({message: '還未新增職缺，請拉到下方點選按鈕新增職缺!!'})
+		if(!positionInfo.length) warning.push({message: '還未新增職缺，請拉到下方點選按鈕新增職缺!!'})
 
-		return res.render('index', {positionResult, warning, cpnyId, jh_position})
+		return res.render('index', {positionInfo, warning, cpnyId, jh_position})
   })
 })
 
