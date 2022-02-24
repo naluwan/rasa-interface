@@ -31,8 +31,8 @@
           </div>
         </span>
         <span>
-          <a href="/admin_company/{{ this.CPY_ID }}/edit" class="btn btn-primary">編輯</a>
-          <a href="/admin_company/{{ this.CPY_ID }}/edit/password" class="btn btn-info">修改密碼</a>
+          <a href="javascript:;" class="btn btn-primary" onclick="page('/admin_company/{{ this.CPY_ID }}/edit')">編輯</a>
+          <a href="javascript:;" class="btn btn-info" onclick="page('/admin_company/{{ this.CPY_ID }}/edit/password')">修改密碼</a>
           <button class=" btn btn-danger" id="admin-delete-user-btn" data-toggle="modal" data-target="#deleteModal" data-id="{{ this.CPY_ID }}" data-name="{{ this.CPY_NAME }}" data-category="admin_company">刪除</button>
         </span>
       </div>
@@ -40,7 +40,7 @@
     </div>
   </div>
   <div class="text-center footButton">
-    <a href="/admin_company/new" class="btn btn-warning" id="create-btn">新增使用者</a>
+    <a href="javascript:;" class="btn btn-warning" id="create-btn" onclick="page('/admin_company/new')">新增使用者</a>
   </div>
 </div>
 

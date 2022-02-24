@@ -49,7 +49,7 @@
       </span>
 
       <span>
-        <a href="/admin_search/{{this.CPY_ID}}/{{../tableFilter}}/{{ this.adminSearch_id}}/edit" class="btn btn-primary">編輯</a>
+        <a href="javascript:;" class="btn btn-primary" onclick="page('/admin_search/{{this.CPY_ID}}/{{../tableFilter}}/{{ this.adminSearch_id}}/edit')">編輯</a>
         {{!-- 設置data名稱，在資料傳遞時都會把名稱轉成全部小寫，所以設定名稱時，全部小寫就好 --}}
         <button class=" btn btn-danger" id="adminSearch-delete-btn" data-toggle="modal" data-target="#deleteModal" data-id="{{ this.adminSearch_id }}" data-name="{{ this.adminSearch_name }}" data-cpnyid="{{this.CPY_ID}}" data-table="{{../tableFilter}}" data-cpyname="{{this.CPY_NAME}}" data-category="admin_search">刪除</button>
       </span>
@@ -57,7 +57,7 @@
     {{/each}}
   </div>
   <div class="text-center footButton">
-    <a href="/admin_search/new" class="btn btn-warning" id="create-btn">新增資訊</a>
+    <a href="javascript:;" class="btn btn-warning" onclick="page('/admin_search/new')">新增資訊</a>
   </div>
 </div>
 
