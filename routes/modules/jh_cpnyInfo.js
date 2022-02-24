@@ -109,7 +109,6 @@ router.get('/:entity_name/edit', (req, res) => {
     }
     const cpnyInfo = result.recordset[0]
     cpnyInfo.des = cpnyInfo.des.replace(/\r\n/g,"\r")
-    console.log(cpnyInfo)
     if(!cpnyInfo){
       req.flash('warning_msg', '查無此資訊資料，請重新嘗試!')
       return res.redirect('/jh_cpnyInfo')
