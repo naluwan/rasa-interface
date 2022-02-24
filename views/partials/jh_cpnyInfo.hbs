@@ -2,35 +2,30 @@
 {{#if jh_cpnyInfo}}
 <div class="jh_cpnyInfo">
   <h1>公司資訊</h1>
-  <div>
-    {{> message}}
-    <div id="data-panel">
-      {{#each cpnyInfo}}
-      <div>
-        <span>
-          <div>
-            <span>資訊名稱：</span>
-            <span title="{{this.CPNYINFO_NAME}}">{{this.CPNYINFO_NAME}}</span>
-          </div>
-          <div>
-            <span>英文名稱：</span>
-            <span title="{{this.ENTITY_NAME}}">{{this.ENTITY_NAME}}</span>
-          </div>
-          <div>
-            <span>資訊內容：</span>
-            <span title="{{this.CPNYINFO_DES}}">{{this.CPNYINFO_DES}}</span>
-          </div>
-        </span>
-        <span>
-          <a href="/jh_cpnyInfo/{{ this.ENTITY_NAME }}/edit" class="btn btn-primary">
-            編輯
-          </a>
-          <button class=" btn btn-danger" id="delete-btn" data-toggle="modal" data-target="#deleteModal" data-name="{{ this.CPNYINFO_NAME }}" data-entity="{{ this.ENTITY_NAME }}" data-category="jh_cpnyInfo">
-              刪除
-          </button>
-        </span>
-      </div>
-      {{/each}}
+  {{> message}}
+  <div id="data-panel">
+    {{#each cpnyInfo}}
+    <div>
+      <span>
+        <div>
+          <span>資訊名稱：</span>
+          <span title="{{this.CPNYINFO_NAME}}">{{this.CPNYINFO_NAME}}</span>
+        </div>
+        <div>
+          <span>英文名稱：</span>
+          <span title="{{this.ENTITY_NAME}}">{{this.ENTITY_NAME}}</span>
+        </div>
+        <div>
+          <span>資訊內容：</span>
+          <span>{{this.CPNYINFO_DES}}</span>
+        </div>
+      </span>
+      <span>
+        <a href="/jh_cpnyInfo/{{ this.ENTITY_NAME }}/edit" class="btn btn-primary">編輯</a>
+        <button class=" btn btn-danger" id="delete-btn" data-toggle="modal" data-target="#deleteModal" data-name="{{ this.CPNYINFO_NAME }}" data-entity="{{ this.ENTITY_NAME }}" data-category="jh_cpnyInfo">刪除</button>
+      </span>
+    </div>
+    {{/each}}
   </div>
   <div class="text-center footButton">
     <a href="/jh_cpnyInfo/new" class="btn btn-warning" id="create-btn">新增資訊</a>

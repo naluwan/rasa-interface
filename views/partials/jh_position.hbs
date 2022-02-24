@@ -1,33 +1,32 @@
-{{#if jh_position}}
 <!-- jh_position -->
+{{#if jh_position}}
 <div class="jh_position">
   <h1>職缺資訊</h1>
-    {{> message}}
-    <div id="data-panel">
-      {{#each positionResult}}
-      <div>
-        <span>
-          <div>
-            <span>職缺名稱：</span>
-            <span title="{{this.POSITION_NAME}}">{{this.POSITION_NAME}}</span>
-          </div>
-          <div>
-            <span>英文名稱：</span>
-            <span title="{{this.ENTITY_NAME}}">{{this.ENTITY_NAME}}</span>
-          </div>
-          <div>
-            <span>職缺內容：</span>
-            <span title="{{ this.POSITION_DES }}">{{ this.POSITION_DES }}</span>
-          </div>
-        </span>
-        <span>
-          <a href="/jh_position/{{ this.ENTITY_NAME}}/edit" class="btn btn-primary">編輯</a>
-          <button class=" btn btn-danger" id="delete-btn" data-toggle="modal" data-target="#deleteModal" data-name="{{ this.POSITION_NAME }}" data-entity="{{ this.ENTITY_NAME }}" data-category="jh_position">刪除</button>
-        </span>
-      </div>
-      {{/each}}
+  {{> message}}
+  <div id="data-panel">
+    {{#each positionInfo}}
+    <div>
+      <span>
+        <div>
+          <span>職缺名稱：</span>
+          <span title="{{this.POSITION_NAME}}">{{this.POSITION_NAME}}</span>
+        </div>
+        <div>
+          <span>英文名稱：</span>
+          <span title="{{this.ENTITY_NAME}}">{{this.ENTITY_NAME}}</span>
+        </div>
+        <div>
+          <span>職缺內容：</span>
+          <span title="{{ this.POSITION_DES }}">{{ this.POSITION_DES }}</span>
+        </div>
+      </span>
+      <span>
+        <a href="/jh_position/{{ this.ENTITY_NAME}}/edit" class="btn btn-primary">編輯</a>
+        <button class=" btn btn-danger" id="delete-btn" data-toggle="modal" data-target="#deleteModal" data-name="{{ this.POSITION_NAME }}" data-entity="{{ this.ENTITY_NAME }}" data-category="jh_position">刪除</button>
+      </span>
+    </div>
+    {{/each}}
   </div>
-
   <div class="text-center footButton">
     <a href="/jh_position/new" class="btn btn-warning" id="create-btn">新增職缺</a>
   </div>

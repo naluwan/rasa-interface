@@ -1,36 +1,35 @@
-{{#if jh_leave}}
 <!-- jh_leave -->
+{{#if jh_leave}}
 <div class="jh_leave">
   <h1>假別資訊</h1>
-  <div>
-    {{> message}}
-    <div id="data-panel">
-      {{#each leaveInfo}}
-      <div>
-        <span>
-          <div>
-            <span>假別名稱：</span>
-            <span title="{{this.LEAVE_NAME}}">{{this.LEAVE_NAME}}</span>
-          </div>
-          <div>
-            <span>英文名稱：</span>
-            <span title="{{this.ENTITY_NAME}}">{{this.ENTITY_NAME}}</span>
-          </div>
-          <div>
-            <span>假別內容：</span>
-            <span title="{{ this.LEAVE_DES }}">{{ this.LEAVE_DES }}</span>
-          </div>
-        </span>
-        <span>
-          <a href="/jh_leave/{{ this.ENTITY_NAME}}/edit" class="btn btn-primary">編輯</a>
-          <button class=" btn btn-danger" id="delete-btn" data-toggle="modal" data-target="#deleteModal" data-name="{{ this.LEAVE_NAME }}" data-entity="{{ this.ENTITY_NAME }}" data-category="jh_leave">刪除</button>
-        </span>
-      </div>                  
-      {{/each}}d
-    </div>
-    <div class="text-center footButton">
-        <a href="/jh_leave/new" class="btn btn-warning" id="create-btn">新增假別資訊</a>
-    </div>
+  {{> message}}
+  <div id="data-panel">
+    {{#each leaveInfo}}
+    <div>
+      <span>
+        <div>
+          <span>假別名稱：</span>
+          <span title="{{this.LEAVE_NAME}}">{{this.LEAVE_NAME}}</span>
+        </div>
+        <div>
+          <span>英文名稱：</span>
+          <span title="{{this.ENTITY_NAME}}">{{this.ENTITY_NAME}}</span>
+        </div>
+        <div>
+          <span>假別內容：</span>
+          <span title="{{ this.LEAVE_DES }}">{{ this.LEAVE_DES }}</span>
+        </div>
+      </span>
+      <span>
+        <a href="/jh_leave/{{ this.ENTITY_NAME}}/edit" class="btn btn-primary">編輯</a>
+        <button class=" btn btn-danger" id="delete-btn" data-toggle="modal" data-target="#deleteModal" data-name="{{ this.LEAVE_NAME }}" data-entity="{{ this.ENTITY_NAME }}" data-category="jh_leave">刪除</button>
+      </span>
+    </div>                  
+    {{/each}}
+  </div>
+  <div class="text-center footButton">
+      <a href="/jh_leave/new" class="btn btn-warning" id="create-btn">新增假別資訊</a>
+  </div>
 </div>
 
 <!-- Modal -->
