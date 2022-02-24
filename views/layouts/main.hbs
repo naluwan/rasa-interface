@@ -20,6 +20,7 @@
   <!-- Core theme CSS (includes Bootstrap)-->
   <link rel="stylesheet" href="https://bootswatch.com/4/lux/bootstrap.min.css">
   <link href="/stylesheets/style.css" rel="stylesheet" />
+  <script src="/javascript/main.js"></script>
 </head>
 
 <body>
@@ -91,8 +92,6 @@
   <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
   <script src="/javascript/front-script.js"></script>
-  <script src="/javascript/search.js"></script>
-  <script src="/javascript/adminSearch-new.js"></script>
   <script src="/javascript/bf_cs_question.js"></script>
   <script src="/javascript/jquery-handlebars-1.1.4.min.js"></script>
 
@@ -100,12 +99,4 @@
   <!-- Core theme JS-->
   {{!-- <script src="js/scripts.js"></script> --}}
 </body>
-<script>
-  if(document.querySelector("[data-func]")){
-    var pageName = document.querySelector("[data-func]").getAttribute("data-func");
-    document.documentElement.setAttribute("class",pageName);
-  };
-
-</script>
-
 </html>
