@@ -96,6 +96,11 @@ textarea,
 
 .footButton{position:sticky;bottom:45px;}
 
+/*loading*/
+#loading{position: fixed;display: flex!important;justify-content: center;align-items: center;left: 0;top: 0;width: 100%!important;height: 100%!important;background-color: rgba(0,0,0,.5);z-index: 9999;animation: fadein .5s both;}
+#loading img{width:70px;}
+
+#data-panel{margin-bottom:10px;}
 #data-panel > div{display: inline-block;background: #fff;box-shadow: 5px 5px 0 rgb(0 0 0 / 10%);margin: 5px;border-radius: 10px;padding: 15px;border:1px solid #ccc;width: calc(100% / 3 - 14px);position: relative;}
 #data-panel > div > span{display:inline-block;vertical-align: middle;}
 #data-panel > div > span:first-of-type > div > span:first-of-type{width: 80px;text-align:right;font-weight:bold;color:#135372;}
@@ -164,7 +169,7 @@ footer{background: rgb(0 0 0 / 60%);width: 100%;padding: 10px;position: fixed;bo
 .adminSearch h2 + div + div{position: absolute;right: 15px;top: 10px;}
 .adminSearch #data-panel h2 + div > span{display:block;min-height:90px;}
 
-.admin_company #data-panel > div{display:block;width:inherit;margin: 0 0 20px 0;}
+.admin_company #data-panel > div{display: inline-block;width:inherit;margin: 0 0 20px 0;width: calc(100% / 2 - 3px);}
 .admin_company #data-panel > div > span:nth-of-type(1){width: calc(100% - 126px);}
 .admin_company #data-panel > div > span:nth-of-type(1) > div > span{display:inline-block;}
 .admin_company #data-panel > div > span:nth-of-type(1) > div > span:nth-of-type(1){width: 145px;text-align:right;font-weight:bold;color:#135372;height: inherit;}
@@ -175,6 +180,9 @@ footer{background: rgb(0 0 0 / 60%);width: 100%;padding: 10px;position: fixed;bo
 
 
 .jh_cpnyInfo #data-panel > div{width:100%;}
+
+.jh_cpnyInfo #data-panel > div > span:first-of-type > div:last-of-type > span:first-of-type{vertical-align: top;}
+.jh_cpnyInfo #data-panel > div > span:first-of-type > div:last-of-type > span:last-of-type{white-space: pre-line;text-overflow: inherit;overflow: inherit;}
 
 
 .admin_new_companyInfo form > div > div{margin-bottom: 20px;}
@@ -213,9 +221,10 @@ footer{background: rgb(0 0 0 / 60%);width: 100%;padding: 10px;position: fixed;bo
 @media screen and (max-width:1100px){
   body{background: url(/images/bg.png);}
   .menu{display:block;width: auto;background: #fff;border-radius: 10px;padding: 20px;position: relative;top: 0;margin: 20px 0;}
-  .menu > div{display:flex;}
+  .menu > div{display:flex;flex-wrap: wrap;}
   .menu > div > div{width:calc(100% / 4);border:none;}
   .setting{display:block;width: auto;background: #fff;padding: 20px;border-radius: 10px;margin: 20px 0;}
+  .admin_company #data-panel > div{width: 100%;}
 }
 
 
