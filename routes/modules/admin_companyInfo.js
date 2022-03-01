@@ -6,7 +6,7 @@ const {isAdmin} = require('../../middleware/auth')
 
 const sql = require('mssql')
 const pool = require('../../config/connectPool')
-const {fsJhWriteInfo} = require('../../modules/fileSystem')
+const {fsJhWriteInfo, fsJhDeleteNlu} = require('../../modules/fileSystem')
 const {setInfoDict} = require('../../modules/setDict')
 
 
@@ -21,22 +21,24 @@ router.delete('/:name/:info_id', (req, res) => {
       console.log(err)
       return
     }
-    result = result.recordset[0]
-    if(!result){
+    const cpynyInfoCheck = result.recordset[0]
+    if(!cpynyInfoCheck){
       req.flash('error', '找不到此公司資訊類別，請重新嘗試!!')
       return res.redirect('/admin_companyInfo')
+    }else{
+      request.query(`delete 
+      from BF_JH_CPNYINFO_CATEGORY
+      where CPNYINFO_ID = ${info_id}
+      and CPNYINFO_NAME = '${name}'`, (err, result) => {
+        if(err){
+          console.log(err)
+          return
+        }
+        fsJhDeleteNlu(cpynyInfoCheck.CPNYINFO_NAME, '問公司資訊', request)
+        req.flash('success_msg', '已成功刪除公司資訊類別!!')
+        res.redirect('/admin_companyInfo')
+      })
     }
-    request.query(`delete 
-    from BF_JH_CPNYINFO_CATEGORY
-    where CPNYINFO_ID = ${info_id}
-    and CPNYINFO_NAME = '${name}'`, (err, result) => {
-      if(err){
-        console.log(err)
-        return
-      }
-      req.flash('success_msg', '已成功刪除公司資訊類別!!')
-      res.redirect('/admin_companyInfo')
-    })
   })
 })
 

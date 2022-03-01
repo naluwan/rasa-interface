@@ -6,7 +6,7 @@ const {isAdmin} = require('../../middleware/auth')
 
 const sql = require('mssql')
 const pool = require('../../config/connectPool')
-const {fsJhWritePosition} = require('../../modules/fileSystem')
+const {fsJhWritePosition, fsJhDeleteNlu} = require('../../modules/fileSystem')
 const {setPositionDict} = require('../../modules/setDict')
 
 // 刪除職缺類別
@@ -24,23 +24,25 @@ router.delete('/:position_name/:position_id', (req, res) => {
       console.log(err)
       return
     }
-    result = result.recordset[0]
-    if(!result){
+    const positionCheck = result.recordset[0]
+    if(!positionCheck){
       req.flash('error', '查無此職缺類別，請重新嘗試!')
       return res.redirect('/admin_positionInfo')
+    }else{
+      // 刪除職缺類別
+      request.query(`delete
+      from BF_JH_POSITION_CATEGORY
+      where POSITION_ID = ${position_id}
+      and POSITION_NAME = '${position_name}'`, (err, result) => {
+        if(err){
+          console.log(err)
+          return
+        }
+        fsJhDeleteNlu(positionCheck.POSITION_NAME, '職缺', request)
+        req.flash('success_msg', '職缺類別刪除成功!!')
+        res.redirect('/admin_positionInfo')
+      })
     }
-    // 刪除職缺類別
-    request.query(`delete
-    from BF_JH_POSITION_CATEGORY
-    where POSITION_ID = ${position_id}
-    and POSITION_NAME = '${position_name}'`, (err, result) => {
-      if(err){
-        console.log(err)
-        return
-      }
-      req.flash('success_msg', '職缺類別刪除成功!!')
-      res.redirect('/admin_positionInfo')
-    })
   })
 })
 

@@ -6,7 +6,7 @@ const {isAdmin} = require('../../middleware/auth')
 
 const sql = require('mssql')
 const pool = require('../../config/connectPool')
-const {fsWriteSubsidy} = require('../../modules/fileSystem')
+const {fsWriteSubsidy, fsJhDeleteNlu} = require('../../modules/fileSystem')
 const {setInfoDict} = require('../../modules/setDict')
 
 
@@ -21,8 +21,8 @@ router.delete('/:subsidy_name/:subsidy_id', (req, res) => {
       console.log(err)
       return
     }
-    result = result.recordset[0]
-    if(!result){
+    const subsidyCheck = result.recordset[0]
+    if(!subsidyCheck){
       req.flash('error', '查無此補助類別，請重新嘗試!!')
       return res.redirect('/admin_subsidyInfo')
     }else{
@@ -34,6 +34,7 @@ router.delete('/:subsidy_name/:subsidy_id', (req, res) => {
           console.log(err)
           return
         }
+        fsJhDeleteNlu(subsidyCheck.SUBSIDY_NAME, '問公司資訊', request)
         req.flash('success_msg', '已成功刪除公司補助類別!!')
         res.redirect('/admin_subsidyInfo')
       })

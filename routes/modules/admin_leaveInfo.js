@@ -6,7 +6,7 @@ const {isAdmin} = require('../../middleware/auth')
 
 const sql = require('mssql')
 const pool = require('../../config/connectPool')
-const {fsWriteLeave} = require('../../modules/fileSystem')
+const {fsWriteLeave, fsJhDeleteNlu} = require('../../modules/fileSystem')
 const {setInfoDict} = require('../../modules/setDict')
 
 
@@ -36,6 +36,7 @@ router.delete('/:leave_name/:leave_id', (req, res) => {
           console.log(err)
           return
         }
+        fsJhDeleteNlu(leaveCheck.LEAVE_NAME, '問公司資訊', request)
         req.flash('success_msg', '已成功刪除公司假別!!')
         res.redirect('/admin_leaveInfo')
       })
