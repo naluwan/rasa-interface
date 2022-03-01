@@ -23,17 +23,18 @@ router.delete('/:name/:cpnyId', (req, res) => {
     if(!companyCheck){
       req.flash('error', '查無此公司，請重新嘗試!!')
       return res.redirect('/admin_company')
+    }else{
+      request.query(`delete BOTFRONT_USERS_INFO
+      where CPY_NAME = '${name}'
+      and CPY_ID = '${cpnyId}'`, (err, result) => {
+        if(err){
+          console.log(err)
+          return
+        }
+          req.flash('success_msg', '刪除成功!!')
+          res.redirect('/admin_company')
+      })
     }
-    request.query(`delete BOTFRONT_USERS_INFO
-    where CPY_NAME = '${name}'
-    and CPY_ID = '${cpnyId}'`, (err, result) => {
-      if(err){
-        console.log(err)
-        return
-      }
-        req.flash('success_msg', '刪除成功!!')
-        res.redirect('/admin_company')
-    })
   })
 })
 
