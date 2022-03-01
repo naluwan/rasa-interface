@@ -641,5 +641,38 @@ module.exports = {
         }
       })
     })
+  },
+  fsJhDeleteNlu: (infoCheck, intent, request) => {
+    axios.get('http://localhost:3030/train/jh/trainingData')
+    .then(response => {
+      return response.data
+    })
+    .then(data => {
+      // 將要刪除的資料篩選出來，回傳需要保留的資料
+      data.nlu.zh.rasa_nlu_data.common_examples = data.nlu.zh.rasa_nlu_data.common_examples.filter(info => {
+        return !info.text.includes(infoCheck) && info.intent != intent
+      })
+      // 將要保留的資料寫檔
+      try{
+        fs.writeFileSync(path.resolve(__dirname, '../public/trainData/nlu-json.json'), JSON.stringify(data.nlu.zh))
+      } catch(err){
+        console.log(err)
+      }
+      // 讀取最新的訓練資料檔並回傳
+      const newNluData =  yaml.load(fs.readFileSync(path.resolve(__dirname, '../public/trainData/nlu-json.json'), 'utf8'))
+      return JSON.stringify(newNluData)
+    })
+    .then(data => {
+      // 將要刪除的資料刪除後回寫資料庫
+      request.query(`update BF_JH_TRAINING_DATA
+      set DATA_CONTENT = '${data}'
+      where DATA_NAME = 'nlu-json'`, (err, result) => {
+        if(err){
+          console.log(err)
+          return
+        }
+      })
+    })
+    .catch(err => console.log(err))
   }
 }
