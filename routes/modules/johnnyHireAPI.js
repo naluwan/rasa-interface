@@ -10,6 +10,7 @@ const qs = require('qs')
 const {TrainSendMail, userSendMAil} = require('../../modules/sendMail')
 const {fsJhWritePosition, fsJhDeletePosition} = require('../../modules/fileSystem')
 const {setPositionDict} = require('../../modules/setDict')
+const {authenticator} = require('../../middleware/auth')
 
 // 徵厲害新增使用者帳號API
 router.post('/api/v1/newUser', (req, res) => {
@@ -209,10 +210,9 @@ router.post('/api/v2/newPosition', (req, res) => {
 })
 
 // 編輯公司資訊API
-router.get('/:cpnyId/:category/edit', (req, res) => {
+router.get('/:cpnyId/:category/edit', authenticator, (req, res) => {
   const {cpnyId, category} = req.params
   const {entity_name, des} = req.query
-  // const cpnyId = '1'
   const request = new sql.Request(pool)
 
   if(!entity_name){
