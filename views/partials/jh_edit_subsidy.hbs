@@ -2,7 +2,7 @@
 <!-- jh_edit_subsidy -->
 <div>
   <h1>編輯補助津貼</h1>
-  <form action="/jh_subsidy/{{subsidyInfo.entity_name}}?_method=PUT" method="POST">
+  <form id="subsidy">
     <div>
       {{> message}}
       <div>
@@ -19,8 +19,8 @@
       </div>
     </div>
     <div class="text-center mt-3">
-      <a href="javascript:;" class="btn btn-primary" onclick="page('/jh_subsidy')">取消</a>
-      <button type="submit" class="btn btn-info">儲存</button>
+      <a id="cancel" href="javascript:;" class="btn btn-primary" onclick="page('/jh_subsidy')">取消</a>
+      <input id="save" type="button" class="btn btn-info" data-cpnyid="{{cpnyId}}" data-route="{{route}}" value="儲存">
     </div>
   </form>
 </div>
