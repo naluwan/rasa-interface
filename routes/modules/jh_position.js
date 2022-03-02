@@ -95,6 +95,7 @@ router.get('/:entity_name/edit', (req, res) => {
   const user = res.locals.user
 	const cpnyId = user.CPY_ID
   const jh_edit_position = true
+  const route = 'johnnyHire'
   const request = new sql.Request(pool)
 
   request.query(`select b.POSITION_NAME as name, b.POSITION_ID as id, a.POSITION_DES as des, b.ENTITY_NAME as entity_name
@@ -108,12 +109,12 @@ router.get('/:entity_name/edit', (req, res) => {
       return
     }
     const positionInfo = result.recordset[0]
-    positionInfo.des = positionInfo.des.replace(/\r\n/g, "\r")
+    positionInfo.des = positionInfo.des.replace(/\n/g, "\r")
     if(!positionInfo){
       req.flash('error', '查無此職缺，請重新嘗試!')
       return res.redirect('/jh_position')
     }
-    res.render('index', {positionInfo, cpnyId, jh_edit_position})
+    res.render('index', {positionInfo, cpnyId, route, jh_edit_position})
   })
 })
 
@@ -247,7 +248,7 @@ router.get('/', (req, res) => {
 
     const positionInfo = result.recordset
     positionInfo.forEach(info => {
-      info.POSITION_DES = info.POSITION_DES.replace(/\r\n/g, "\r")
+      info.POSITION_DES = info.POSITION_DES.replace(/\n/g, "\r")
     })
     const jh_position = true
 		if(!positionInfo.length) warning.push({message: '還未新增職缺，請拉到下方點選按鈕新增職缺!!'})

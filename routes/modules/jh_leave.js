@@ -95,6 +95,7 @@ router.get('/:entity_name/edit', (req, res) => {
   const user = res.locals.user
 	const cpnyId = user.CPY_ID
   const jh_edit_leave = true
+  const route = 'johnnyHire'
   const request = new sql.Request(pool)
 
   request.query(`select a.LEAVE_DES as des, b.LEAVE_ID as id, b.LEAVE_NAME as name, b.ENTITY_NAME as entity_name
@@ -109,12 +110,12 @@ router.get('/:entity_name/edit', (req, res) => {
     }
 
     const leaveInfo = result.recordset[0]
-    leaveInfo.des = leaveInfo.des.replace(/\r\n/g, "\r")
+    leaveInfo.des = leaveInfo.des.replace(/\n/g, "\r")
     if(!leaveInfo){
       req.flash('warning_msg', '查無此假別資訊資料，請重新嘗試!')
       return res.redirect('/jh_leave')
     }else{
-      res.render('index', {leaveInfo, jh_edit_leave})
+      res.render('index', {leaveInfo, cpnyId, route, jh_edit_leave})
     }
   })
 
@@ -243,7 +244,7 @@ router.get('/', (req, res) => {
     }
     const leaveInfo = result.recordset
     leaveInfo.forEach(info => {
-      info.LEAVE_DES = info.LEAVE_DES.replace(/\r\n/g, "\r")
+      info.LEAVE_DES = info.LEAVE_DES.replace(/\n/g, "\r")
     })
     if(!leaveInfo.length) warning.push({message: '還未新增假別資訊，請拉到下方點選按鈕新增假別資訊!!'})
     res.render('index', {leaveInfo, warning, jh_leave})

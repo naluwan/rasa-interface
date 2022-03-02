@@ -95,6 +95,7 @@ router.get('/:entity_name/edit', (req, res) => {
   const user = res.locals.user
 	const cpnyId = user.CPY_ID
   const jh_edit_cpnyInfo = true
+  const route = 'johnnyHire'
   const request = new sql.Request(pool)
 
   request.query(`select a.CPNYINFO_DES as des, b.CPNYINFO_ID as id, b.CPNYINFO_NAME as name, b.ENTITY_NAME as entity_name
@@ -108,12 +109,12 @@ router.get('/:entity_name/edit', (req, res) => {
       return
     }
     const cpnyInfo = result.recordset[0]
-    cpnyInfo.des = cpnyInfo.des.replace(/\r\n/g,"\r")
+    cpnyInfo.des = cpnyInfo.des.replace(/\n/g,"\r")
     if(!cpnyInfo){
       req.flash('warning_msg', '查無此資訊資料，請重新嘗試!')
       return res.redirect('/jh_cpnyInfo')
     }else{
-      res.render('index', {cpnyInfo, cpnyId, jh_edit_cpnyInfo})
+      res.render('index', {cpnyInfo, cpnyId, route, jh_edit_cpnyInfo})
     }
   })
 })
@@ -247,7 +248,7 @@ router.get('/', (req, res) => {
     }
     const cpnyInfo = result.recordset
     cpnyInfo.forEach(info => {
-      info.CPNYINFO_DES = info.CPNYINFO_DES.replace(/\r\n/g, "\r")
+      info.CPNYINFO_DES = info.CPNYINFO_DES.replace(/\n/g, "\r")
     })
     const jh_cpnyInfo = true
 		if(!cpnyInfo.length){

@@ -86,12 +86,13 @@ router.put('/:entity_name', (req, res) => {
   })
 })
 
-// 顯示補助津貼內容頁面
+// 顯示編輯補助津貼內容頁面
 router.get('/:entity_name/edit', (req, res) => {
   const {entity_name} = req.params
   const user = res.locals.user
 	const cpnyId = user.CPY_ID
   const jh_edit_subsidy = true
+  const route = 'johnnyHire'
   const request = new sql.Request(pool)
 
   request.query(`select a.SUBSIDY_DES as des, b.SUBSIDY_ID as id, b.SUBSIDY_NAME as name, b.ENTITY_NAME as entity_name
@@ -105,12 +106,12 @@ router.get('/:entity_name/edit', (req, res) => {
       return
     }
     const subsidyInfo = result.recordset[0]
-    subsidyInfo.des = subsidyInfo.des.replace(/\r\n/g, "\r")
+    subsidyInfo.des = subsidyInfo.des.replace(/\n/g, "\r")
     if(!subsidyInfo){
       req.flash('warning_msg', '查無此補助津貼資料，請重新嘗試!')
       return res.redirect('/jh_subsidy')
     }else{
-      res.render('index', {subsidyInfo, cpnyId, jh_edit_subsidy})
+      res.render('index', {subsidyInfo, cpnyId, route, jh_edit_subsidy})
     }
   })
 })
@@ -242,7 +243,7 @@ router.get('/', (req, res) => {
     }
     const subsidyInfo = result.recordset
     subsidyInfo.forEach(info => {
-      info.SUBSIDY_DES = info.SUBSIDY_DES.replace(/\r\n/g, "\r")
+      info.SUBSIDY_DES = info.SUBSIDY_DES.replace(/\n/g, "\r")
     })
     const jh_subsidy = true
     if(!subsidyInfo.length) warning.push({message: '還未新增補助津貼，請拉到下方點選按鈕新增補助津貼!!'})
