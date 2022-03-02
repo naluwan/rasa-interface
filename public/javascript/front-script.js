@@ -100,7 +100,7 @@ if(jhTrainBtn){
 					})
 					.then(result => {
 						jhTrainBtn.removeAttribute('disabled')
-						jhTrainBtn.innerText = '執行訓練'
+						jhTrainBtn.innerText = 'TRAIN'
 						// messageBlock.innerHTML = `
 						// <div class="alert alert-success alert-dismissible fade show" role="alert">
 						// 	訓練完成!!
