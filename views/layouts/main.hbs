@@ -7,7 +7,7 @@
   <meta name="description" content="" />
   <meta name="author" content="" />
   <title>chat bot</title>
-  <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+  <link rel="shortcut icon" href="/images/icon.png" sizes="any">
   <!-- Font Awesome icons (free version)-->
   <script src="https://use.fontawesome.com/releases/v5.15.3/js/all.js" crossorigin="anonymous"></script>
   <!-- Google fonts-->
@@ -61,12 +61,10 @@
   <!-- Navigation-->
   <header>
     <nav>
-      <a href="/">
-        設定
+      <a href="javascript:;" onclick="page('/')">
         {{#if isAuthenticated}}
         {{user.CPY_NAME}}
         {{/if}}
-        小幫手
       </a>
       {{!-- <h1 style="color: #fff;">ChatBot設定</h1> --}}
       {{#if isAuthenticated}}
