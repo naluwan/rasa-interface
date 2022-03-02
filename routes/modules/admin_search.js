@@ -51,7 +51,8 @@ router.post('/', (req, res) => {
 
   // 抓取公司
   request.query(`select *
-  from BOTFRONT_USERS_INFO`, (err, result) => {
+  from BOTFRONT_USERS_INFO
+  where ISHR = 0`, (err, result) => {
     if(err){
       console.log(err)
       return
@@ -256,7 +257,8 @@ router.get('/new', (req, res) => {
   const request = new sql.Request(pool)
 
   request.query(`select *
-  from BOTFRONT_USERS_INFO`, (err, result) => {
+  from BOTFRONT_USERS_INFO
+  where ISHR = 0`, (err, result) => {
     if(err){
       console.log(err)
       return
@@ -357,7 +359,8 @@ router.get('/filter', (req, res) => {
 
   // 獲取所有公司資料 => 選取公司的下拉選單
   request.query(`select * 
-  from BOTFRONT_USERS_INFO`, (err, result) => {
+  from BOTFRONT_USERS_INFO
+  where ISHR = 0`, (err, result) => {
     if(err){
       console.log(err)
       return
@@ -408,7 +411,8 @@ router.get('/', (req, res) => {
 
   // 獲取所有公司資料 => 選取公司的下拉選單
   request.query(`select * 
-  from BOTFRONT_USERS_INFO`, (err, result) => {
+  from BOTFRONT_USERS_INFO
+  where ISHR = 0`, (err, result) => {
     if(err){
       console.log(err)
       return
