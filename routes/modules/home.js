@@ -25,6 +25,7 @@ router.get('/', (req, res) => {
 	const whichRole = res.locals.whichRole
 	const request = new sql.Request(pool)
 	const user = res.locals.user
+	const jh_index = true
 
 	if(!user){
 		return res.redirect('/users/login')
@@ -92,7 +93,7 @@ router.get('/', (req, res) => {
 				}
 				const questionInfo = result.recordset
 				const trainQuestion = questionInfo.length
-				return res.render('index', {trainQuestion, trainFunction})
+				return res.render('index', {cpny_name: user.CPY_NAME, jh_index, trainQuestion, trainFunction})
 			})
 		})
 	}
