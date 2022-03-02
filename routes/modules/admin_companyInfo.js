@@ -6,7 +6,7 @@ const {isAdmin} = require('../../middleware/auth')
 
 const sql = require('mssql')
 const pool = require('../../config/connectPool')
-const {fsJhWriteInfo, fsJhDeleteNlu} = require('../../modules/fileSystem')
+const {fsJhWriteInfo, fsJhDeleteNlu, fsUpdateCategoryNlu} = require('../../modules/fileSystem')
 const {setInfoDict} = require('../../modules/setDict')
 
 
@@ -38,6 +38,69 @@ router.delete('/:name/:info_id', (req, res) => {
         req.flash('success_msg', '已成功刪除公司資訊類別!!')
         res.redirect('/admin_companyInfo')
       })
+    }
+  })
+})
+
+router.put('/:info_id', (req, res) => {
+  const {info_id} = req.params
+  const {name, entity_name} = req.body
+  const request = new sql.Request(pool)
+  
+  if(!name || !entity_name){
+    req.flash('warning_msg', '所有欄位都是必填的!')
+    return res.redirect(`/admin_companyInfo/${info_id}/edit`)
+  }
+
+  request.query(`select * 
+  from BF_JH_CPNYINFO_CATEGORY
+  where CPNYINFO_ID = ${info_id}`, (err, result) => {
+    if(err){
+      console.log(err)
+      return
+    }
+
+    const cpnyInfoCheck = result.recordset[0]
+    if(!cpnyInfoCheck){
+      req.flash('error', '查無此資訊類別，請重新嘗試!')
+      return res.redirect('/admin_companyInfo')
+    }else{
+      request.input('name', sql.NVarChar(200), name)
+      .input('entity_name', sql.NVarChar(200), entity_name)
+      .query(`update BF_JH_CPNYINFO_CATEGORY
+      set CPNYINFO_NAME = @name, ENTITY_NAME = @entity_name
+      where CPNYINFO_ID = ${info_id}`, (err, result) => {
+        if(err){
+          console.log(err)
+          return
+        }
+        fsUpdateCategoryNlu(cpnyInfoCheck.CPNYINFO_NAME, '問公司資訊', name, entity_name, request)
+        setInfoDict(name)
+        req.flash('success_msg', '更新資訊類別成功!')
+        res.redirect('/admin_companyInfo')
+      })
+    }
+  })
+})
+
+router.get('/:info_id/edit', (req, res) => {
+  const {info_id} = req.params
+  const admin_edit_companyInfo = true
+  const request = new sql.Request(pool)
+
+  request.query(`select CPNYINFO_NAME as name, ENTITY_NAME as entity_name, CPNYINFO_ID as id 
+  from BF_JH_CPNYINFO_CATEGORY
+  where CPNYINFO_ID = ${info_id}`, (err, result) => {
+    if(err){
+      console.log(err)
+      return
+    }
+    const cpnyInfoCategory = result.recordset[0]
+    if(!cpnyInfoCategory){
+      req.flash('error', '找不到此公司資訊類別，請重新嘗試!!')
+      return res.redirect('/admin_companyInfo')
+    }else{
+      res.render('index', {admin_edit_companyInfo, cpnyInfoCategory})
     }
   })
 })
