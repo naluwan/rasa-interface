@@ -642,6 +642,7 @@ module.exports = {
       })
     })
   },
+  // 徵厲害admin刪除類別nlu訓練資料
   fsJhDeleteNlu: (infoCheck, intent, request) => {
     axios.get('http://localhost:3030/train/jh/trainingData')
     .then(response => {
@@ -664,6 +665,45 @@ module.exports = {
     })
     .then(data => {
       // 將要刪除的資料刪除後回寫資料庫
+      request.query(`update BF_JH_TRAINING_DATA
+      set DATA_CONTENT = '${data}'
+      where DATA_NAME = 'nlu-json'`, (err, result) => {
+        if(err){
+          console.log(err)
+          return
+        }
+      })
+    })
+    .catch(err => console.log(err))
+  },
+  // 徵厲害admin更新類別nlu訓練資料
+  fsUpdateCategoryNlu: (infoCheck, intent, name, entity_name, request) => {
+    axios.get('http://localhost:3030/train/jh/trainingData')
+    .then(response => {
+      return response.data
+    })
+    .then(data => {
+      // 將要更新的資料篩選出來並更新資料
+      data.nlu.zh.rasa_nlu_data.common_examples.map(info => {
+        if(info.text.includes(infoCheck) && info.intent == intent){
+          info.text = info.text.replace(infoCheck, name)
+          info.entities[0].entity = entity_name
+          info.entities[0].value = info.text
+          info.entities[0].end = info.text.length
+        }
+      })
+      // 將更新後的資料寫檔
+      try{
+        fs.writeFileSync(path.resolve(__dirname, '../public/trainData/nlu-json.json'), JSON.stringify(data.nlu.zh))
+      } catch(err){
+        console.log(err)
+      }
+      // 讀取最新的訓練資料檔並回傳
+      const newNluData =  yaml.load(fs.readFileSync(path.resolve(__dirname, '../public/trainData/nlu-json.json'), 'utf8'))
+      return JSON.stringify(newNluData)
+    })
+    .then(data => {
+      // 將更新後的訓練資料回寫資料庫
       request.query(`update BF_JH_TRAINING_DATA
       set DATA_CONTENT = '${data}'
       where DATA_NAME = 'nlu-json'`, (err, result) => {
