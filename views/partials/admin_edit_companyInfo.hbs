@@ -1,0 +1,25 @@
+{{#if admin_edit_companyInfo}}
+<!-- jh_edit_cpnyInfo -->
+<div class="jh_edit_cpnyInfo">
+  <h1>編輯資訊</h1>
+  <form action="/admin_companyInfo/{{cpnyInfoCategory.id}}?_method=PUT" method="POST">
+      {{> message}}
+      <div>
+        <div>
+          <label for="name">資訊名稱</label>
+          <input type="text" class="form-control" name="name" id="name" placeholder="請輸入資訊名稱" value="{{cpnyInfoCategory.name}}" required>
+        </div>
+
+        <div>
+          <label for="position_des">資訊英文名稱</label>
+          <input class="form-control" name="entity_name" id="entity_name" placeholder="請輸入英文名稱" value="{{cpnyInfoCategory.entity_name}}" required>
+        </div>
+
+    </div>
+    <div class="text-center mt-3">
+      <a href="javascript:;" class="btn btn-primary" onclick="page('/admin_companyInfo')">取消</a>
+      <button type="submit" class="btn btn-info">儲存</button>
+    </div>
+  </form>
+</div>
+{{/if}}
