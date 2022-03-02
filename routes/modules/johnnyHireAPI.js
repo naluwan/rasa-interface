@@ -43,51 +43,18 @@ router.post('/api/v1/newUser', (req, res) => {
         }
         
       }else{
-        // 驗證資料庫裡cpy_id和cpy_name是否有重複的值
-        request.query(`select * 
-        from BOTFRONT_TYPE_OF_INDUSTRY
-        where INDUSTRY_ID = '${cpy_id}'
-        or INDUSTRY_NAME = '${cpy_name}'`, (err, result) => {
-          if(err){
-            console.log(err)
-            return
-          }
-          const industryCheck = result.recordset[0]
-          if(industryCheck){
-            return res.status(409).send({status: `fail`, code: 409, message: ['公司代號或公司名稱重複!!請重新嘗試!!'], data})
-          }else{
-            try {
-              // 利用公司名稱和公司代號創建產業類別
-              request.input('industry_name', sql.NVarChar(200), cpy_name)
-              .input('industry_id', sql.NVarChar(30), cpy_id)
-              .query(`insert into BOTFRONT_TYPE_OF_INDUSTRY(INDUSTRY_ID, INDUSTRY_NAME)
-              values (@industry_id, @industry_name)`,(err, result) => {
-                if(err){
-                  console.log(err)
-                  return
-                }
-              })
               // 使用bcrypt加密密碼再存進資料庫
               bcrypt
               .genSalt(10)
               .then(salt => bcrypt.hash(password, salt))
               .then(hash => {
-                request.query(`select INDUSTRY_ID
-                from BOTFRONT_TYPE_OF_INDUSTRY
-                where INDUSTRY_NAME = '${cpy_name}'`, (err, result) => {
-                  if(err){
-                    console.log(err)
-                    return
-                  }
-                  const industry_no = result.recordset[0].INDUSTRY_ID
                   // 新增進資料庫
                   request.input('cpy_id', sql.NVarChar(30), cpy_id)
                   .input('cpy_name', sql.NVarChar(80), cpy_name)
                   .input('email', sql.NVarChar(80), email)
                   .input('password', sql.NVarChar(100), hash)
-                  .input('industry_no', sql.NVarChar(30), industry_no)
-                  .query(`insert into BOTFRONT_USERS_INFO (CPY_ID, CPY_NAME, EMAIL, PASSWORD, INDUSTRY_NO)
-                  values (@cpy_id, @cpy_name, @email, @password, @industry_no)`, (err, result) => {
+          .query(`insert into BOTFRONT_USERS_INFO (CPY_ID, CPY_NAME, EMAIL, PASSWORD)
+          values (@cpy_id, @cpy_name, @email, @password)`, (err, result) => {
                     if(err){
                       console.log(err)
                       return
@@ -102,18 +69,11 @@ router.post('/api/v1/newUser', (req, res) => {
                         console.log(err)
                         return
                       }
-                      // 用response回傳狀態碼和成功資訊，另外回傳此間公司的industry_no，以便要傳入職缺類別
                       data = result.recordset[0]
-                      return res.status(200).send({status: `success`,message: ['使用者資料設定成功!!'], data})
-                    })
+              return res.status(200).send({status: `success`,message: ['新增使用者成功!'], data})
                   })
                 })
               }).catch(err => console.log(err))
-            } catch (error) {
-              return res.status(500).send({status: `fail`, code: 500, message: [error], data})
-            }
-          }
-        })
       }
     })
   }else{
