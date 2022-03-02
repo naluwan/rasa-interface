@@ -42,38 +42,38 @@ router.post('/api/v1/newUser', (req, res) => {
           return res.status(409).send({status: `fail`, code: 409, message: ['公司信箱重複，請重新嘗試!!'], data})
         }
         
-      }else{
-              // 使用bcrypt加密密碼再存進資料庫
-              bcrypt
-              .genSalt(10)
-              .then(salt => bcrypt.hash(password, salt))
-              .then(hash => {
-                  // 新增進資料庫
-                  request.input('cpy_id', sql.NVarChar(30), cpy_id)
-                  .input('cpy_name', sql.NVarChar(80), cpy_name)
-                  .input('email', sql.NVarChar(80), email)
-                  .input('password', sql.NVarChar(100), hash)
+      }else{           
+        // 使用bcrypt加密密碼再存進資料庫
+        bcrypt
+        .genSalt(10)
+        .then(salt => bcrypt.hash(password, salt))
+        .then(hash => {
+          // 新增進資料庫
+          request.input('cpy_id', sql.NVarChar(30), cpy_id)
+          .input('cpy_name', sql.NVarChar(80), cpy_name)
+          .input('email', sql.NVarChar(80), email)
+          .input('password', sql.NVarChar(100), hash)
           .query(`insert into BOTFRONT_USERS_INFO (CPY_ID, CPY_NAME, EMAIL, PASSWORD)
           values (@cpy_id, @cpy_name, @email, @password)`, (err, result) => {
-                    if(err){
-                      console.log(err)
-                      return
-                    }
-                    // 增加公司資訊description(ex.tel, address)
-                    
-                    userSendMAil(res, 'mail_newUser', cpy_id, cpy_name, email, '新使用者加入')
-                    request.query(`select * 
-                    from BOTFRONT_USERS_INFO
-                    where CPY_ID = '${cpy_id}'`, (err, result) => {
-                      if(err){
-                        console.log(err)
-                        return
-                      }
-                      data = result.recordset[0]
+            if(err){
+              console.log(err)
+              return
+            }
+            // 增加公司資訊description(ex.tel, address)
+            
+            userSendMAil(res, 'mail_newUser', cpy_id, cpy_name, email, '新使用者加入')
+            request.query(`select * 
+            from BOTFRONT_USERS_INFO
+            where CPY_ID = '${cpy_id}'`, (err, result) => {
+              if(err){
+                console.log(err)
+                return
+              }
+              data = result.recordset[0]
               return res.status(200).send({status: `success`,message: ['新增使用者成功!'], data})
-                  })
-                })
-              }).catch(err => console.log(err))
+            })
+          })
+        }).catch(err => console.log(err))
       }
     })
   }else{
@@ -206,6 +206,52 @@ router.post('/api/v2/newPosition', (req, res) => {
   }else{
     return res.status(403).send({status: `fail`, code: 403, message: ['沒有權限做此操作!!'], data})
   }
+})
+
+// 編輯公司資訊API
+router.get('/:cpnyId/:category/edit', (req, res) => {
+  const {cpnyId, category} = req.params
+  const {entity_name, des} = req.query
+  // const cpnyId = '1'
+  const request = new sql.Request(pool)
+
+  if(!entity_name){
+    return res.send({status: 'none', message: '查無此資訊，請重新嘗試!'})
+  }
+
+  if(!des){
+    return res.send({status:'fail', message: '資訊內容為必填欄位!'})
+  }
+
+  request.query(`select b.${category.toUpperCase()}_ID
+  from BF_JH_${category.toUpperCase()} a
+  left join BF_JH_${category.toUpperCase()}_CATEGORY b
+  on a.${category.toUpperCase()}_ID = b.${category.toUpperCase()}_ID
+  where b.ENTITY_NAME = '${entity_name}'
+  and a.CPY_ID = '${cpnyId}'`, (err, result) => {
+    if(err){
+      console.log(err)
+      return
+    }
+    const info_id = result.recordset[0][`${category.toUpperCase()}_ID`]
+    
+    if(!info_id){
+      return res.send({statue:'none', message: '查無此資訊，請重新嘗試!'})
+    }else{
+      request.input('des', sql.NVarChar(2000), decodeURI(des))
+      .query(`update BF_JH_${category.toUpperCase()}
+      set ${category.toUpperCase()}_DES = @des
+      where ${category.toUpperCase()}_ID = ${info_id}
+      and CPY_ID = '${cpnyId}'`, (err, result) => {
+        if(err){
+          console.log(err)
+          return
+        }
+        
+        res.send({status: 'success', message: '更新資訊內容成功!'})
+      })
+    }
+  })
 })
 
 // // 新增新職缺類別及職缺資訊
