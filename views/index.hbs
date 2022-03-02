@@ -14,7 +14,7 @@
           </select>
         </form>
         <!-- <a href="#" class="btn btn-dark active mx-3" role="button" id="train-btn">Train</a> -->
-        <button id="train" class="btn btn-dark jh-train-btn" type="button">TRAIN</button>
+        <button id="train" class="btn btn-dark jh-train-btn" type="button">執行訓練</button>
         <div>
           <div>
             <label>帳號資料:</label>
@@ -88,7 +88,7 @@
           </select>
         </form>
 
-        <button id="train" class="btn btn-dark cs-train-btn" type="button">TRAIN</button>
+        <button id="train" class="btn btn-dark cs-train-btn" type="button">執行訓練</button>
         <div>
           <div>
             <label>Admin - 功能分類:</label>
@@ -130,7 +130,7 @@
   <div>
     <!-- user hr 按鈕 -->
     <span class="menu">
-        <button id="train" class="btn btn-dark cs-train-btn" type="button">TRAIN</button>
+        <button id="train" class="btn btn-dark cs-train-btn" type="button">執行訓練</button>
         <div>
           <div>
             <div>
@@ -158,7 +158,7 @@
 
     <!-- user jh 按鈕 -->
     <span class="menu">
-      <button id="train" class="btn btn-dark jh-train-btn" type="button">TRAIN</button>
+      <button id="train" class="btn btn-dark jh-train-btn" type="button">執行訓練</button>
         <div>
           <div>
             <label>公司資訊:</label>
@@ -194,6 +194,7 @@
 
     <!-- user jh 右側畫面 -->
     <span class="setting">
+      {{> jh_index}}
       {{> jh_position}}
       {{> jh_new_position}}
       {{> jh_edit_position}}
