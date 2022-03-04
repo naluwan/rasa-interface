@@ -1,0 +1,25 @@
+{{#if admin_edit_category}}
+<!-- admin_edit_category -->
+<div class="admin_edit_category">
+  <h1>編輯{{#is category 'cpnyinfo'}}資訊{{/is}}{{#is category 'position'}}職缺{{/is}}{{#is category 'leave'}}假別{{/is}}{{#is category 'subsidy'}}補助{{/is}}</h1>
+  <form action="" name="form">
+      {{> message}}
+      <div>
+        <div>
+          <label for="cnName">{{#is category 'cpnyinfo'}}資訊{{/is}}{{#is category 'position'}}職缺{{/is}}{{#is category 'leave'}}假別{{/is}}{{#is category 'subsidy'}}補助{{/is}}名稱</label>
+          <input type="text" class="form-control" name="cnName" id="cnName" placeholder="請輸入中文名稱" value="{{infoCategory.name}}" required>
+        </div>
+
+        <div>
+          <label for="position_des">英文名稱</label>
+          <input class="form-control" name="entity_name" id="entity_name" placeholder="請輸入英文名稱" value="{{infoCategory.entity_name}}" required>
+        </div>
+
+    </div>
+    <div class="formButton">
+      <input id="cancel" class="btn btn-primary" onclick="page('/admin_companyInfo')" value="取消">
+      <input id="save" type="submit" class="btn btn-info" data-infoid="{{infoCategory.id}}" value="儲存">
+    </div>
+  </form>
+</div>
+{{/if}}
