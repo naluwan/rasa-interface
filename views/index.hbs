@@ -13,20 +13,20 @@
             <option value="hr" {{#is whichRole 'hr'}} selected {{/is}}>棉花糖客服</option>
           </select>
         </form>
-        <!-- <a href="#" class="btn btn-dark active mx-3" role="button" id="train-btn">Train</a> -->
-        <button id="train" class="btn btn-dark jh-train-btn" type="button">執行訓練</button>
+        <!-- <a href="#" class="btn btn-dark active mx-3" id="train-btn">Train</a> -->
+        <input type="button" id="train" class="btn btn-dark jh-train-btn" value="執行訓練">
         <div>
           <div>
             <label>帳號資料:</label>
-            <a href="javascript:;" class="btn btn-success" role="button" onclick="page('/admin_company')">設定</a>
+            <input type="button" class="btn btn-success" onclick="page('/admin_company')" value="設定">
           </div> 
           <div>
             <label>資訊類別:</label>
-            <a href="javascript:;" class="btn btn-success" role="button" onclick="page('/admin_companyInfo')">設定</a>
+            <input type="button" class="btn btn-success" onclick="page('/admin_companyInfo')" value="設定">
           </div> 
           <div>
             <label>職缺類別:</label>
-            <a href="javascript:;" class="btn btn-success" role="button" onclick="page('/admin_positionInfo')">設定</a>
+            <input type="button" class="btn btn-success" onclick="page('/admin_positionInfo')" value="設定">
           </div>
           <!--
           <div>
@@ -36,15 +36,15 @@
           --> 
           <div>
             <label>假別類別:</label>
-            <a href="javascript:;" class="btn btn-success" role="button" onclick="page('/admin_leaveInfo')">設定</a>
+            <input type="button" class="btn btn-success" onclick="page('/admin_leaveInfo')" value="設定">
           </div>
           <div>
             <label>補助類別:</label>
-            <a href="javascript:;" class="btn btn-success" role="button" onclick="page('/admin_subsidyInfo')">設定</a>
+            <input type="button" class="btn btn-success" onclick="page('/admin_subsidyInfo')" value="設定">
           </div>
           <div>
             <label>回覆查詢:</label>
-            <a href="javascript:;" class="btn btn-success" role="button" onclick="page('/admin_search')">設定</a>
+            <input type="button" class="btn btn-success" onclick="page('/admin_search')" value="設定">
           </div>
         </div>
       </span>
@@ -66,7 +66,7 @@
         {{> admin_search}}
         {{> admin_new_search}}
         {{> admin_edit_search}}
-        {{> admin_edit_companyInfo}}
+        {{> admin_edit_category}}
       </span>
 
     </div>
@@ -162,22 +162,22 @@
         <div>
           <div>
             <label>公司資訊:</label>
-            <a href="javascript:;" class="btn btn-success" role="button" onclick="page('/jh_cpnyInfo')">設定</a>
+            <input type="button" class="btn btn-success" onclick="page('/jh_cpnyInfo')" value="設定">
           </div>
 
           <div>
             <label>職缺設定:</label>
-            <a href="javascript:;" class="btn btn-success" role="button" onclick="page('/jh_position')">設定</a>
+            <input type="button" class="btn btn-success" onclick="page('/jh_position')" value="設定">
           </div>
 
           <div>
             <label>補助津貼:</label>
-            <a href="javascript:;" class="btn btn-success" role="button" onclick="page('/jh_subsidy')">設定</a>
+            <input type="button" class="btn btn-success" onclick="page('/jh_subsidy')" value="設定">
           </div>
 
           <div>
             <label>假別設定:</label>
-            <a href="javascript:;" class="btn btn-success" role="button" onclick="page('/jh_leave')">設定</a>
+            <input type="button" class="btn btn-success" onclick="page('/jh_leave')" value="設定">
           </div>
 
           {{!-- <div>
