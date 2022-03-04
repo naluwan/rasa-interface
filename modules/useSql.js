@@ -133,7 +133,7 @@ module.exports = {
       if(!infoCheck){
         return res.send({status: 'error', message: '查無此資訊，請重新嘗試'})
       }else{
-        request.input('des', sql.NVarChar(2000), data.des)
+        request.input('des', sql.NVarChar(2000), decodeURI(data.des))
         .query(`update BF_JH_${data.category.toUpperCase()}
         set ${category_des} = @des
         where INFO_ID = '${data.infoId}'`, (err, result) => {
