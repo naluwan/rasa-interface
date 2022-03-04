@@ -6,6 +6,7 @@ window.onload = function() {
     deleteButton();
     saveButton();
     addButton();
+    repwdButton();
 };
 
 //jump page
@@ -24,6 +25,7 @@ function page(url){
         deleteButton();
         saveButton();
         addButton();
+        repwdButton();
         loadingClose();
     };
     asyncAjax(location.origin + url,back,true);
@@ -93,7 +95,7 @@ function deleteButton(){
 
             var listName = event.target.parentNode.previousElementSibling.querySelector("[data-title]").title;
 
-            var html = "<h3 style='text-align:center;'><div class='sa-icon warning'><span></span></div>確定刪除" + listName + "！</h3>";
+            var html = "<h3 style='text-align:center;'><div class='sa-icon warning'><span></span></div>確定刪除 " + listName + "</h3>";
 
             showBox(html,"message","");
 
@@ -159,7 +161,7 @@ function saveButton(){
                 if(inputs[i].value==""){
                     return;
                 };
-                data += "&" + inputs[i].id + "=" + inputs[i].value;
+                data += "&" + inputs[i].name + "=" + inputs[i].value;
             };
 
             data += "&infoId=" + infoId;
@@ -202,7 +204,7 @@ function addButton(){
                 if(inputs[i].value==""){
                     return;
                 };
-                data += "&" + inputs[i].id + "=" + inputs[i].value;
+                data += "&" + inputs[i].name + "=" + inputs[i].value;
             };
             
             loading();
@@ -229,6 +231,90 @@ function addButton(){
             };
 
             asyncAjax(url,back,true);
+        };
+    };
+};
+
+//repwd button
+function repwdButton(){
+    if(document.querySelector("#repwd")){
+        document.querySelector("#data-panel").onclick = function(event){
+
+            var listName = event.target.parentNode.previousElementSibling.querySelector("[data-title]").title;
+
+            if(event.target.getAttribute("id") != "repwd"){
+                return;
+            };
+            
+            var html = "<h3 style='text-align:center;'>修改密碼</h3>";
+
+            html += '<form action="" name="form">'+
+                        '<div>'+
+                            '<label for="password">新密碼</label>'+
+                            '<input type="password" name="password" class="form-control" placeholder="請輸入密碼" required>'+
+                        '</div>'+
+                    
+                        '<div>'+
+                            '<label for="confirmPassword">再次輸入密碼</label>'+
+                            '<input type="password" name="confirmPassword" class="form-control" placeholder="請再次輸入密碼" required>'+
+                        '</div>'+
+                    '</form>';
+
+            showBox(html,"message","");
+
+            var msgBox = document.querySelector("#message .content");
+
+            var footButton = document.createElement("div");
+            footButton.setAttribute("class","button");
+            msgBox.appendChild(footButton);
+
+            var cencelButton = document.createElement("button");
+            cencelButton.innerText = "取消";
+            cencelButton.setAttribute("class","btn btn-primary");
+            cencelButton.onclick = function() {
+                document.querySelector("#message").remove();
+            };
+            footButton.appendChild(cencelButton);
+
+            var saveButton = document.createElement("button");
+            saveButton.innerText = "確定";
+            saveButton.setAttribute("class","btn btn-info");
+
+            saveButton.onclick = function() {
+                savePwd();
+            };
+            footButton.appendChild(saveButton);
+            
+            function savePwd(){
+                
+                var data="/repwd?infoId=" + listName;
+                var inputs = document.querySelectorAll("#message [required]");
+                console.log(inputs)
+                for(var i=0;i<inputs.length;i++){
+                    if(inputs[i].value==""){
+                        return;
+                    };
+                    data += "&" + inputs[i].name + "=" + inputs[i].value;
+                };
+
+                var url = location.href + data;
+                console.log(url)
+
+                function back(info){
+                    document.querySelector("#message").remove();
+                    var info = JSON.parse(info.data);
+                    console.log(info)
+
+                    var html = "<h3 style='text-align:center;'><div class='sa-icon " + info.status + "'><span></span></div>" + info.message + "！</h3>";
+
+                    var prevPage = null;
+                    
+                    loadingClose();
+                    showBox(html,"message","",prevPage);
+                };
+                loading();
+                asyncAjax(url,back,true);
+            };
         };
     };
 };
