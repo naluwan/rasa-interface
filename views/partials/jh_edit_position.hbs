@@ -2,27 +2,27 @@
 <!-- jh_edit_position -->
 <div>
   <h1>編輯職缺</h1>
-  <form id="position">
+  <form action="" name="form" id="position">
     <div>
       {{> message}}
       <div>
-        <label for="name">職缺名稱</label>
-        <input type="text" class="form-control" name="name" id="name" placeholder="請輸入職缺名稱" value="{{positionInfo.name}}" disabled>
+        <label for="cnName">職缺名稱</label>
+        <input type="text" class="form-control" name="cnName" placeholder="請輸入職缺名稱" value="{{positionInfo.name}}" disabled>
       </div>
 
       <div>
         <label for="name">職缺英文名稱</label>
-        <input type="text" class="form-control" name="entity_name" id="entity_name" placeholder="請輸入英文名稱" value="{{positionInfo.entity_name}}" disabled>
+        <input type="text" class="form-control" name="entity_name" placeholder="請輸入英文名稱" value="{{positionInfo.entity_name}}" disabled>
       </div>
 
       <div>
         <label for="position_des">職缺內容</label>
-        <textarea class="form-control" name="des" id="des" placeholder="請輸入職缺內容" rows="5" required>{{positionInfo.des}}</textarea>
+        <textarea class="form-control" name="des" placeholder="請輸入職缺內容" rows="5" required>{{positionInfo.des}}</textarea>
       </div>
     </div>
-    <div class="text-center mt-3">
-      <a id="cancel" href="javascript:;" class="btn btn-primary" onclick="page('/jh_position')">取消</a>
-      <input id="save" type="button" class="btn btn-info" data-cpnyid="{{cpnyId}}" data-route="{{route}}" value="儲存">
+    <div class="formButton">
+      <input id="cancel" class="btn btn-primary" onclick="page('/jh_position')" value="取消">
+      <input id="save" type="submit" class="btn btn-info" data-infoId="{{positionInfo.infoId}}" value="儲存">
     </div>
   </form>
 </div>

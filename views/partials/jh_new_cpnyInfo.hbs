@@ -2,28 +2,28 @@
 <!-- jh_new_cpnyInfo -->
 <div class="jh_new_cpnyInfo ">
   <h1>新增資訊</h1>
-  <form action="/jh_cpnyInfo" method="POST">
+  <form action="" name="form" id="cpnyInfo">
     <div>
       {{> message}}
       <div>
         <label for="name">資訊名稱</label>
-        <input type="text" class="form-control" name="name" id="name" placeholder="請輸入資訊名稱" value="{{name}}" required>
+        <input type="text" class="form-control" name="cnName" placeholder="請輸入資訊名稱" value="{{name}}" required>
       </div>
 
       <div>
         <label for="entity_name">英文名稱</label>
-        <input type="text" class="form-control" name="entity_name" id="entity_name" placeholder="請輸入資訊英文名稱" value="{{entity_name}}" required>
+        <input type="text" class="form-control" name="entity_name" placeholder="請輸入資訊英文名稱" value="{{entity_name}}" required>
       </div>
 
       <div>
         <label for="des">資訊內容</label>
-        <textarea class="form-control" name="des" id="des" placeholder="請輸入資訊內容" rows="5" required>{{des}}</textarea>
+        <textarea class="form-control" name="des" placeholder="請輸入資訊內容" rows="5" required>{{des}}</textarea>
       </div>
 
     </div>
-    <div class="text-center">
-      <a href="javascript:;" class="btn btn-primary" onclick="page('/jh_cpnyInfo')">取消</a>
-      <button type="submit" class="btn btn-info" id="confirm-create">新增</button>
+    <div class="formButton">
+      <input id="cancel" class="btn btn-primary" onclick="page('/jh_cpnyInfo')" value="取消">
+      <input id="add" type="submit" class="btn btn-info" value="新增">
     </div>
   </form>
 </div>

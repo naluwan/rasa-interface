@@ -9,7 +9,7 @@
       <span>
         <div>
           <span>補助名稱：</span>
-          <span title="{{this.SUBSIDY_NAME}}">{{this.SUBSIDY_NAME}}</span>
+          <span data-title title="{{this.SUBSIDY_NAME}}">{{this.SUBSIDY_NAME}}</span>
         </div>
         <div>
           <span>英文名稱：</span>
@@ -21,38 +21,13 @@
         </div>
       </span>
       <span>
-        <a href="javascript:;" class="btn btn-primary" onclick="page('/jh_subsidy/{{ this.ENTITY_NAME}}/edit')">編輯</a>
-        <button class=" btn btn-danger" id="delete-btn" data-toggle="modal" data-target="#deleteModal" data-name="{{ this.SUBSIDY_NAME }}" data-entity="{{ this.ENTITY_NAME }}" data-category="jh_subsidy">刪除</button>
-      </span>
+        <input type="button" class="btn btn-primary" onclick="page('/jh_subsidy/{{ this.ENTITY_NAME}}/edit')" value="編輯">
+        <input type="button" class="btn btn-danger" data-infoId="{{this.infoId}}" value="刪除">
     </div>
     {{/each}}
   </div>
-  <div class="text-center mt-3">
-    <a href="javascript:;" class="btn btn-warning" onclick="page('/jh_subsidy/new')">新增補助津貼</a>
-  </div>
-</div>
-
-<!-- Modal -->
-<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle"
-  aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalScrollableTitle">刪除資訊</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <p>確定要刪除<strong id="delete-position">{{ this.SUBSIDY_NAME }}</strong>?</p> 
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
-        <form action="/jh_subsidy/{{ this.SUBSIDY_NO }}" method="post" style="display:inline-block;" id="delete-form">
-          <button type="submit" class="btn btn-danger">確定</button>
-        </form>
-      </div>
-    </div>
+  <div class="footButton">
+    <input type="button" class="btn btn-warning" onclick="page('/jh_subsidy/new')">新增補助津貼</a>
   </div>
 </div>
 {{/if}}

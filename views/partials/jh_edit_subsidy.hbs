@@ -2,25 +2,25 @@
 <!-- jh_edit_subsidy -->
 <div>
   <h1>編輯補助津貼</h1>
-  <form id="subsidy">
+  <form action="" name="form" id="subsidy">
     <div>
       {{> message}}
       <div>
-        <label for="name">補助名稱</label>
-        <input type="text" class="form-control" name="name" id="name" placeholder="請輸入補助津貼名稱" value="{{subsidyInfo.name}}" disabled>
+        <label for="cnName">補助名稱</label>
+        <input type="text" class="form-control" name="cnName" placeholder="請輸入補助津貼名稱" value="{{subsidyInfo.name}}" disabled>
       </div>
       <div>
         <label for="name">英文名稱</label>
-        <input type="text" class="form-control" name="entity_name" id="entity_name" placeholder="請輸入英文名稱" value="{{subsidyInfo.entity_name}}" disabled>
+        <input type="text" class="form-control" name="entity_name" placeholder="請輸入英文名稱" value="{{subsidyInfo.entity_name}}" disabled>
       </div>
       <div>
         <label for="position_des">補助內容</label>
-        <textarea class="form-control" name="des" id="des" placeholder="請輸入補助津貼內容" rows="5" required>{{subsidyInfo.des}}</textarea>
+        <textarea class="form-control" name="des" placeholder="請輸入補助津貼內容" rows="5" required>{{subsidyInfo.des}}</textarea>
       </div>
     </div>
-    <div class="text-center mt-3">
-      <a id="cancel" href="javascript:;" class="btn btn-primary" onclick="page('/jh_subsidy')">取消</a>
-      <input id="save" type="button" class="btn btn-info" data-cpnyid="{{cpnyId}}" data-route="{{route}}" value="儲存">
+    <div class="formButton">
+      <input id="cancel" class="btn btn-primary" onclick="page('/jh_subsidy')" value="取消">
+      <input id="save" type="submit" class="btn btn-info" data-infoId="{{subsidyInfo.infoId}}" value="儲存">
     </div>
   </form>
 </div>

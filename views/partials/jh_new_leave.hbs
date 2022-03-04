@@ -7,23 +7,23 @@
       {{> message}}
       <div>
         <label for="name">假別名稱</label>
-        <input type="text" class="form-control" name="name" id="name" placeholder="請輸入假別名稱" value="{{name}}" required>
+        <input type="text" class="form-control" name="cnName" placeholder="請輸入假別名稱" value="{{name}}" required>
       </div>
 
       <div>
         <label for="entity_name">英文假別</label>
-        <input type="text" class="form-control" name="entity_name" id="entity_name" placeholder="請輸入英文假別" value="{{entity_name}}" required>
+        <input type="text" class="form-control" name="entity_name" placeholder="請輸入英文假別" value="{{entity_name}}" required>
       </div>
 
       <div>
         <label for="des">假別內容</label>
-        <textarea class="form-control" name="des" id="des" placeholder="請輸入假別內容" rows="5" required>{{des}}</textarea>
+        <textarea class="form-control" name="des" placeholder="請輸入假別內容" rows="5" required>{{des}}</textarea>
       </div>
 
     </div>
-    <div class="text-center mt-3">
-      <a href="javascript:;" class="btn btn-primary" onclick="page('/jh_leave')">取消</a>
-      <button type="submit" class="btn btn-info" id="confirm-create">新增</button>
+    <div class="formButton">
+      <input id="cancel" class="btn btn-primary" onclick="page('/jh_leave')" value="取消">
+      <input id="add" type="submit" class="btn btn-info" value="新增">
     </div>
   </form>
 </div>
