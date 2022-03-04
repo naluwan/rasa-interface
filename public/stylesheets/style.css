@@ -105,13 +105,16 @@ textarea,
 
 .alert{margin-top:10px;}
 .alert-dismissible .close{font-size: 24px;}
-.footButton{position:sticky;bottom:45px;text-align: center;}
-.formButton{margin-top:30px;text-align:center;}
-.formButton > input{width:150px;}
+
 #rasaWebchatPro h4{color:#fff;font-size:16px;width: calc(100% - 120px);text-align:left;text-overflow: ellipsis;overflow: hidden;white-space: nowrap;}
 .btn{border-radius:5px;font-size:16px;white-space: nowrap;padding: 5px 15px;font-weight: inherit;}
 .lead{font-weight:bold;font-size:18px;margin-top:30px}
-.form-control{background:#f9f9f9;padding: 10px;}
+.form-control{background:#f9f9f9;padding: 10px;height: 40px;}
+
+.footButton{position:sticky;bottom:45px;text-align: center;margin-top:30px;text-align:center;}
+
+.formButton{margin-top:30px;text-align:center;}
+.formButton > input{width: 120px;margin:0 5px}
 
 .form-control:disabled, 
 .form-control[readonly]{background:none;border:none;border-bottom:1px solid #ccc;border-radius:0!important;padding:0 5px}
@@ -138,14 +141,13 @@ header nav .btn{padding:10px 20px;border-radius: 5px;}
 .menu > div > div{padding: 15px 10px;border-bottom: 1px solid #ccc;}
 .menu > div > div:last-of-type{border:none;padding-bottom: 5px;}
 .menu > div > div > label{font-size: 16px;vertical-align: middle;display: inline-block;margin: 0 10px 0 0;}
-.menu div > a{line-height:inherit;border-radius: 5px;display: inline-block;font-size: 14px;padding: 2px 15px;}
+.menu input{padding: 0 15px;height: 28px;font-size: 14px;line-height: inherit;}
 
-
-.setting label{margin-top: 10px;margin-bottom: 5px;font-size: 16px;color: #333;}
+.setting label{margin-top: 15px;margin-bottom: 5px;font-size: 16px;color: #333;font-weight: bold;}
 
 .searchBar{font-size:18px;margin: 0 5px 10px;}
 
-.searchBar input,
+.searchBar input[type="text"],
 .searchBar select{padding: 0 10px;border: 1px solid #ccc;margin: 0 10px 0 0;font-size: 18px;height: 36px;vertical-align: middle;background: #f9f9f9;}
 
 #data-panel{margin-bottom:10px;min-height:50px;}
@@ -162,6 +164,7 @@ header nav .btn{padding:10px 20px;border-radius: 5px;}
 #message h3{font-size: 18px;}
 #message .button{text-align: center;margin-top: 20px;}
 #message .button button{width: calc(100% / 2 - 10px);margin: 0 5px;}
+#message label{margin:15px 0 5px}
 
 /*login*/
 .login header{display:none;}
@@ -203,10 +206,6 @@ header nav .btn{padding:10px 20px;border-radius: 5px;}
 
 /*admin_new_companyInfo*/
 .admin_new_companyInfo form > div > div{margin-bottom: 20px;}
-
-/*admin_edit_company*/
-.admin_edit_company form > div{margin: 20px 0 0 0;}
-.admin_edit_pwd form > div{margin: 20px 0 0 0;}
 
 /*jh_position*/
 .jh_position li{line-height:34px;}
