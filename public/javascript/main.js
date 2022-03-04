@@ -5,6 +5,7 @@ window.onload = function() {
     };
     deleteButton();
     saveButton();
+    addButton();
 };
 
 //jump page
@@ -22,6 +23,7 @@ function page(url){
         history.pushState("","",url);
         deleteButton();
         saveButton();
+        addButton();
         loadingClose();
     };
     asyncAjax(location.origin + url,back,true);
@@ -82,96 +84,150 @@ function loadingClose(){
 
 //delete button
 function deleteButton(){
-    var obj = document.querySelector('#data-panel')
-    if(obj){
-        obj.addEventListener('click', function(event) {
-            var target = event.target
+    if(document.querySelector("#del")){
+        document.querySelector("#data-panel").onclick = function(event){
 
-            var dname = target.dataset.name;
-
-            if(!dname){return;};
-
-            var category   = target.dataset.category;
-            var entity     = target.dataset.entity;
-            var cpnyid     = target.dataset.cpnyid;
-            var table      = target.dataset.table;
-            var id         = target.dataset.id;
-            var categoryid = target.dataset.categoryid;
-            var functionid = target.dataset.functionid;
-
-            var action;           
-        
-            if(target.id == "delete-btn"){
-                document.querySelector('#delete-position').innerText = "「" + dname + "」";
-                action = "/" + category + "/" + entity;
-            };
-        
-            if(target.id == "adminSearch-delete-btn"){
-                document.querySelector('#delete-position').innerText = "「" + cpyname + "的" + dname + "」";
-                action = "/" + category + "/" + cpnyid + "/" + table + "/" + id;
+            if(event.target.getAttribute("id") != "del"){
+                return;
             };
 
-            if(target.id == "delete-function-btn"){
-                document.querySelectorAll('#delete-function').forEach(function(item){
-                    item.innerText = "「" + dname + "」";
-                });
-                action = "/" + category + "/" + id + "/" + categoryid;
-            };
+            var listName = event.target.parentNode.previousElementSibling.querySelector("[data-title]").title;
 
-            if(target.id == "delete-question-btn"){
-                document.querySelectorAll('#delete-question').forEach(function(item){
-                    item.innerText = "「" + dname + "」";
-                });
-                action = "/" + category + "/" + id + "/" + functionid;
-                if(categoryid){
-                    action += "/" + categoryid;
+            var html = "<h3 style='text-align:center;'><div class='sa-icon warning'><span></span></div>確定刪除" + listName + "！</h3>";
+
+            showBox(html,"message","");
+
+            var msgBox = document.querySelector("#message .content");
+
+            var footButton = document.createElement("div");
+            footButton.setAttribute("class","button");
+            msgBox.appendChild(footButton);
+
+            var cencelButton = document.createElement("button");
+            cencelButton.innerText = "取消";
+            cencelButton.setAttribute("class","btn btn-primary");
+            cencelButton.onclick = function() {
+                document.querySelector("#message").remove();
+            };
+            footButton.appendChild(cencelButton);
+
+            var delButton = document.createElement("button");
+            delButton.innerText = "確定";
+            delButton.setAttribute("class","btn btn-info");
+
+            delButton.onclick = function() {
+                document.querySelector("#message").remove();
+                deleteList();
+            };
+            footButton.appendChild(delButton);
+            
+            function deleteList(){
+                loading();                            
+                var url = location.href + "/delete?infoId=" + event.target.getAttribute("data-infoId");
+                console.log(url)
+
+                function back(info){
+                    var info = JSON.parse(info.data);
+                    console.log(info)
+
+                    var html = "<h3 style='text-align:center;'><div class='sa-icon " + info.status + "'><span></span></div>" + info.message + "！</h3>";
+
+                    var prevPage = null;
+                    if(info.status == "success"){
+                        prevPage = function(){
+                            event.target.parentNode.parentNode.remove();
+                        };
+                    };
+                    loadingClose();
+                    showBox(html,"message","",prevPage);
                 };
-            };
 
-            if(target.id == "delete-question-admin-btn"){
-                document.querySelectorAll('#delete-question').forEach(function(item){
-                    item.innerText = "「" + dname + "」";
-                })
-                action =  "/" + category + "/" + id + "/" + functionid;
+                asyncAjax(url,back,true);
             };
-
-            if(target.id == "admin-delete-user-btn"){
-                document.querySelector('#delete-position').innerText = "「" + dname + "」";
-                action =  "/" + category + "/" + dname + "/" + id;
-            };
-
-            document.querySelector('#delete-form').action = action + "?_method=DELETE";
-        });
+        };
     };
 };
 
 //save button
 function saveButton(){
-    var save = document.querySelector("#save");
-    if(save){
-        save.onclick = function(){            
+    if(document.querySelector("#save")){
+        save.onclick = function(event){
+            var infoId = this.getAttribute("data-infoId");
+            var data="?";
+            var inputs = document.querySelectorAll("[required]");
+            for(var i=0;i<inputs.length;i++){
+                if(inputs[i].value==""){
+                    return;
+                };
+                data += "&" + inputs[i].id + "=" + inputs[i].value;
+            };
+
+            data += "&infoId=" + infoId;
+            
+            loading();
+
+            event.preventDefault();
+                            
+            var url = location.href + "/update" + encodeURI(data);
+            console.log(url)
+
             function back(info){
                 var info = JSON.parse(info.data);
-                var status = info.status;
+                console.log(info)
 
-                if(status != "success"){
-                    status = "warning";
-                };
-
-                var html = "<h3 style='text-align:center;'><div class='sa-icon " + status + "'><span></span></div>" + info.message + "！</h3>";
+                var html = "<h3 style='text-align:center;'><div class='sa-icon " + info.status + "'><span></span></div>" + info.message + "！</h3>";
 
                 var prevPage = null;
-                if(status == "success"){
-                    prevPage= function(){
+                if(info.status == "success"){
+                    prevPage = function(){
                         document.querySelector("#cancel").click();
                     };
                 };
-
-                showBox(html,"message","",prevPage)                
+                loadingClose();
+                showBox(html,"message","",prevPage);
             };
-            var id = document.querySelector("form").id;
-            var cpnyid = this.getAttribute("data-cpnyid");
-            var url = location.origin + "/johnnyHire/" + cpnyid + "/" + id + "/edit?entity_name=" + entity_name.value + "&des=" + encodeURI(des.value);
+
+            asyncAjax(url,back,true);
+        };
+    };
+};
+
+//add button
+function addButton(){
+    if(document.querySelector("#add")){
+        add.onclick = function(event){
+            var data="?";
+            var inputs = document.querySelectorAll("[required]");
+            for(var i=0;i<inputs.length;i++){
+                if(inputs[i].value==""){
+                    return;
+                };
+                data += "&" + inputs[i].id + "=" + inputs[i].value;
+            };
+            
+            loading();
+
+            event.preventDefault();
+                            
+            var url = location.href + "/insert" + encodeURI(data);
+            console.log(url)
+
+            function back(info){
+                var info = JSON.parse(info.data);
+                console.log(info)
+
+                var html = "<h3 style='text-align:center;'><div class='sa-icon " + info.status + "'><span></span></div>" + info.message + "！</h3>";
+
+                var prevPage = null;
+                if(info.status == "success"){
+                    prevPage = function(){
+                        document.querySelector("#cancel").click();
+                    };
+                };
+                loadingClose();
+                showBox(html,"message","",prevPage);
+            };
+
             asyncAjax(url,back,true);
         };
     };
