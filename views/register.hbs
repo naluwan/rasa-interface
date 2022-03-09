@@ -1,66 +1,29 @@
 <!-- register -->
 <div data-func="login">
   <div class="register">
-
     <h1>註冊帳號</h1>
     {{> message}}
-    <form {{#if isAdmin}}action="/adminCompany/new"{{else}}action="/users/register"{{/if}} Method="post">
+    <form action="" name="form" id="user">
         <input type="text" id="cpy_no" name="cpy_no" class="form-control" placeholder="請輸入公司代號或統編" value="{{ cpy_no }}" required>
+
         <input type="text" id="cpy_name" name="cpy_name" class="form-control" placeholder="請輸入公司名稱" value="{{ cpy_name }}" required>
+
         <input type="email" id="email" name="email" class="form-control" placeholder="請輸入信箱" value="{{ email }}" required>
-
-  <!--
-      <div class="form-group">
-        <label for="industry_no">產業類別</label>
-        <select name="industry_no" id="industry_no" class="form-control" required>
-          <option value="" selected hidden>請選擇</option>
-          {{#each industryInfo}}
-          <option value="{{this.INDUSTRY_ID}}" {{#unless ../isAdmin}} {{#is this.INDUSTRY_ID 0}} hidden disabled {{/is}} {{/unless}} 
-          {{#is this.INDUSTRY_ID ../industry_no}} selected {{/is}}>
-          {{this.INDUSTRY_NAME}}
-          </option>
-          {{/each}}
-        </select>
-      </div>
-  -->
-
-      {{#if isAdmin}}
-      <div class="form-group">
-        <label for="ishr">客服使用者</label>
-        <select name="ishr" id="ishr" class="form-control" required>
-          <option value="" selected hidden>請選擇</option>
-          <option value="1" {{#is ishr '1'}} selected {{/is}}>是</option>
-          <option value="0" {{#is ishr '0'}} selected {{/is}}>否</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <select name="isadmin" id="isadmin" class="form-control" required>
-          <option value="" selected hidden>請選擇</option>
-          <option value="1" {{#is isadmin '1'}} selected {{/is}}>管理員</option>
-          <option value="0" {{#is isadmin '0'}} selected {{/is}}>一般使用者</option>
-        </select>
-      </div>
-      {{/if}}
 
         <input type="password" id="password" name="password" class="form-control" placeholder="請輸入密碼" value="{{ password }}" required>
 
         <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" placeholder="請再次輸入密碼" value="{{ confirmPassword }}" required>
 
       <div>
-        
-        <button id="submit" type="submit" class="btn btn-info">註冊</button>
-        
+        <div>
+          <button id="add" type="submit" class="btn btn-info">註冊</button>
+        </div>
+
         <div class="account">
           已經有帳號了?
           <a href="javascript:;" onclick="Method.common.page('/')" style="color: blue;">登入</a>
         </div>
-
       </div>
-      
     </form>
-    {{#unless isAdmin}}
-    
-    {{/unless}}
   </div>
 </div>
