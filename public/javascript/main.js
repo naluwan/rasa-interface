@@ -25,6 +25,7 @@ Method.button.all = function(){
     Method.button.delButton();
     Method.button.repwdButton();
     Method.button.forgetButton();
+    Method.button.resetPwd();
 };
 
 //save button
@@ -106,10 +107,18 @@ Method.button.addButton = function(){
 
                 var prevPage = null;
                 if(info.status == "success"){
-                    prevPage = function(){
-                        document.querySelector("#cancel").click();
+
+                    if(document.querySelector("#cancel")){
+                        prevPage = function(){
+                            document.querySelector("#cancel").click();
+                        };
+                    }else{
+                        prevPage = function(){
+                            Method.common.page("/");
+                        };
                     };
                 };
+
                 Method.common.loadingClose();
                 Method.common.showBox(html,"message","",prevPage);
             };
@@ -310,17 +319,85 @@ Method.button.forgetButton  = function(){
 
             var html = 
                 '<h1>忘記密碼</h1>'+
-                '<form action="/users/sendResetMail" Method="GET">'+
-                    '<input type="email" class="form-control" name="resetEmail" placeholder="請輸入申請帳號時所填入的E-mail" required>'+
+                '<form action="" name="forgetForm">'+
+                    '<input type="email" class="form-control" name="email" placeholder="請輸入申請帳號時所填入的E-mail">'+
                     '<div>'+
-                        '<button type="submit" class="btn btn-info">送出</button>'+
+                        '<button id="sendEmail" type="button" class="btn btn-info">送出</button>'+
                     '</div>'+
                 '</form>';
 
             Method.common.showBox(html,"forgetBox");
+
+            document.querySelector("#sendEmail").onclick = function(event) {
+                
+                function back(info){
+                    var info = JSON.parse(info.data);
+                    console.log(info)
+    
+                    var html = "<h5><div class='sa-icon " + info.status + "'><span></span></div>" + info.message + "</h5>";
+    
+                    document.querySelector("#forgetBox .content").innerHTML = html;
+    
+                    Method.common.loadingClose();
+                };
+
+                if(forgetForm.email.value == ""){
+                    forgetForm.email.focus();
+                };
+
+                event.preventDefault();
+
+                Method.common.loading();
+
+                var url = location.origin + "/users/sendResetMail?email=" + forgetForm.email.value;
+                console.log(url)
+                Method.common.asyncAjax(url,back);
+            }
         };
     };
 };
+
+//resetPassword button
+Method.button.resetPwd = function(){
+    if(document.querySelector("#resetPwd")){
+        resetPwd.onclick = function(event){
+
+            function back(info){
+                var info = JSON.parse(info.data);
+                console.log(info)
+
+                var html = "<h2><div class='sa-icon " + info.status + "'><span></span></div>" + info.message + "</h2>";
+
+                function goLogin(){
+                    Method.common.page("/")
+                };
+
+                Method.common.showBox(html,"message","",goLogin);
+
+                Method.common.loadingClose();
+            };
+
+            var data = "/update";
+            var inputs = document.querySelectorAll("[required]");
+            for(var i=0;i<inputs.length;i++){
+                if(inputs[i].value==""){
+                    return;
+                };
+
+                i == 0 ? symbol = "?" : symbol = "&";
+
+                data += symbol + inputs[i].name + "=" + inputs[i].value;
+            };
+
+            event.preventDefault();
+
+            var url = location.href + data;
+            console.log(url)
+            Method.common.asyncAjax(url,back);
+        };
+    };
+};
+
 
 //search
 Method.search={};
@@ -370,6 +447,12 @@ Method.search.keyWord = function(){
 
         }else{
             search.onkeyup = function(){
+
+                var code =  "{[]',:?\/><=+-()!@#$%^&*`\"~";
+                var x = [].slice.call(code);
+                console.log(x)
+
+                console.log(x.includes(search.value))
 
                 searchCss.innerHTML = "#data-panel > :not([data-search*=" + search.value + "]){display:none;}";
 
