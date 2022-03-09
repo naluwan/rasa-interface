@@ -448,11 +448,39 @@ Method.search.keyWord = function(){
         }else{
             search.onkeyup = function(){
 
-                var code =  "{[]',:?\/><=+-()!@#$%^&*`\"~";
-                var x = [].slice.call(code);
-                console.log(x)
+                console.log(search.value)
 
+                if(search.value == ""){
+                    return;
+                }
+
+                if(document.querySelector("#msg")){
+                    msg.remove();
+                };
+
+                var code =  "{}[]',:?/><=+-()!@#$%^&*`~" + '"';
+                var x = [].slice.call(code);
+                var y = [].slice.call(search.value);
+                console.log(x)
                 console.log(x.includes(search.value))
+
+                for(var i=0;i<y.length;i++){
+                    if(x.includes(y[i])){
+                        search.value = search.value.replace(y[i],"");
+                        
+                        var html =
+                        '<div id="msg" class="alert alert-warning alert-dismissible fade show" role="alert">'+
+                            '請輸入文字!'+
+                            '<button type="button" class="close" data-dismiss="alert" aria-label="Close">'+
+                                '<span aria-hidden="true">×</span>'+
+                            '</button>'+
+                        '</div>';
+                        
+                    document.querySelector(".searchBar").insertAdjacentHTML("beforeend",html);
+
+                    return;
+                    };
+                };
 
                 searchCss.innerHTML = "#data-panel > :not([data-search*=" + search.value + "]){display:none;}";
 
