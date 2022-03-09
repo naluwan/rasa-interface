@@ -10,13 +10,7 @@
   <link rel="shortcut icon" href="/images/icon.png" sizes="any">
   <!-- Font Awesome icons (free version)-->
   <script src="https://use.fontawesome.com/releases/v5.15.3/js/all.js" crossorigin="anonymous"></script>
-  <!-- Google fonts-->
-  <link href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet"
-    type="text/css" />
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-  <link
-    href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800"
-    rel="stylesheet" type="text/css" />
+
   <!-- Core theme CSS (includes Bootstrap)-->
   <link rel="stylesheet" href="https://bootswatch.com/4/lux/bootstrap.min.css">
   <link href="/stylesheets/style.css" rel="stylesheet" />
@@ -61,14 +55,14 @@
   <!-- Navigation-->
   <header>
     <nav>
-      <a href="javascript:;" onclick="page('/')">
+      <a href="javascript:;" onclick="Method.common.page('/')">
         {{#if isAuthenticated}}
         {{user.CPY_NAME}}
         {{/if}}
       </a>
       {{!-- <h1 style="color: #fff;">ChatBot設定</h1> --}}
       {{#if isAuthenticated}}
-      <a href="/users/logout" class="btn btn-outline-light">登出</a>
+      <bottom onclick="Method.common.page('/users/logout')" class="btn btn-outline-light">登出</bottom>
       {{/if}}
     </nav>
   </header>
@@ -90,8 +84,10 @@
   <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
   <script src="/javascript/front-script.js"></script>
+  <!--
   <script src="/javascript/bf_cs_question.js"></script>
   <script src="/javascript/jquery-handlebars-1.1.4.min.js"></script>
+  -->
 
   {{!-- <script data-main="front-script" src="javascript/require.js"></script> --}}
   <!-- Core theme JS-->
