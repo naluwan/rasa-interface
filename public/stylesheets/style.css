@@ -2,7 +2,7 @@
 
 /*showbox*/
 .showBox{position: fixed;display: flex!important;justify-content: center;align-items: center;left: 0;top: 0;width: 100%!important;height: 100%!important;background-color: rgba(0,0,0,.5);z-index: 10000;animation: fadein .5s both;}
-.showBox > div{margin: 10px; position: relative;background: #fff;padding: 20px;box-shadow: 0 0 10px #333;border-radius: 5px;max-width: 90%;z-index: 9997;}
+.showBox > div{margin: 10px;position: relative;background: #fff;padding: 20px;box-shadow: 0 0 10px #333;border-radius: 5px;max-width: 90%;z-index: 9997;animation: popZoomIn .3s;}
 .showBox > div .close{cursor: pointer;display: flex;}
 .showBox > div .close:before{content: "";display: block;width: 32px;height: 32px;line-height: 32px;position: absolute;top: 3px;right: 3px;color: #fff;font-weight: bold;text-align: center;opacity: .6;font-size: 18px;z-index: 9997;background: url(/images/del.svg) center / 80% no-repeat;filter: invert(1);}
 .showBox > div .close:hover:before{opacity: .7;cursor:pointer;}
@@ -93,7 +93,11 @@ footer{background: rgb(0 0 0 / 60%);width: 100%;padding: 10px;position: fixed;bo
 ::-webkit-scrollbar {width: 0px;}
 ::placeholder{color:#999;}
 
-h1{margin-bottom: 15px;font-weight: initial;}
+h1{margin-bottom: 15px;font-size: 28px;}
+h2{font-size: 22px;}
+
+h1,
+h2{color: #666;font-weight:bold;}
 
 select{outline:none;}
 
@@ -108,10 +112,9 @@ textarea,
 
 #rasaWebchatPro h4{color:#fff;font-size:16px;width: calc(100% - 120px);text-align:left;text-overflow: ellipsis;overflow: hidden;white-space: nowrap;}
 .btn{border-radius:5px;font-size:16px;white-space: nowrap;padding: 5px 15px;font-weight: inherit;}
-.lead{font-weight:bold;font-size:18px;margin-top:30px}
-.form-control{background:#f9f9f9;padding: 10px;height: 40px;}
+.form-control{background:#f9f9f9;padding: 10px;height: 40px;display: block;width: 100%;border: 1px solid #ccc;}
 
-.footButton{position:sticky;bottom:45px;text-align: center;margin-top:30px;text-align:center;}
+.footButton{position:sticky;bottom:45px;text-align: center;margin-top:30px;text-align:center;padding-top: 20px;border-top: 1px solid #ccc;}
 
 .formButton{margin-top:30px;text-align:center;}
 .formButton > input{width: 120px;margin:0 5px}
@@ -122,8 +125,8 @@ textarea,
 #create-btn,
 #confirm-create{margin:10px;font-size:16px;}
 
-#loading{position: fixed;display: flex!important;justify-content: center;align-items: center;left: 0;top: 0;width: 100%!important;height: 100%!important;background-color: rgba(0,0,0,.5);z-index: 9999;animation: fadein .5s both;}
-#loading img{width:70px;}
+#loading{position: fixed;display: flex!important;justify-content: center;align-items: center;left: 0;top: 0;width: 100%!important;height: 100%!important;background-color: rgba(0,0,0,.5);z-index: 10000;animation: fadein .5s both;}
+#loading img{width:70px;user-select:none;}
 
 header nav{padding:10px;background: rgb(0 0 0 / 60%);width: 100%;}
 header a{color:#fff;font-size:20px;display:inline-block;vertical-align: middle;text-decoration: none!important;}
@@ -140,7 +143,7 @@ header nav .btn{padding:10px 20px;border-radius: 5px;}
 .menu #train{width:100%;margin-bottom: 10px;font-size: 16px;height: 45px;}
 .menu > div > div{padding: 15px 10px;border-bottom: 1px solid #ccc;}
 .menu > div > div:last-of-type{border:none;padding-bottom: 5px;}
-.menu > div > div > label{font-size: 16px;vertical-align: middle;display: inline-block;margin: 0 10px 0 0;}
+.menu > div > div > label{font-size: 16px;vertical-align: middle;display: inline-block;margin: 0 10px 0 0;font-weight: bold;}
 .menu input{padding: 0 15px;height: 28px;font-size: 14px;line-height: inherit;}
 
 .setting label{margin-top: 15px;margin-bottom: 5px;font-size: 16px;color: #333;font-weight: bold;}
@@ -151,6 +154,7 @@ header nav .btn{padding:10px 20px;border-radius: 5px;}
 .searchBar select{padding: 0 10px;border: 1px solid #ccc;margin: 0 10px 0 0;font-size: 18px;height: 36px;vertical-align: middle;background: #f9f9f9;}
 
 #data-panel{margin-bottom:10px;min-height:50px;}
+#data-panel.noList:before{content:"查無資料";display:block;font-size: 16px;text-align:center;background:#f1f1f1;line-height:48px;border-radius:5px;}
 #data-panel > div{display: inline-block;background: #fff;box-shadow: 5px 5px 0 rgb(0 0 0 / 10%);margin: 5px;border-radius: 10px;padding: 15px;border:1px solid #ccc;width: calc(100% / 3 - 14px);position: relative;}
 #data-panel > div > span{display:inline-block;vertical-align: middle;}
 #data-panel > div > span:first-of-type > div > span:first-of-type{width: 80px;text-align:right;font-weight:bold;color:#135372;}
@@ -161,37 +165,56 @@ header nav .btn{padding:10px 20px;border-radius: 5px;}
 #data-panel > div button{padding:5px 15px;}
 
 #message > div{width: 300px;}
-#message h3{font-size: 18px;}
 #message .button{text-align: center;margin-top: 20px;}
 #message .button button{width: calc(100% / 2 - 10px);margin: 0 5px;}
-#message label{margin:15px 0 5px}
+
+#message h1,
+#message h2,
+#message h3{text-align:center;}
 
 /*login*/
 .login header{display:none;}
-.login label{font-size: 16px;}
-.login button{border-radius:5px;letter-spacing: 1px;}
-.login h1{font-size: 70px;margin-bottom: 18px;text-transform: initial;color: #1f9bcf;font-family: 'Luckiest Guy',cursive;text-shadow: 5px 5px 0 #e5e3e3;font-weight: inherit;}
 .login .container{max-width: calc(100% - 20px);height: calc(100% - 42px);display: flex;padding: 0;justify-content: center;align-items: center;overflow: auto;}
-.login .container > div{width: 500px;overflow: auto;padding: 20px;max-height: 100%;background: #fff;border-radius: 10px;padding: 20px;box-shadow: 10px 10px 0px rgb(0 0 0 / 10%);border: 1px solid #ccc;}
-.login .btn{font-size: 14px;}
-.login #resetModal button > span{font-size: 30px;font-weight: inherit;}
-.login .account{font-size: 16px;margin:20px 0 0;text-align:center;}
-.login .account a{color:#00f;}
+.login .container > div{overflow: auto;max-height: 100%;background: #fff;border-radius: 10px;padding: 20px;box-shadow: 10px 10px 0px rgb(0 0 0 / 10%);border: 1px solid #ccc;opacity: 0;animation: fadein .5s forwards;}
 
-.login #submit,
-.login #forget{width: calc(50% - 3px);font-weight: inherit;font-size: 16px;}
+/*signin*/
+.signin{width:400px;max-width:100%;}
+.signin h1{font-size: 70px;margin-bottom: 18px;text-transform: initial;color: #1f9bcf;font-family: 'Luckiest Guy',cursive;text-shadow: 5px 5px 0 #e5e3e3;font-weight: inherit;text-align: center;}
+.signin #resetModal button > span{font-size: 30px;font-weight: inherit;}
+.signin .account{font-size: 16px;margin:20px 0 0;text-align:center;}
+.signin .account a{color:#00f;}
+.signin input{margin: 25px 0;}
+
+.signin #submit,
+.signin #forget{width: calc(50% - 3px);font-weight: inherit;font-size: 16px;letter-spacing: 1px;}
+
+/*forget*/
+#forgetBox h1{text-align:center;}
+#forgetBox .content{width:300px;}
+#forgetBox input{margin:20px 0;}
+#forgetBox button{width: 100%;font-weight: inherit;font-size: 16px;letter-spacing: 1px;}
+
+/*register*/
+.register{width: 400px;max-width: 100%;}
+.register header{display:none;}
+.register .container{max-width: calc(100% - 20px);height: calc(100% - 62px);display: flex;padding: 0;justify-content: center;align-items: center;overflow: auto;}
+.register .container > div{width: 400px;overflow: auto;max-height: calc(100% - 100px);background: #fff;border-radius: 10px;padding: 20px;box-shadow: 10px 10px 0px rgb(204 204 204);border: 1px solid #ccc;margin-bottom: 60px;}
+.register .account{font-size: 16px;margin:20px 0 0;text-align:center;}
+.register h1{text-align:center;}
+.register input{margin: 20px 0;}
+.register #submit{width:100%;font-weight: inherit;font-size: 16px;letter-spacing: 1px;}
 
 /*index*/
 .index #roleFilter{font-size: 18px;width:100%;margin-bottom:15px;padding:5px;border: 1px solid #ccc;color: #666;height: 50px;background: #f9f9f9;}
 
-/*register*/
-.register .container{max-width: calc(100% - 20px);height: calc(100% - 62px);display: flex;padding: 0;justify-content: center;align-items: center;overflow: auto;}
-.register .container > div{width: 500px;overflow: auto;max-height: calc(100% - 100px);background: #fff;border-radius: 10px;padding: 20px;box-shadow: 10px 10px 0px rgb(204 204 204);border: 1px solid #ccc;margin-bottom: 60px;}
 
 /*adminSearch*/
 .adminSearch #data-panel{display:flex;flex-wrap:wrap;}
 .adminSearch h2 + div + div{position: absolute;right: 15px;top: 10px;}
 .adminSearch #data-panel h2 + div > span{display:block;min-height:90px;}
+
+/*admin_search*/
+.admin_search #data-panel{min-height:inherit;}
 
 
 /*admin_company*/
@@ -203,6 +226,8 @@ header nav .btn{padding:10px 20px;border-radius: 5px;}
 .admin_company #data-panel > div > span:nth-of-type(2){width: 120px;}
 .admin_company h2{font-size: 22px;color: #d9534f;}
 .admin_company #data-panel > div > span:nth-of-type(2) > *{width: 100%;margin: 10px 0;}
+
+#message #rePassword input{margin: 20px 0 0;}
 
 /*admin_new_companyInfo*/
 .admin_new_companyInfo form > div > div{margin-bottom: 20px;}
@@ -292,4 +317,9 @@ header nav .btn{padding:10px 20px;border-radius: 5px;}
     50% {transform: scale(0.4);margin-top: 26px;opacity: 0; }
     80% {transform: scale(1.15);margin-top: -6px; }
     100% {transform: scale(1);margin-top: 0;opacity: 1; }
+}
+
+@keyframes popZoomIn {
+    from {opacity: 0;transform: scale3d(0.3, 0.3, 0.3);}
+    50% {opacity: 1;}
 }
