@@ -24,7 +24,7 @@ module.exports = {
           console.log('error in email template');
         }
         transporter.sendMail({
-          from: '"BOTFRONT" <harrychien@interinfo.com.tw>',
+          from: '"ChatBot" <harrychien@interinfo.com.tw>',
           to: 'harrychien@interinfo.com.tw',
           subject: subject,
           html: html,
@@ -45,7 +45,7 @@ module.exports = {
           console.log('error in email template');
         }
         transporter.sendMail({
-          from: '"BOTFRONT" <harrychien@interinfo.com.tw>',
+          from: '"ChatBot" <harrychien@interinfo.com.tw>',
           to: 'harrychien@interinfo.com.tw',
           subject: subject,
           html: html,
@@ -66,7 +66,7 @@ module.exports = {
           console.log('error in email template');
         }
         transporter.sendMail({
-          from: '"BOTFRONT" <harrychien@interinfo.com.tw>',
+          from: '"ChatBot" <harrychien@interinfo.com.tw>',
           to: email,
           subject: subject,
           html: html,
