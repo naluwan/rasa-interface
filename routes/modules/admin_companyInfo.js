@@ -110,43 +110,21 @@ router.get('/new', isAdmin, (req, res) => {
 })
 
 router.get('/', isAdmin, (req, res) => {
-  const {search} = req.query
   const warning = []
   const request = new sql.Request(pool)
   const admin_category = true
   const category = 'cpnyinfo'
-  const regex = /\{|\[|\]|\'|\"\;|\:\?|\\|\/|\.|\,|\>|\<|\=|\+|\-|\(|\)|\!|\@|\#|\$|\%|\^|\&|\*|\`|\~/g
 
-  if(!search){
-    request.query(`select CPNYINFO_NAME as cnName, ENTITY_NAME as entity_name, CPNYINFO_ID as id
-    from BF_JH_CPNYINFO_CATEGORY`, (err, result) => {
-      if(err){
-        console.log(err)
-        return
-      }
-      const adminCategoryInfo = result.recordset
-      if(!adminCategoryInfo.length) warning.push({message: '查無公司資訊類別，請拉到下方新增公司資訊類別!'})
-      res.render('index', {adminCategoryInfo, warning, admin_category, category})
-    })
-  }else{
-    // 驗證搜尋字串是否有非法字元
-    if(regex.test(search)){
-      req.flash('warning_msg', '搜尋字串包含非法字元，請重新嘗試!')
-      return res.redirect('/admin_companyInfo')
+  request.query(`select CPNYINFO_NAME as cnName, ENTITY_NAME as entity_name, CPNYINFO_ID as id
+  from BF_JH_CPNYINFO_CATEGORY`, (err, result) => {
+    if(err){
+      console.log(err)
+      return
     }
-
-    request.query(`select CPNYINFO_NAME as cnName, ENTITY_NAME as entity_name, CPNYINFO_ID as id
-    from BF_JH_CPNYINFO_CATEGORY
-    where CPNYINFO_NAME like '%%${search}%%'`, (err, result) => {
-      if(err){
-        console.log(err)
-        return
-      }
-      const adminCategoryInfo = result.recordset
-      if(!adminCategoryInfo.length) warning.push({message: '查無此資訊!'})
-      res.render('index', {adminCategoryInfo, warning, search, admin_category, category})
-    })
-  }
+    const adminCategoryInfo = result.recordset
+    if(!adminCategoryInfo.length) warning.push({message: '查無公司資訊類別，請拉到下方新增公司資訊類別!'})
+    res.render('index', {adminCategoryInfo, warning, admin_category, category})
+  })
 })
 
 module.exports = router

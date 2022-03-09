@@ -111,45 +111,22 @@ router.get('/new', isAdmin, (req, res) => {
 
 router.get('/', isAdmin, (req, res) => {
   const request = new sql.Request(pool)
-  const {search} = req.query
   const warning = []
   const admin_category = true
   const category = 'position'
-  const regex = /\{|\[|\]|\'|\"\;|\:\?|\\|\/|\.|\,|\>|\<|\=|\+|\-|\(|\)|\!|\@|\#|\$|\%|\^|\&|\*|\`|\~/g
 
-    if(!search){
-      // 如果沒有搜尋字串，顯示所有結果
-      request.query(`select POSITION_NAME as cnName, ENTITY_NAME as entity_name, POSITION_ID as id 
-      from BF_JH_POSITION_CATEGORY`, (err, result) => {
-        if(err){
-          console.log(err)
-          return
-        }
-
-        const adminCategoryInfo = result.recordset 
-        if(adminCategoryInfo.length == 0) warning.push({message: '查無職缺類別，請拉到下方新增職缺類別'})
-        return res.render('index', {adminCategoryInfo, admin_category, warning, category})
-      })
-    }else{
-      // 驗證搜尋字串是否有非法字元
-      if(regex.test(search)){
-        req.flash('warning_msg', '搜尋字串包含非法字元，請重新嘗試')
-        return res.redirect('/admin_positionInfo')
-      }
-
-      // 有選擇分類的話，顯示篩選後結果
-      request.query(`select POSITION_NAME as cnName, ENTITY_NAME as entity_name, POSITION_ID as id 
-      from BF_JH_POSITION_CATEGORY
-      where POSITION_NAME like '%%${search}%%'`, (err, result) => {
-        if(err){
-          console.log(err)
-          return
-        }
-        const adminCategoryInfo = result.recordset
-        if(!adminCategoryInfo.length) warning.push({message: '查無此職缺'})
-        return res.render('index', {adminCategoryInfo, admin_category, warning, category})
-      })
+  // 如果沒有搜尋字串，顯示所有結果
+  request.query(`select POSITION_NAME as cnName, ENTITY_NAME as entity_name, POSITION_ID as id 
+  from BF_JH_POSITION_CATEGORY`, (err, result) => {
+    if(err){
+      console.log(err)
+      return
     }
+
+    const adminCategoryInfo = result.recordset 
+    if(adminCategoryInfo.length == 0) warning.push({message: '查無職缺類別，請拉到下方新增職缺類別'})
+    return res.render('index', {adminCategoryInfo, admin_category, warning, category})
+  })
 })
 
 module.exports = router

@@ -110,38 +110,21 @@ router.get('/new', isAdmin, (req, res) => {
 })
 
 router.get('/', isAdmin, (req, res) => {
-  const {search} = req.query
   const admin_category = true
   const category = 'leave'
   const warning = []
   const request = new sql.Request(pool)
-  const regex = /\{|\[|\]|\'|\"\;|\:\?|\\|\/|\.|\,|\>|\<|\=|\+|\-|\(|\)|\!|\@|\#|\$|\%|\^|\&|\*|\`|\~/g
 
-  if(!search){
-    request.query(`select LEAVE_NAME as cnName, ENTITY_NAME as entity_name, LEAVE_ID as id 
-    from BF_JH_LEAVE_CATEGORY`, (err, result) => {
-      if(err){
-        console.log(err)
-        return
-      }
-      const adminCategoryInfo = result.recordset
-      if(!adminCategoryInfo.length) warning.push({message: '查無公司假別，請拉到下方新增公司假別!!'})
-      res.render('index', {adminCategoryInfo, warning, admin_category, category})
-    })
-  }else{
-    request.query(`select LEAVE_NAME as cnName, ENTITY_NAME as entity_name, LEAVE_ID as id 
-    from BF_JH_LEAVE_CATEGORY
-    where LEAVE_NAME like '%%${search}%%'`, (err, result) => {
-      if(err){
-        console.log(err)
-        return
-      }
-      const adminCategoryInfo = result.recordset
-      if(!adminCategoryInfo.length) warning.push({message: '查無此假別!'})
-      res.render('index', {adminCategoryInfo, warning, search, admin_category, category})
-    })
-  }
-  
+  request.query(`select LEAVE_NAME as cnName, ENTITY_NAME as entity_name, LEAVE_ID as id 
+  from BF_JH_LEAVE_CATEGORY`, (err, result) => {
+    if(err){
+      console.log(err)
+      return
+    }
+    const adminCategoryInfo = result.recordset
+    if(!adminCategoryInfo.length) warning.push({message: '查無公司假別，請拉到下方新增公司假別!!'})
+    res.render('index', {adminCategoryInfo, warning, admin_category, category})
+  })
 })
 
 module.exports = router

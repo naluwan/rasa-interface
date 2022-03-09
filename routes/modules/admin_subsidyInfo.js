@@ -110,42 +110,21 @@ router.get('/new', isAdmin, (req, res) => {
 })
 
 router.get('/', isAdmin, (req, res) => {
-  const {search} = req.query
   const admin_category = true
   const category = 'subsidy'
   const warning = []
   const request = new sql.Request(pool)
-  const regex = /\{|\[|\]|\'|\"\;|\:\?|\\|\/|\.|\,|\>|\<|\=|\+|\-|\(|\)|\!|\@|\#|\$|\%|\^|\&|\*|\`|\~/g
-  if(!search){
-    request.query(`select SUBSIDY_NAME as cnName, ENTITY_NAME as entity_name, SUBSIDY_ID as id 
-    from BF_JH_SUBSIDY_CATEGORY`, (err, result) => {
-      if(err){
-        console.log(err)
-        return
-      }
-      const adminCategoryInfo = result.recordset
-      if(!adminCategoryInfo.length) warning.push({message: '查無公司補助類別，請拉到下方新增公司補助類別!!!'})
-      res.render('index', {adminCategoryInfo, warning, admin_category, category})
-    })
-  }else{
-    // 驗證搜尋字串是否有非法字元
-    if(regex.test(search)){
-      req.flash('warning_msg', '搜尋字串包含非法字元，請重新嘗試!')
-      return res.redirect('/admin_subsidyInfo')
-    }
 
-    request.query(`select SUBSIDY_NAME as cnName, ENTITY_NAME as entity_name, SUBSIDY_ID as id
-    from BF_JH_SUBSIDY_CATEGORY
-    where SUBSIDY_NAME like '%%${search}%%'`, (err, result) => {
-      if(err){
-        console.log(err)
-        return
-      }
-      const adminCategoryInfo = result.recordset
-      if(!adminCategoryInfo.length) warning.push({message: '查無此補助!'})
-      res.render('index', {adminCategoryInfo, warning, search, admin_category, category})
-    })
-  }
+  request.query(`select SUBSIDY_NAME as cnName, ENTITY_NAME as entity_name, SUBSIDY_ID as id 
+  from BF_JH_SUBSIDY_CATEGORY`, (err, result) => {
+    if(err){
+      console.log(err)
+      return
+    }
+    const adminCategoryInfo = result.recordset
+    if(!adminCategoryInfo.length) warning.push({message: '查無公司補助類別，請拉到下方新增公司補助類別!!!'})
+    res.render('index', {adminCategoryInfo, warning, admin_category, category})
+  })
 })
 
 module.exports = router
