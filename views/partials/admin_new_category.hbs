@@ -1,0 +1,26 @@
+{{#if admin_new_category}}
+<!-- admin_new_category -->
+<div class="admin_new_category">
+  <h1>新增{{#is category 'cpnyinfo'}}資訊{{/is}}{{#is category 'position'}}職缺{{/is}}{{#is category 'leave'}}假別{{/is}}{{#is category 'subsidy'}}補助{{/is}}類別</h1>
+  <form name="form" id="admin_new_category" action="">
+    <div>
+      {{> message}}
+      <div>
+        <label>{{#is category 'cpnyinfo'}}資訊{{/is}}{{#is category 'position'}}職缺{{/is}}{{#is category 'leave'}}假別{{/is}}{{#is category 'subsidy'}}補助{{/is}}名稱</label>
+        <input type="text" class="form-control" name="cnName" placeholder="請輸入中文名稱" value="{{info_name}}" required>
+      </div>
+      <div>
+        <label>{{#is category 'cpnyinfo'}}資訊{{/is}}{{#is category 'position'}}職缺{{/is}}{{#is category 'leave'}}假別{{/is}}{{#is category 'subsidy'}}補助{{/is}}英文名稱</label>
+        <input type="text" class="form-control" name="entity_name" placeholder="請輸入英文名稱" value="{{entity_name}}" required>
+      </div>
+    </div>
+    <div class="formButton">
+      {{#is category 'cpnyinfo'}}<input id="cancel" type="button" class="btn btn-primary" onclick="Method.common.page('/admin_companyInfo')" value="取消">{{/is}}
+      {{#is category 'position'}}<input id="cancel" type="button" class="btn btn-primary" onclick="Method.common.page('/admin_positionInfo')" value="取消">{{/is}}
+      {{#is category 'leave'}}<input id="cancel" type="button" class="btn btn-primary" onclick="Method.common.page('/admin_leaveInfo')" value="取消">{{/is}}
+      {{#is category 'subsidy'}}<input id="cancel" type="button" class="btn btn-primary" onclick="Method.common.page('/admin_subsidyInfo')" value="取消">{{/is}}
+      <input type="submit" id="add" class="btn btn-info" value="新增">
+    </div>
+  </form>
+</div>
+{{/if}}
