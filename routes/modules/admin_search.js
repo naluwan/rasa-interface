@@ -162,7 +162,9 @@ router.get('/filter', (req, res) => {
     left join BOTFRONT_USERS_INFO c
     on a.CPY_ID = c.CPY_ID
     where c.CPY_ID = '${companyFilter}'
-    and b.${tableFilter}_NAME like '%%${search}%%'
+    and (b.${tableFilter}_NAME like '%%${search}%%'
+    or b.ENTITY_NAME like '%%${search}%%'
+    or a.${tableFilter}_DES like '%%${search}%%')
     order by b.${tableFilter}_ID ASC`, (err, result) => {
       if(err){
         console.log(err)
