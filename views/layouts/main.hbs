@@ -1,96 +1,95 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>chat bot</title>
+    <link rel="shortcut icon" href="/images/icon.png" sizes="any">
+    <!-- Font Awesome icons (free version)-->
+    <script src="https://use.fontawesome.com/releases/v5.15.3/js/all.js" crossorigin="anonymous"></script>
 
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-  <meta name="description" content="" />
-  <meta name="author" content="" />
-  <title>chat bot</title>
-  <link rel="shortcut icon" href="/images/icon.png" sizes="any">
-  <!-- Font Awesome icons (free version)-->
-  <script src="https://use.fontawesome.com/releases/v5.15.3/js/all.js" crossorigin="anonymous"></script>
+    <!-- Core theme CSS (includes Bootstrap)-->
+    <link rel="stylesheet" href="https://bootswatch.com/4/lux/bootstrap.min.css">
+    <link href="/stylesheets/style.css" rel="stylesheet" />
+    <script src="/javascript/main.js"></script>
+  </head>
 
-  <!-- Core theme CSS (includes Bootstrap)-->
-  <link rel="stylesheet" href="https://bootswatch.com/4/lux/bootstrap.min.css">
-  <link href="/stylesheets/style.css" rel="stylesheet" />
-  <script src="/javascript/main.js"></script>
-</head>
-
-<body>
-  {{#if isAuthenticated}}
-  <!-- 導入webchat視窗 -->
-  <script>!(function () {
-      let e = document.createElement("script"),
-        t = document.head || document.getElementsByTagName("head")[0];
-      (e.src =
-        "/javascript/index.js"),
-        // Replace 1.x.x with the hversion that you want
-        (e.async = !0),
-        (e.onload = () => {
-          window.WebChat.default(
-            {
-              customData: { "language": "zh", "userId": `{{user.CPY_ID}}`, "industryId": `{{user.INDUSTRY_NO}}`},
-              socketUrl: "http://192.168.10.108:5005",
-              profileAvatar: "/images/jennyhire.jpg",
-              inputTextFieldHint: "請輸入內容....",
-              title: `[測試版]{{user.CPY_NAME}}小幫手`,
-              subtitle: "",
-              params: { "storage": "session" },
-              showFullScreenButton: true,
-              showCloseButton: true,
-              showMessageDate: true,
-             // embedded: true,
-              // add other props here
-            },
-            null
-          );
-        }),
-        t.insertBefore(e, t.firstChild);
-        // 只要重整就刪除對話紀錄
-        window.sessionStorage.clear()
-    })();
-  </script>
-  {{/if}}
-  <!-- Navigation-->
-  <header>
-    <nav>
-      <a href="javascript:;" onclick="Method.common.page('/')">
+  <body>
+    {{#if isAuthenticated}}
+    <!-- 導入webchat視窗 -->
+    <script>!(function () {
+        let e = document.createElement("script"),
+          t = document.head || document.getElementsByTagName("head")[0];
+        (e.src =
+          "/javascript/index.js"),
+          // Replace 1.x.x with the hversion that you want
+          (e.async = !0),
+          (e.onload = () => {
+            window.WebChat.default(
+              {
+                customData: { "language": "zh", "userId": `{{user.CPY_ID}}`, "industryId": `{{user.INDUSTRY_NO}}`},
+                socketUrl: "http://192.168.10.108:5005",
+                profileAvatar: "/images/jennyhire.jpg",
+                inputTextFieldHint: "請輸入內容....",
+                title: `[測試版]{{user.CPY_NAME}}小幫手`,
+                subtitle: "",
+                params: { "storage": "session" },
+                showFullScreenButton: true,
+                showCloseButton: true,
+                showMessageDate: true,
+              // embedded: true,
+                // add other props here
+              },
+              null
+            );
+          }),
+          t.insertBefore(e, t.firstChild);
+          // 只要重整就刪除對話紀錄
+          window.sessionStorage.clear()
+      })();
+    </script>
+    {{/if}}
+    <!-- Navigation-->
+    <header>
+      <nav>
+        <a href="javascript:;" onclick="Method.common.page('/')">
+          {{#if isAuthenticated}}
+          {{user.CPY_NAME}}
+          {{/if}}
+        </a>
+        {{!-- <h1 style="color: #fff;">ChatBot設定</h1> --}}
         {{#if isAuthenticated}}
-        {{user.CPY_NAME}}
+        <bottom onclick="Method.common.page('/users/logout')" class="btn btn-outline-light">登出</bottom>
         {{/if}}
-      </a>
-      {{!-- <h1 style="color: #fff;">ChatBot設定</h1> --}}
-      {{#if isAuthenticated}}
-      <bottom onclick="Method.common.page('/users/logout')" class="btn btn-outline-light">登出</bottom>
-      {{/if}}
-    </nav>
-  </header>
+      </nav>
+    </header>
 
-  <div class="container">
-    {{{body}}}
-  </div>
-  <!-- Footer-->
-  <footer>
-    Internet Information Co., Ltd All Rights Reserve
-  </footer>
+    <div class="container">
+      {{{body}}}
+    </div>
+    <!-- Footer-->
+    <footer>
+      Internet Information Co., Ltd All Rights Reserve
+    </footer>
 
-  <!-- 導入webchat最新版本 -->
-  {{!-- <script src="https://storage.googleapis.com/mrbot-cdn/webchat-latest.js"></script> --}}
-  <!-- Bootstrap core JS-->
-  <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-  <script src="/javascript/front-script.js"></script>
-  <!--
-  <script src="/javascript/bf_cs_question.js"></script>
-  <script src="/javascript/jquery-handlebars-1.1.4.min.js"></script>
-  -->
+    <!-- 導入webchat最新版本 -->
+    {{!-- <script src="https://storage.googleapis.com/mrbot-cdn/webchat-latest.js"></script> --}}
+    <!-- Bootstrap core JS-->
+    <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="/javascript/front-script.js"></script>
+    <!--
+    <script src="/javascript/bf_cs_question.js"></script>
+    <script src="/javascript/jquery-handlebars-1.1.4.min.js"></script>
+    -->
 
-  {{!-- <script data-main="front-script" src="javascript/require.js"></script> --}}
-  <!-- Core theme JS-->
-  {{!-- <script src="js/scripts.js"></script> --}}
-</body>
+    {{!-- <script data-main="front-script" src="javascript/require.js"></script> --}}
+    <!-- Core theme JS-->
+    {{!-- <script src="js/scripts.js"></script> --}}
+  </body>
 </html>

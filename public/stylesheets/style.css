@@ -114,7 +114,7 @@ textarea,
 .btn{border-radius:5px;font-size:16px;white-space: nowrap;padding: 5px 15px;font-weight: inherit;}
 .form-control{background:#f9f9f9;padding: 10px;height: 40px;display: block;width: 100%;border: 1px solid #ccc;}
 
-.footButton{position:sticky;bottom:45px;text-align: center;margin-top:30px;text-align:center;padding-top: 20px;border-top: 1px solid #ccc;}
+.footButton{position:sticky;bottom:45px;margin-top: 20px;text-align:center;padding-top: 20px;border-top: 1px solid #ccc;}
 
 .formButton{margin-top:30px;text-align:center;}
 .formButton > input{width: 120px;margin:0 5px}
@@ -148,7 +148,7 @@ header nav .btn{padding:10px 20px;border-radius: 5px;}
 
 .setting label{margin-top: 15px;margin-bottom: 5px;font-size: 16px;color: #333;font-weight: bold;}
 
-.searchBar{font-size:18px;margin: 0 5px 10px;}
+.searchBar{font-size:18px;margin: 0 5px 15px;}
 
 .searchBar input[type="text"],
 .searchBar select{padding: 0 10px;border: 1px solid #ccc;margin: 0 10px 0 0;font-size: 18px;height: 36px;vertical-align: middle;background: #f9f9f9;}
@@ -193,6 +193,7 @@ header nav .btn{padding:10px 20px;border-radius: 5px;}
 #forgetBox .content{width:300px;}
 #forgetBox input{margin:20px 0;}
 #forgetBox button{width: 100%;font-weight: inherit;font-size: 16px;letter-spacing: 1px;}
+#forgetBox h5{line-height:24px;margin:0;}
 
 /*register*/
 .register{width: 400px;max-width: 100%;}
@@ -203,6 +204,13 @@ header nav .btn{padding:10px 20px;border-radius: 5px;}
 .register h1{text-align:center;}
 .register input{margin: 20px 0;}
 .register #submit{width:100%;font-weight: inherit;font-size: 16px;letter-spacing: 1px;}
+.register #add{width:100%;}
+
+/*resetPassword*/
+.resetPassword{width: 400px;max-width: 100%;}
+.resetPassword h1{text-align:center;}
+.resetPassword input{margin: 20px 0;}
+.resetPassword #resetPwd{width:100%;}
 
 /*index*/
 .index #roleFilter{font-size: 18px;width:100%;margin-bottom:15px;padding:5px;border: 1px solid #ccc;color: #666;height: 50px;background: #f9f9f9;}

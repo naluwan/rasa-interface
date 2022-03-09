@@ -1,53 +1,21 @@
 <div data-func="login">
-  <!--login.hbs-->
-  <div>
-    <h1 class="text-center mb-4">Chat Bot</h1>
+  <div class="signin">
+    <!--login.hbs-->
+    <h1>Chat Bot</h1>
     {{> message}}
-    <form action="/users/login" method="post">
-      <div class="mt-3">
-        <input type="email" id="email" name="email" class="form-control" placeholder="請輸入E-mail" required>
-      </div>
-      <div class="mt-4">
-        <input type="password" id="password" name="password" class="form-control" placeholder="請輸入密碼" required>
-      </div>
-      <div class="text-center mt-4">
-        <button type="button" class="btn btn-primary" id="forget" data-toggle="modal" data-target="#resetModal">忘記密碼</button>
+    <form action="/users/login" Method="post">
+      
+      <input type="email" id="email" name="email" class="form-control" placeholder="請輸入E-mail" required>
+      <input type="password" id="password" name="password" class="form-control" placeholder="請輸入密碼" required>
+      
+      <div>
+        <button type="button" class="btn btn-primary" id="forget">忘記密碼</button>
         <button type="submit" class="btn btn-info" id="submit">登入</button>
       </div>
-      <div class="account  mt-4">
+      <div class="account">
         還沒有帳號?
-        <a href="/users/register">註冊</a>
+        <a href="javascript:;" onclick="Method.common.page('/users/register')">註冊</a>
       </div>
     </form>
-  </div>
-
-  <!-- Modal -->
-  <div class="modal fade" id="resetModal" tabindex="-1" role="dialog" aria-labelledby="resetModal" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">忘記密碼</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <form action="/users/sendResetMail" method="GET">
-          <div class="modal-body">
-            {{> message}}
-            <div class="input-group">
-              <div class="input-group-prepend">
-                <span class="input-group-text">信箱:</span>
-              </div>
-              <input type="email" class="form-control" name="resetEmail" placeholder="請輸入申請帳號時所填入的E-mail..." aria-label="resetEmail"
-                aria-describedby="resetEmail" required>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-primary" data-dismiss="modal">取消</button>
-            <button type="submit" class="btn btn-info">送出</button>
-          </div>
-        </form>
-      </div>
-    </div>
   </div>
 </div>
