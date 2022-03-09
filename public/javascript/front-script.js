@@ -3,8 +3,6 @@ const csTrainBtn = document.querySelector('.cs-train-btn')
 const jhTrainBtn = document.querySelector('.jh-train-btn')
 const questionDes = document.querySelector('.question-description')
 
-
-
 if(csTrainBtn){
 	csTrainBtn.addEventListener('click', e => {
 		const target = e.target

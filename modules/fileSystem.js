@@ -651,7 +651,7 @@ module.exports = {
     .then(data => {
       // 將要刪除的資料篩選出來，回傳需要保留的資料
       data.nlu.zh.rasa_nlu_data.common_examples = data.nlu.zh.rasa_nlu_data.common_examples.filter(info => {
-        return !info.text.includes(infoCheck) && info.intent != intent
+        return !info.text.includes(infoCheck) || info.intent != intent
       })
       // 將要保留的資料寫檔
       try{
