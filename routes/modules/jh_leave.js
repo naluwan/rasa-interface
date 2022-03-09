@@ -7,7 +7,7 @@ const pool = require('../../config/connectPool')
 const {fsJhWriteInfo, fsJhWritePosition, fsWriteSubsidy, fsWriteLeave} = require('../../modules/fileSystem')
 const {setInfoDict, setPositionDict} = require('../../modules/setDict')
 const {randomNum, checkNum} = require('../../modules/randomNum')
-const {insertDes, editDes, deleteDes} = require('../../modules/useSql')
+const {insertDes, updateDes, deleteDes} = require('../../modules/useSql')
 
 // 顯示編輯假別資訊頁面
 router.get('/:entity_name/edit', (req, res) => {
@@ -66,7 +66,7 @@ router.get('/:entity_name/edit/update', (req, res) => {
     infoId
   }
 
-  editDes(request, sql, res, data)
+  updateDes(request, sql, res, data)
 })
 
 // 徵厲害新增假別API

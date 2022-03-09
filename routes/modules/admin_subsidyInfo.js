@@ -6,96 +6,109 @@ const {isAdmin} = require('../../middleware/auth')
 
 const sql = require('mssql')
 const pool = require('../../config/connectPool')
-const {fsWriteSubsidy, fsJhDeleteNlu} = require('../../modules/fileSystem')
-const {setInfoDict} = require('../../modules/setDict')
+const {fsJhWriteInfo, fsJhDeleteNlu, fsUpdateCategoryNlu, fsJhWritePosition, fsWriteLeave, fsWriteSubsidy} = require('../../modules/fileSystem')
+const {setInfoDict, setPositionDict} = require('../../modules/setDict')
+const {updateCategory, insertCategory, deleteCategory} = require('../../modules/useSql')
 
-
-router.delete('/:subsidy_name/:subsidy_id', (req, res) => {
-  const {subsidy_name,subsidy_id} = req.params
+// 徵厲害 admin 刪除補助類別 API
+router.get('/delete', isAdmin, (req, res) => {
+  const {infoId} = req.query
   const request = new sql.Request(pool)
-  request.query(`select *
-  from BF_JH_SUBSIDY_CATEGORY
-  where SUBSIDY_ID = ${subsidy_id}
-  and SUBSIDY_NAME = '${subsidy_name}'`, (err, result) => {
-    if(err){
-      console.log(err)
-      return
-    }
-    const subsidyCheck = result.recordset[0]
-    if(!subsidyCheck){
-      req.flash('error', '查無此補助類別，請重新嘗試!!')
-      return res.redirect('/admin_subsidyInfo')
-    }else{
-      request.query(`delete
-      from BF_JH_SUBSIDY_CATEGORY
-      where SUBSIDY_ID = ${subsidy_id}
-      and SUBSIDY_NAME = '${subsidy_name}'`, (err, result) => {
-        if(err){
-          console.log(err)
-          return
-        }
-        fsJhDeleteNlu(subsidyCheck.SUBSIDY_NAME, '問公司資訊', request)
-        req.flash('success_msg', '已成功刪除公司補助類別!!')
-        res.redirect('/admin_subsidyInfo')
-      })
-    }
-  })
-})
 
-router.post('/', (req, res) => {
-  const {name, entity_name} = req.body
-  const request = new sql.Request(pool)
-  const admin_new_subsidyInfo = true
-  const warning = []
-
-  if(!name || !entity_name){
-    warning.push({message: '所有欄位都是必填的!!'})
-    return res.render('index', {name, entity_name, warning, admin_new_subsidyInfo})
+  if(!infoId) return res.send({status: 'error', message: '查無此類別，請重新嘗試'})
+  const data = {
+    category: 'subsidy',
+    infoId
   }
 
-  request.query(`select *
+  const fsFunc = {
+    fsJhDeleteNlu
+  }
+
+  deleteCategory(request, res, data, fsFunc)
+})
+
+// 徵厲害 admin 編輯補助類別 API
+router.get('/:entity/edit/update', isAdmin, (req, res) => {
+  const {entity} = req.params
+  const {cnName, entity_name, infoId} = req.query
+  const request = new sql.Request(pool)
+
+  if(!cnName || !entity_name) return res.send({status: 'warning', message: '所有欄位都是必填的'})
+
+  const data = {
+    category: 'subsidy',
+    infoId,
+    entity,
+    cnName,
+    entity_name
+  }
+
+  const fsFunc = {
+    fsUpdateCategoryNlu,
+    setInfoDict,
+    setPositionDict
+  }
+
+  updateCategory(request, sql, res, data, fsFunc)
+})
+
+// 徵厲害 admin 顯示編輯補助類別頁面
+router.get('/:entity_name/edit', isAdmin, (req, res) => {
+  const {entity_name} = req.params
+  const admin_edit_category = true
+  const category = 'subsidy'
+  const request = new sql.Request(pool)
+
+  request.query(`select SUBSIDY_NAME as name, ENTITY_NAME as entity_name, SUBSIDY_ID as id 
   from BF_JH_SUBSIDY_CATEGORY
-  where SUBSIDY_NAME = '${name}'`, (err, result) => {
+  where ENTITY_NAME = '${entity_name}'`, (err, result) => {
     if(err){
       console.log(err)
       return
     }
-    const subsidyCheck = result.recordset[0]
-    if(subsidyCheck){
-      warning.push({message: '此補助津貼類別已存在，請確認後重新嘗試!!'})
-      return res.render('index', {
-        warning,
-        name,
-        entity_name,
-        admin_new_subsidyInfo
-      })
+    const infoCategory = result.recordset[0]
+    if(!infoCategory){
+      req.flash('error', '找不到此公司資訊類別，請重新嘗試')
+      return res.redirect('/admin_subsidy')
     }else{
-      request.input('name', sql.NVarChar(20), name)
-      .input('entity_name', sql.NVarChar(50), entity_name)
-      .query(`insert into BF_JH_SUBSIDY_CATEGORY (SUBSIDY_NAME, ENTITY_NAME)
-      values (@name, @entity_name)`, (err, result) => {
-        if(err){
-          console.log(err)
-          return
-        }
-
-        // 寫檔及寫入dict
-        fsWriteSubsidy(name, entity_name, request)
-        setInfoDict(name)
-
-        req.flash('success_msg', '新增公司補助類別成功!!')
-        res.redirect('/admin_subsidyInfo')
-      })
+      res.render('index', {admin_edit_category, infoCategory, category})
     }
   })
 })
 
-router.get('/new', (req, res) => {
+// 徵厲害 admin 新增補助類別 API
+router.get('/new/insert', isAdmin, (req, res) => {
+  const {cnName, entity_name} = req.query
+  const request = new sql.Request(pool)
+
+  if(!cnName || !entity_name) return res.send({status: 'warning', message: '所有欄位都是必填的'})
+
+  const data = {
+    category: 'subsidy',
+    cnName,
+    entity_name
+  }
+
+  const fsFunc = {
+    fsJhWriteInfo,
+    fsJhWritePosition,
+    fsWriteLeave,
+    fsWriteSubsidy,
+    setInfoDict,
+    setPositionDict
+  }
+
+  insertCategory(request, sql, res, data, fsFunc)
+})
+
+// 徵厲害 admin 顯示新增補助類別頁面
+router.get('/new', isAdmin, (req, res) => {
   const admin_new_subsidyInfo = true
   res.render('index', {admin_new_subsidyInfo})
 })
 
-router.get('/', (req, res) => {
+router.get('/', isAdmin, (req, res) => {
   const {search} = req.query
   const admin_subsidyInfo = true
   const warning = []

@@ -6,158 +6,109 @@ const {isAdmin} = require('../../middleware/auth')
 
 const sql = require('mssql')
 const pool = require('../../config/connectPool')
-const {fsJhWriteInfo, fsJhDeleteNlu, fsUpdateCategoryNlu} = require('../../modules/fileSystem')
-const {setInfoDict} = require('../../modules/setDict')
+const {fsJhWriteInfo, fsJhDeleteNlu, fsUpdateCategoryNlu, fsJhWritePosition, fsWriteLeave, fsWriteSubsidy} = require('../../modules/fileSystem')
+const {setInfoDict, setPositionDict} = require('../../modules/setDict')
+const {updateCategory, insertCategory, deleteCategory} = require('../../modules/useSql')
 
-
-router.delete('/:name/:info_id', (req, res) => {
-  const {name, info_id} = req.params
+// 徵厲害 admin 刪除資訊類別 API
+router.get('/delete', isAdmin, (req, res) => {
+  const {infoId} = req.query
   const request = new sql.Request(pool)
-  request.query(`select *
-  from BF_JH_CPNYINFO_CATEGORY
-  where CPNYINFO_ID = ${info_id}
-  and CPNYINFO_NAME = '${name}'`, (err, result) => {
-    if(err){
-      console.log(err)
-      return
-    }
-    const cpynyInfoCheck = result.recordset[0]
-    if(!cpynyInfoCheck){
-      req.flash('error', '找不到此公司資訊類別，請重新嘗試!!')
-      return res.redirect('/admin_companyInfo')
-    }else{
-      request.query(`delete 
-      from BF_JH_CPNYINFO_CATEGORY
-      where CPNYINFO_ID = ${info_id}
-      and CPNYINFO_NAME = '${name}'`, (err, result) => {
-        if(err){
-          console.log(err)
-          return
-        }
-        fsJhDeleteNlu(cpynyInfoCheck.CPNYINFO_NAME, '問公司資訊', request)
-        req.flash('success_msg', '已成功刪除公司資訊類別!!')
-        res.redirect('/admin_companyInfo')
-      })
-    }
-  })
-})
 
-router.put('/:info_id', (req, res) => {
-  const {info_id} = req.params
-  const {name, entity_name} = req.body
-  const request = new sql.Request(pool)
-  
-  if(!name || !entity_name){
-    req.flash('warning_msg', '所有欄位都是必填的!')
-    return res.redirect(`/admin_companyInfo/${info_id}/edit`)
+  if(!infoId) return res.send({status: 'error', message: '查無此類別，請重新嘗試'})
+  const data = {
+    category: 'cpnyinfo',
+    infoId
   }
 
-  request.query(`select * 
-  from BF_JH_CPNYINFO_CATEGORY
-  where CPNYINFO_ID = ${info_id}`, (err, result) => {
-    if(err){
-      console.log(err)
-      return
-    }
+  const fsFunc = {
+    fsJhDeleteNlu
+  }
 
-    const cpnyInfoCheck = result.recordset[0]
-    if(!cpnyInfoCheck){
-      req.flash('error', '查無此資訊類別，請重新嘗試!')
-      return res.redirect('/admin_companyInfo')
-    }else{
-      request.input('name', sql.NVarChar(200), name)
-      .input('entity_name', sql.NVarChar(200), entity_name)
-      .query(`update BF_JH_CPNYINFO_CATEGORY
-      set CPNYINFO_NAME = @name, ENTITY_NAME = @entity_name
-      where CPNYINFO_ID = ${info_id}`, (err, result) => {
-        if(err){
-          console.log(err)
-          return
-        }
-        fsUpdateCategoryNlu(cpnyInfoCheck.CPNYINFO_NAME, '問公司資訊', name, entity_name, request)
-        setInfoDict(name)
-        req.flash('success_msg', '更新資訊類別成功!')
-        res.redirect('/admin_companyInfo')
-      })
-    }
-  })
+  deleteCategory(request, res, data, fsFunc)
 })
 
-router.get('/:info_id/edit', (req, res) => {
-  const {info_id} = req.params
-  const admin_edit_companyInfo = true
+// 徵厲害 admin 編輯資訊類別 API
+router.get('/:entity/edit/update', isAdmin, (req, res) => {
+  const {entity} = req.params
+  const {cnName, entity_name, infoId} = req.query
+  const request = new sql.Request(pool)
+
+  if(!cnName || !entity_name) return res.send({status: 'warning', message: '所有欄位都是必填的'})
+
+  const data = {
+    category: 'cpnyinfo',
+    infoId,
+    entity,
+    cnName,
+    entity_name
+  }
+
+  const fsFunc = {
+    fsUpdateCategoryNlu,
+    setInfoDict,
+    setPositionDict
+  }
+
+  updateCategory(request, sql, res, data, fsFunc)
+})
+
+// 徵厲害 admin 顯示編輯資訊頁面
+router.get('/:entity_name/edit', isAdmin, (req, res) => {
+  const {entity_name} = req.params
+  const admin_edit_category = true
+  const category = 'cpnyinfo'
   const request = new sql.Request(pool)
 
   request.query(`select CPNYINFO_NAME as name, ENTITY_NAME as entity_name, CPNYINFO_ID as id 
   from BF_JH_CPNYINFO_CATEGORY
-  where CPNYINFO_ID = ${info_id}`, (err, result) => {
+  where ENTITY_NAME = '${entity_name}'`, (err, result) => {
     if(err){
       console.log(err)
       return
     }
-    const cpnyInfoCategory = result.recordset[0]
-    if(!cpnyInfoCategory){
+    const infoCategory = result.recordset[0]
+    if(!infoCategory){
       req.flash('error', '找不到此公司資訊類別，請重新嘗試!!')
       return res.redirect('/admin_companyInfo')
     }else{
-      res.render('index', {admin_edit_companyInfo, cpnyInfoCategory})
+      res.render('index', {admin_edit_category, infoCategory, category})
     }
   })
 })
 
-router.post('/', (req, res) => {
-  const {info_name, entity_name} = req.body
-  const errors = []
-  const admin_new_companyInfo = true
+// 徵厲害 admin 新增資訊類別 API
+router.get('/new/insert', isAdmin, (req, res) => {
+  const {cnName, entity_name} = req.query
   const request = new sql.Request(pool)
 
-  if(!info_name || !entity_name){
-    errors.push({message: '所有欄位都是必填的!!'})
-    return res.render('index', {info_name, entity_name, errors, admin_new_companyInfo})
+  if(!cnName || !entity_name) return res.send({status: 'warning', message: '所有欄位都是必填的'})
+
+  const data = {
+    category: 'cpnyinfo',
+    cnName,
+    entity_name
   }
 
-  request.query(`select *
-  from BF_JH_CPNYINFO_CATEGORY
-  where CPNYINFO_NAME = '${info_name}'`, (err, result) => {
-    if(err){
-      console.log(err)
-      return
-    }
-    const infoCheck = result.recordset[0]
-    if(infoCheck){
-      errors.push({message: '此資訊類別已存在，請重新嘗試!!'})
-      return res.render('index',{
-        errors,
-        info_name,
-        entity_name,
-        admin_new_companyInfo
-      })
-    }else{
-      request.input('info_name', sql.NVarChar(200), info_name)
-      .input('entity_name', sql.NVarChar(200), entity_name)
-      .query(`insert into BF_JH_CPNYINFO_CATEGORY (CPNYINFO_NAME, ENTITY_NAME)
-      values (@info_name, @entity_name)`, (err, result) => {
-        if(err){
-          console.log(err)
-          return
-        }
+  const fsFunc = {
+    fsJhWriteInfo,
+    fsJhWritePosition,
+    fsWriteLeave,
+    fsWriteSubsidy,
+    setInfoDict,
+    setPositionDict
+  }
 
-        // 寫檔及寫入dict
-        fsJhWriteInfo(info_name, entity_name, request)
-        setInfoDict(info_name)
-        req.flash('success_msg', '新增公司資訊類別成功!!')
-        res.redirect('/admin_companyInfo')
-      })
-    }
-  })
+  insertCategory(request, sql, res, data, fsFunc)
 })
 
-router.get('/new', (req, res) => {
+// 徵厲害 admin 顯示新增資訊類別頁面
+router.get('/new', isAdmin, (req, res) => {
   const admin_new_companyInfo = true
   res.render('index', {admin_new_companyInfo})
 })
 
-router.get('/', (req, res) => {
+router.get('/', isAdmin, (req, res) => {
   const {search} = req.query
   const warning = []
   const request = new sql.Request(pool)

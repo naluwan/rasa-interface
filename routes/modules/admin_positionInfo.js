@@ -6,235 +6,109 @@ const {isAdmin} = require('../../middleware/auth')
 
 const sql = require('mssql')
 const pool = require('../../config/connectPool')
-const {fsJhWritePosition, fsJhDeleteNlu} = require('../../modules/fileSystem')
-const {setPositionDict} = require('../../modules/setDict')
+const {fsJhWriteInfo, fsJhDeleteNlu, fsUpdateCategoryNlu, fsJhWritePosition, fsWriteLeave, fsWriteSubsidy} = require('../../modules/fileSystem')
+const {setInfoDict, setPositionDict} = require('../../modules/setDict')
+const {updateCategory, insertCategory, deleteCategory} = require('../../modules/useSql')
 
-// 刪除職缺類別
-router.delete('/:position_name/:position_id', (req, res) => {
-  const {position_name, position_id} = req.params
-
+// 徵厲害 admin 刪除職缺類別 API
+router.get('/delete', isAdmin, (req, res) => {
+  const {infoId} = req.query
   const request = new sql.Request(pool)
 
-  // 驗證是否有這個職缺類別
-  request.query(`select * 
-  from BF_JH_POSITION_CATEGORY
-  where POSITION_ID = ${position_id}
-  and POSITION_NAME = '${position_name}'`, (err, result) => {
-    if(err){
-      console.log(err)
-      return
-    }
-    const positionCheck = result.recordset[0]
-    if(!positionCheck){
-      req.flash('error', '查無此職缺類別，請重新嘗試!')
-      return res.redirect('/admin_positionInfo')
-    }else{
-      // 刪除職缺類別
-      request.query(`delete
-      from BF_JH_POSITION_CATEGORY
-      where POSITION_ID = ${position_id}
-      and POSITION_NAME = '${position_name}'`, (err, result) => {
-        if(err){
-          console.log(err)
-          return
-        }
-        fsJhDeleteNlu(positionCheck.POSITION_NAME, '職缺', request)
-        req.flash('success_msg', '職缺類別刪除成功!!')
-        res.redirect('/admin_positionInfo')
-      })
-    }
-  })
-})
-
-// 新增職缺類別
-router.post('/', (req, res) => {
-  const {name, entity_name} = req.body
-  const admin_new_positionInfo = true
-  const request = new sql.Request(pool)
-  const errors = []
-  const warning = []
-  // 驗證欄位
-  if(!name || !entity_name){
-    warning.push({message: '所有欄位都是必填的!'})
-    return res.render('index', {name, entity_name, warning, admin_new_positionInfo})
+  if(!infoId) return res.send({status: 'error', message: '查無此類別，請重新嘗試'})
+  const data = {
+    category: 'position',
+    infoId
   }
 
-  // 驗證此產業類別中是否有相同的職缺類別
-  request.query(`select *
+  const fsFunc = {
+    fsJhDeleteNlu
+  }
+
+  deleteCategory(request, res, data, fsFunc)
+})
+
+// 徵厲害 admin 編輯職缺類別 API
+router.get('/:entity/edit/update', isAdmin, (req, res) => {
+  const {entity} = req.params
+  const {cnName, entity_name, infoId} = req.query
+  const request = new sql.Request(pool)
+
+  if(!cnName || !entity_name) return res.send({status: 'warning', message: '所有欄位都是必填的'})
+
+  const data = {
+    category: 'position',
+    infoId,
+    entity,
+    cnName,
+    entity_name
+  }
+
+  const fsFunc = {
+    fsUpdateCategoryNlu,
+    setInfoDict,
+    setPositionDict
+  }
+
+  updateCategory(request, sql, res, data, fsFunc)
+})
+
+// 徵厲害 admin 顯示編輯職缺類別頁面
+router.get('/:entity_name/edit', isAdmin, (req, res) => {
+  const {entity_name} = req.params
+  const admin_edit_category = true
+  const category = 'position'
+  const request = new sql.Request(pool)
+
+  request.query(`select POSITION_NAME as name, ENTITY_NAME as entity_name, POSITION_ID as id 
   from BF_JH_POSITION_CATEGORY
-  where POSITION_NAME = '${name}'`, (err, result) => {
+  where ENTITY_NAME = '${entity_name}'`, (err, result) => {
     if(err){
       console.log(err)
       return
     }
-    const positionCheck = result.recordset[0]
-    if(positionCheck){
-      errors.push({message: '此職缺類別已存在，請後重新嘗試!!'})
-        return res.render('index', {
-          errors,
-          name,
-          entity_name,
-          admin_new_positionInfo
-        })
+    const infoCategory = result.recordset[0]
+    if(!infoCategory){
+      req.flash('error', '找不到此公司資訊類別，請重新嘗試')
+      return res.redirect('/admin_positionInfo')
     }else{
-      request.input('name', sql.NVarChar(200), name)
-      .input('entity_name', sql.NVarChar(200), entity_name)
-      .query(`insert into BF_JH_POSITION_CATEGORY (POSITION_NAME, ENTITY_NAME)
-      values (@name, @entity_name)`, (err, result) => {
-        if(err){
-          console.log(err)
-          return
-        }
-        fsJhWritePosition(name, entity_name, request)
-        setPositionDict(name)
-        req.flash('success_msg', '新增職缺類別成功!!')
-        res.redirect('/admin_positionInfo')
-      })
+      res.render('index', {admin_edit_category, infoCategory, category})
     }
   })
 })
 
-// 顯示新增頁面
-router.get('/new', (req, res) => {
+// 徵厲害 admin 新增職缺類別 API
+router.get('/new/insert', isAdmin, (req, res) => {
+  const {cnName, entity_name} = req.query
+  const request = new sql.Request(pool)
+
+  if(!cnName || !entity_name) return res.send({status: 'warning', message: '所有欄位都是必填的'})
+
+  const data = {
+    category: 'position',
+    cnName,
+    entity_name
+  }
+
+  const fsFunc = {
+    fsJhWriteInfo,
+    fsJhWritePosition,
+    fsWriteLeave,
+    fsWriteSubsidy,
+    setInfoDict,
+    setPositionDict
+  }
+
+  insertCategory(request, sql, res, data, fsFunc)
+})
+
+// 徵厲害 admin 顯示新增缺類別頁面
+router.get('/new', isAdmin, (req, res) => {
   const admin_new_positionInfo = true
   res.render('index', {admin_new_positionInfo})
 })
 
-// 顯示今日新增且未讀的職缺類別
-router.get('/notRead', (req, res) => {
-  const request = new sql.Request(pool)
-
-  // 查詢未讀的職缺類別
-  request.query(`select a.POSITION_ID, a.POSITION_NAME, a.POSITION_ENTITY_NAME, a.TRAINED, a.HAD_READ, b.INDUSTRY_NAME
-  from BOTFRONT_ALL_POSITION a
-  left join BOTFRONT_TYPE_OF_INDUSTRY b
-  on a.INDUSTRY_NO = b.INDUSTRY_ID
-  where a.HAD_READ = 0`, (err, result) => {
-    if(err){
-      console.log(err)
-      return
-    }
-    const adminPositionInfo = result.recordset
-    if(adminPositionInfo.length == 0){
-      req.flash('warning', '沒有未讀的職缺類別!')
-      return res.redirect('/admin_positionInfo')
-    }else{
-      request.query(`select *
-      from BOTFRONT_TYPE_OF_INDUSTRY`, (err, result) => {
-        if(err){
-          console.log(err)
-          return
-        }
-        const industryInfo = result.recordset
-        // 點擊顯示後將未讀改成已讀
-        adminPositionInfo.forEach(position => {
-          request.query(`update BOTFRONT_ALL_POSITION
-          set HAD_READ = 1
-          where POSITION_ID = ${position.POSITION_ID}`, (err, result) => {
-            if(err){
-              console.log(err)
-              return
-            }
-          })
-        })
-        return res.render('adminPositionInfo', {adminPositionInfo, industryInfo})
-      })
-    }
-  })
-})
-
-// 點擊完成訓練後更新SQL資料庫TRAINED狀態
-router.put('/trained/:position_id', (req, res) => {
-  const {position_id} = req.params
-  const request = new sql.Request(pool)
-
-  // 驗證職缺類別是否存在
-  request.query(`select *
-  from BOTFRONT_ALL_POSITION
-  where POSITION_ID = ${position_id}`, (err, result) => {
-    if(err){
-      console.log(err)
-      return
-    }
-    const positionCheck = result.recordset[0]
-
-    if(!positionCheck){
-      req.flash('error', '查無此職缺類別!請重新嘗試!!')
-      return res.redirect('/adminPositionInfo/notTrained')
-    }else{
-      request.query(`update BOTFRONT_ALL_POSITION
-      set TRAINED = 1
-      where POSITION_ID = ${position_id}`, (err, result) => {
-        if(err){
-          console.log(err)
-          return
-        }
-        req.flash('success_msg', `職缺類別：『${positionCheck.POSITION_NAME}』已訓練完成`)
-        // 查詢是否還有未訓練的職缺類別
-        request.query(`select * 
-        from BOTFRONT_ALL_POSITION
-        where TRAINED = 0`, (err, result) => {
-          if(err){
-            console.log(err)
-            return
-          }
-          const trainedCheck = result.recordset
-          if(trainedCheck.length > 0){
-            return res.redirect('/adminPositionInfo/notTrained')
-          }else{
-            req.flash('success_msg', '所有職缺類別已訓練完成!!')
-            return res.redirect('/')
-          }
-        })
-        
-      })
-    }
-  })
-})
-
-// 顯示沒有訓練過的職缺類別
-router.get('/notTrained', (req, res) => {
-  const request = new sql.Request(pool)
-
-  request.query(`select a.POSITION_ID, a.POSITION_NAME, a.POSITION_ENTITY_NAME, a.TRAINED, a.HAD_READ, b.INDUSTRY_NAME
-  from BOTFRONT_ALL_POSITION a
-  left join BOTFRONT_TYPE_OF_INDUSTRY b
-  on a.INDUSTRY_NO = b.INDUSTRY_ID
-  where a.TRAINED = 0`, (err, result) => {
-    if(err){
-      console.log(err)
-      return
-    }
-
-    const adminPositionInfo = result.recordset
-    if(adminPositionInfo.length == 0){
-      req.flash('warning', '沒有需要訓練的職缺類別!')
-      return res.redirect('/adminPositionInfo')
-    }else{
-      request.query(`select *
-      from BOTFRONT_TYPE_OF_INDUSTRY`, (err, result) => {
-        if(err){
-          console.log(err)
-          return
-        }
-        const industryInfo = result.recordset
-        adminPositionInfo.forEach(position => {
-          request.query(`update BOTFRONT_ALL_POSITION
-          set HAD_READ = 1
-          where POSITION_ID = ${position.POSITION_ID}`, (err, result) => {
-            if(err){
-              console.log(err)
-              return
-            }
-          })
-        })
-        return res.render('adminPositionInfo', {adminPositionInfo, industryInfo})
-      })
-    }
-  })
-})
-
-router.get('/', (req, res) => {
+router.get('/', isAdmin, (req, res) => {
   const request = new sql.Request(pool)
   const {search} = req.query
   const warning = []
@@ -251,13 +125,13 @@ router.get('/', (req, res) => {
         }
 
         const adminPositionInfo = result.recordset 
-        if(adminPositionInfo.length == 0) warning.push({message: '查無職缺類別，請拉到下方新增職缺類別!'})
+        if(adminPositionInfo.length == 0) warning.push({message: '查無職缺類別，請拉到下方新增職缺類別'})
         return res.render('index', {adminPositionInfo, admin_positionInfo, warning})
       })
     }else{
       // 驗證搜尋字串是否有非法字元
       if(regex.test(search)){
-        req.flash('warning_msg', '搜尋字串包含非法字元，請重新嘗試!')
+        req.flash('warning_msg', '搜尋字串包含非法字元，請重新嘗試')
         return res.redirect('/admin_positionInfo')
       }
 
@@ -270,7 +144,7 @@ router.get('/', (req, res) => {
           return
         }
         const adminPositionInfo = result.recordset
-        if(!adminPositionInfo.length) warning.push({message: '查無此職缺!'})
+        if(!adminPositionInfo.length) warning.push({message: '查無此職缺'})
         return res.render('index', {adminPositionInfo, admin_positionInfo, warning})
       })
     }

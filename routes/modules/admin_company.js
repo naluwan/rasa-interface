@@ -7,175 +7,178 @@ const {isAdmin} = require('../../middleware/auth')
 const sql = require('mssql')
 const pool = require('../../config/connectPool')
 
-router.delete('/:name/:cpnyId', (req, res) => {
-  const {name, cpnyId} = req.params
+// 厲害 admin 刪除帳號 API
+router.get('/delete', isAdmin, (req, res) => {
+  const {infoId} = req.query
   const request = new sql.Request(pool)
+  if(!infoId) return res.send({status: 'error', message: '查無此帳號，請重新嘗試'})
 
-  request.query(`select *
+  request.query(`select * 
   from BOTFRONT_USERS_INFO
-  where CPY_NAME = '${name}'
-  and CPY_ID = '${cpnyId}'`, (err, result) => {
+  where CPY_ID = '${infoId}'`, (err, result) => {
     if(err){
       console.log(err)
       return
     }
-    const companyCheck = result.recordset[0]
-    if(!companyCheck){
-      req.flash('error', '查無此公司，請重新嘗試!!')
-      return res.redirect('/admin_company')
+    const cpnyCheck = result.recordset[0]
+
+    if(!cpnyCheck){
+      return res.send({status: 'error', message: '查無此帳號，請重新嘗試'})
     }else{
-      request.query(`delete BOTFRONT_USERS_INFO
-      where CPY_NAME = '${name}'
-      and CPY_ID = '${cpnyId}'`, (err, result) => {
+      request.query(`delete from BOTFRONT_USERS_INFO
+      where CPY_ID = '${infoId}'`, (err, result) => {
         if(err){
           console.log(err)
           return
         }
-          req.flash('success_msg', '刪除成功!!')
-          res.redirect('/admin_company')
+        res.send({status: 'success', message: '刪除帳號成功'})
       })
     }
   })
 })
 
-router.put('/password/:CPY_ID', (req, res) => {
-  const {CPY_ID} = req.params
-  const {password, confirmPassword} = req.body
-
-  if(!password || !confirmPassword){
-    req.flash('error', '所有欄位都是必填的!!')
-    return res.redirect(`/admin_company/${CPY_ID}/edit/password`)
-  }
-
-  if(password !== confirmPassword){
-    req.flash('error', '密碼與確認密碼不相符!')
-    return res.redirect(`/admin_company/${CPY_ID}/edit/password`)
-  }
-
+// 徵厲害 admin 修改密碼 API
+router.get('/repwd', isAdmin, (req, res) => {
+  const {infoId, password, confirmPassword} = req.query
   const request = new sql.Request(pool)
 
-  request.query(`select CPY_ID, CPY_NAME
+  if(!infoId) return res.send({status: 'error', message: '查無此帳號，請重新嘗試'})
+  if(!password || !confirmPassword) return res.send({status: 'warning', message: '所有欄位都為必填欄位'})
+  if(password !== confirmPassword) return res.send({status: 'warning', message: '密碼和確認密碼不相符'})
+
+  request.query(`select * 
   from BOTFRONT_USERS_INFO
-  where CPY_ID = '${CPY_ID}'`, (err, result) => {
+  where CPY_NAME = '${infoId}'`, (err, result) => {
     if(err){
       console.log(err)
       return
     }
-    const adminCompanyInfo = result.recordset[0]
-    if(!adminCompanyInfo){
-      req.flash('error', '查無此公司，請重新嘗試!!')
-      return res.redirect('/admin_company')
+    const cpnyCheck = result.recordset[0]
+    if(!cpnyCheck){
+      return res.send({status: 'error', message: '查無此帳號，請重新嘗試'})
     }else{
       return bcrypt
       .genSalt(10)
       .then(salt => bcrypt.hash(password, salt))
       .then(hash => {
-        request.input('password', sql.NVarChar(100), hash)
+        request.input('pwd', sql.NVarChar(100), hash)
         .query(`update BOTFRONT_USERS_INFO 
-        set password = @password
-        where CPY_ID = '${CPY_ID}'`, (err, result) => {
+        set password = @pwd
+        where CPY_NAME = '${infoId}'`, (err, result) => {
           if(err){
             console.log(err)
             return
           }
         })
       }).then(() => {
-        req.flash('success_msg', '密碼修改成功!!')
-        return res.redirect('/admin_company')
+        return res.send({status: 'success', message: '密碼修改成功'})
       })
       .catch(err => console.log(err))
     }
   })
 })
 
-router.get('/:CPY_ID/edit/password', (req, res) => {
-  const {CPY_ID} = req.params
-  const admin_edit_pwd = true
+// 徵厲害 admin 編輯 API
+router.get('/:cpnyId/edit/update', isAdmin, (req, res) => {
+  const {cpnyId} = req.params
+  const {cpy_no, cpy_name, email, ishr, isadmin} = req.query
   const request = new sql.Request(pool)
-  request.query(`select CPY_ID, CPY_NAME
-  from BOTFRONT_USERS_INFO
-  where CPY_ID = '${CPY_ID}'`, (err, result) => {
-    if(err){
-      console.log(err)
-      return
-    }
-    const adminCompanyInfo = result.recordset[0]
-    if(!adminCompanyInfo){
-      req.flash('error', '查無此公司，請重新嘗試!!')
-      return res.redirect('/admin_company')
-    }
-    res.render('index', {adminCompanyInfo, admin_edit_pwd})
-  })
-})
-
-router.put('/:CPY_ID', (req, res) => {
-  const {CPY_ID} = req.params
-  const {cpy_no, cpy_name, email, isadmin, ishr} = req.body
-
-  const request = new sql.Request(pool)
-
-  if(!cpy_no || !cpy_name || !email || !isadmin || !ishr){
-    req.flash('error', '所有欄位都是必填的!!')
-    return res.redirect(`/admin_company/${CPY_ID}/edit`)
+  
+  if(!cpy_no || !cpy_name || !email || !ishr || !isadmin){
+    return res.send({status:'warning', message: '所有欄位都為必填欄位'})
   }
 
-  request.query(`select *
-  from BOTFRONT_USERS_INFO 
-  where CPY_ID = '${CPY_ID}'`, (err, result) => {
+  request.query(`select * 
+  from BOTFRONT_USERS_INFO
+  where CPY_ID = '${cpnyId}'`, (err, result) => {
     if(err){
       console.log(err)
       return
     }
-    const adminCompanyInfo = result.recordset[0]
-    if(!adminCompanyInfo) {
-      req.flash('error', '查無此公司，請重新嘗試!!')
-      return res.redirect('/admin_company')
-    }
-    if(adminCompanyInfo.CPY_ID == cpy_no){
-      request.input('cpy_name', sql.NVarChar(80), cpy_name)
-      .input('email', sql.NVarChar(80), email)
-      .input('isadmin', sql.Bit, parseInt(isadmin))
-      .input('ishr', sql.Bit, parseInt(ishr))
-      .query(`update BOTFRONT_USERS_INFO
-      set CPY_NAME = @cpy_name, EMAIL = @email, ISADMIN = @isadmin, ISHR = @ishr
-      where CPY_ID = '${CPY_ID}'`, (err, result) => {
-        if(err){
-          console.log(err)
-          return
-        }
-        req.flash('success_msg', '更新資料成功!!')
-        return res.redirect('/admin_company')
-      })
+    const cpnyCheck = result.recordset[0]
+    if(!cpnyCheck){
+      return res.send({status: 'error', message: '查無此帳號，請重新嘗試'})
     }else{
-      request.input('cpy_no', sql.NVarChar(30), cpy_no)
-      .input('cpy_name', sql.NVarChar(80), cpy_name)
+      request.input('cpy_id', sql.NVarChar(30), cpy_no)
+      .input('cpy_name', sql.NVarChar(80), decodeURI(cpy_name))
       .input('email', sql.NVarChar(80), email)
-      .input('isadmin', sql.Bit, parseInt(isadmin))
       .input('ishr', sql.Bit, parseInt(ishr))
+      .input('isadmin', sql.Bit, parseInt(isadmin))
       .query(`update BOTFRONT_USERS_INFO
-      set CPY_ID = @cpy_no, CPY_NAME = @cpy_name, EMAIL = @email, ISADMIN = @isadmin, ISHR = @ishr
-      where CPY_ID = '${CPY_ID}'`, (err, result) => {
+      set CPY_ID = @cpy_id, CPY_NAME = @cpy_name, EMAIL = @email, ISHR = @ishr, ISADMIN = @isadmin
+      where CPY_ID = '${cpnyId}'`, (err, result) => {
         if(err){
           console.log(err)
           return
         }
-        req.flash('success_msg', '更新資料成功!!')
-        return res.redirect('/admin_company')
+        res.send({status: 'success', message: '帳號資料更新成功!'})
       })
     }
   })
 })
 
-router.get('/:CPY_ID/edit', (req, res) => {
-  const {CPY_ID} = req.params
+// 徵厲害 admin 新增帳號 API
+router.get('/new/insert', isAdmin, (req, res) => {
+  const {cpy_no, cpy_name, email, ishr, isadmin, password, confirmPassword} = req.query
+
+  if(!cpy_no || !cpy_name || !email || !isadmin || !password || !confirmPassword || !ishr) return res.send({status: 'warning', message: '所有欄位都為必填欄位'})
+  if(password !== confirmPassword) return res.send({status: 'warning', message: '密碼和確認密碼不相符'})
+
+  const request = new sql.Request(pool)
+
+  request.query(`select * 
+  from BOTFRONT_USERS_INFO
+  where CPY_ID = '${cpy_no}'
+  or EMAIL = '${email}'
+  or CPY_NAME = '${cpy_name}'`, (err, result) => {
+    if(err){
+      console.log(err)
+      return
+    }
+    const cpnyCheck = result.recordset
+    if(cpnyCheck.length){
+      cpnyCheck.forEach(user => {
+        if(user.CPY_NAME == cpy_name) return res.send({status: 'warning', message: '此「公司名稱」已經註冊過'})
+        if(user.CPY_ID == cpy_no) return res.send({status: 'warning', message: '此「公司代號」已經註冊過'})
+        if(user.EMAIL == email) return res.send({status: 'warning', message: '此「Email」已經註冊過'})
+      })
+    }else{
+      return bcrypt
+      .genSalt(10)
+      .then(salt => bcrypt.hash(password, salt))
+      .then(hash => {
+        request.input('cpy_no', sql.NVarChar(30), cpy_no)
+        .input('cpy_name', sql.NVarChar(80), decodeURI(cpy_name))
+        .input('email', sql.NVarChar(80), email)
+        .input('isadmin', sql.Bit, parseInt(isadmin))
+        .input('ishr', sql.Bit, parseInt(ishr))
+        .input('password', sql.NVarChar(100), hash)
+        .query(`insert into BOTFRONT_USERS_INFO (CPY_ID, CPY_NAME, EMAIL, PASSWORD, ISADMIN, ISHR)
+        values (@cpy_no, @cpy_name, @email, @password, @isadmin, @ishr)`, (err, result) => {
+        if(err){
+          console.log(err)
+          return
+        }
+        })
+      }).then(() => {
+        return res.send({status: 'success', message: '新增帳號成功'})
+      })
+      .catch(err => console.log(err))
+    }
+  })
+})
+
+// 顯示徵厲害 admin 編輯帳號頁面
+router.get('/:cpnyId/edit', isAdmin, (req, res) => {
+  const {cpnyId} = req.params
   const request = new sql.Request(pool)
   const admin_edit_company = true
-
-    request.query(`select a.CPY_ID, a.CPY_NAME, a.EMAIL, a.PASSWORD, a.INDUSTRY_NO, b.INDUSTRY_NAME, a.ISADMIN, a.ISHR
+  const route = 'johnnyHire'
+  const action = 'admin_edit'
+  const category = 'cpny'
+    request.query(`select a.CPY_ID, a.CPY_NAME, a.EMAIL, a.PASSWORD, a.ISADMIN, a.ISHR
     from BOTFRONT_USERS_INFO a
-    left join BOTFRONT_TYPE_OF_INDUSTRY b
-    on a.INDUSTRY_NO = b.INDUSTRY_ID
-    where CPY_ID = '${CPY_ID}'`, (err, result) => {
+    where CPY_ID = '${cpnyId}'`, (err, result) => {
       if(err){
         console.log(err)
         return
@@ -185,109 +188,23 @@ router.get('/:CPY_ID/edit', (req, res) => {
         req.flash('error', '查無此公司，請重新嘗試!!')
         return res.redirect('/admin_company')
       }
-      res.render('index', {adminCompanyInfo, admin_edit_company})
+      res.render('index', {adminCompanyInfo, route, id: cpnyId, admin_edit_company, category, action})
     })
 })
 
-router.post('/new', isAdmin, (req, res) => {
-  const {cpy_no, cpy_name, email, isadmin, password, confirmPassword, ishr} = req.body
-
-  const request = new sql.Request(pool)
-  const errors = []
-  const warning = []
-  const admin_register = true
-  if(!cpy_no || !cpy_name || !email || !isadmin || !password || !confirmPassword || !ishr){
-    warning.push({message: '所有欄位都是必填的!'})
-  }
-
-  if(password !== confirmPassword){
-    warning.push({message: '密碼和確認密碼不相符!'})
-  }
-
-  if(warning.length){
-      return res.render('index', {
-        warning,
-        cpy_no,
-        cpy_name,
-        email,
-        isadmin,
-        ishr,
-        password,
-        confirmPassword,
-        admin_register
-      })
-  }else{
-    request.query(`select * 
-    from BOTFRONT_USERS_INFO
-    where EMAIL = '${email}' or CPY_ID = '${cpy_no}' or CPY_NAME = '${cpy_name}'`, (err, result) => {
-      if(err){
-        console.log(err)
-        return
-      }
-      const user = result.recordset[0]
-      // console.log(user)
-      if(user){
-        if(user.EMAIL == email) errors.push({message: `此「Email」已經註冊過了!!`})
-
-        if(user.CPY_ID == cpy_no) errors.push({message: `此「公司代號」已經註冊過了!!`})
-
-        if(user.CPY_NAME == cpy_name) errors.push({message: `此「公司名稱」已經註冊過了!!`})
-
-        if(errors.length){
-          return res.render('index', {
-            errors,
-            cpy_no,
-            cpy_name,
-            email,
-            isadmin,
-            ishr,
-            password,
-            confirmPassword,
-            admin_register,
-          })
-        }
-      }else{
-        return bcrypt
-        .genSalt(10)
-        .then(salt => bcrypt.hash(password, salt))
-        .then(hash => {
-          request.input('cpy_no', sql.NVarChar(30), cpy_no)
-          .input('cpy_name', sql.NVarChar(80), cpy_name)
-          .input('email', sql.NVarChar(80), email)
-          .input('isadmin', sql.Bit, parseInt(isadmin))
-          .input('ishr', sql.Bit, parseInt(ishr))
-          .input('password', sql.NVarChar(100), hash)
-          .query(`insert into BOTFRONT_USERS_INFO (CPY_ID, CPY_NAME, EMAIL, PASSWORD, ISADMIN, ISHR)
-          values (@cpy_no, @cpy_name, @email, @password, @isadmin, @ishr)`, (err, result) => {
-          if(err){
-            console.log(err)
-            return
-          }
-          // console.log(result)
-          })
-        }).then(() => {
-          req.flash('success_msg', '使用者新增成功!!')
-          return res.redirect('/admin_company')
-        })
-        .catch(err => console.log(err))
-      }
-    })
-  }
-})
-
+// 顯示徵厲害admin 新增帳號頁面
 router.get('/new', isAdmin, (req, res) => {
   const admin_register = true
   res.render('index', {admin_register})
 })
 
+// 顯示徵厲害admin頁面
 router.get('/', (req, res) => {
   const request = new sql.Request(pool)
   const admin_company = true
 
-  request.query(`select a.CPY_ID, a.CPY_NAME, a.EMAIL, a.PASSWORD, a.INDUSTRY_NO, b.INDUSTRY_NAME, a.ISADMIN, a.ISHR
-  from BOTFRONT_USERS_INFO a
-  left join BOTFRONT_TYPE_OF_INDUSTRY b
-  on a.INDUSTRY_NO = b.INDUSTRY_ID`, (err, result) => {
+  request.query(`select a.CPY_ID, a.CPY_NAME, a.EMAIL, a.PASSWORD, a.ISADMIN, a.ISHR
+  from BOTFRONT_USERS_INFO a`, (err, result) => {
     if(err){
       console.log(err)
       return
