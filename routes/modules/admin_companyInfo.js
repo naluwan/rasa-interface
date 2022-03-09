@@ -104,27 +104,29 @@ router.get('/new/insert', isAdmin, (req, res) => {
 
 // 徵厲害 admin 顯示新增資訊類別頁面
 router.get('/new', isAdmin, (req, res) => {
-  const admin_new_companyInfo = true
-  res.render('index', {admin_new_companyInfo})
+  const admin_new_category = true
+  const category = 'cpnyinfo'
+  res.render('index', {admin_new_category, category})
 })
 
 router.get('/', isAdmin, (req, res) => {
   const {search} = req.query
   const warning = []
   const request = new sql.Request(pool)
-  const admin_companyInfo = true
+  const admin_category = true
+  const category = 'cpnyinfo'
   const regex = /\{|\[|\]|\'|\"\;|\:\?|\\|\/|\.|\,|\>|\<|\=|\+|\-|\(|\)|\!|\@|\#|\$|\%|\^|\&|\*|\`|\~/g
 
   if(!search){
-    request.query(`select *
+    request.query(`select CPNYINFO_NAME as cnName, ENTITY_NAME as entity_name, CPNYINFO_ID as id
     from BF_JH_CPNYINFO_CATEGORY`, (err, result) => {
       if(err){
         console.log(err)
         return
       }
-      const adminCompanyInfo = result.recordset
-      if(!adminCompanyInfo.length) warning.push({message: '查無公司資訊類別，請拉到下方新增公司資訊類別!'})
-      res.render('index', {adminCompanyInfo, warning, admin_companyInfo})
+      const adminCategoryInfo = result.recordset
+      if(!adminCategoryInfo.length) warning.push({message: '查無公司資訊類別，請拉到下方新增公司資訊類別!'})
+      res.render('index', {adminCategoryInfo, warning, admin_category, category})
     })
   }else{
     // 驗證搜尋字串是否有非法字元
@@ -133,16 +135,16 @@ router.get('/', isAdmin, (req, res) => {
       return res.redirect('/admin_companyInfo')
     }
 
-    request.query(`select *
+    request.query(`select CPNYINFO_NAME as cnName, ENTITY_NAME as entity_name, CPNYINFO_ID as id
     from BF_JH_CPNYINFO_CATEGORY
     where CPNYINFO_NAME like '%%${search}%%'`, (err, result) => {
       if(err){
         console.log(err)
         return
       }
-      const adminCompanyInfo = result.recordset
-      if(!adminCompanyInfo.length) warning.push({message: '查無此資訊!'})
-      res.render('index', {adminCompanyInfo, warning, search, admin_companyInfo})
+      const adminCategoryInfo = result.recordset
+      if(!adminCategoryInfo.length) warning.push({message: '查無此資訊!'})
+      res.render('index', {adminCategoryInfo, warning, search, admin_category, category})
     })
   }
 })

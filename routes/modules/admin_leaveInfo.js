@@ -104,39 +104,41 @@ router.get('/new/insert', isAdmin, (req, res) => {
 
 // 徵厲害 admin 顯示新增假別類別頁面
 router.get('/new', isAdmin, (req, res) => {
-  const admin_new_leaveInfo = true
-  res.render('index', {admin_new_leaveInfo})
+  const admin_new_category = true
+  const category = 'leave'
+  res.render('index', {admin_new_category, category})
 })
 
 router.get('/', isAdmin, (req, res) => {
   const {search} = req.query
-  const admin_leaveInfo = true
+  const admin_category = true
+  const category = 'leave'
   const warning = []
   const request = new sql.Request(pool)
   const regex = /\{|\[|\]|\'|\"\;|\:\?|\\|\/|\.|\,|\>|\<|\=|\+|\-|\(|\)|\!|\@|\#|\$|\%|\^|\&|\*|\`|\~/g
 
   if(!search){
-    request.query(`select * 
+    request.query(`select LEAVE_NAME as cnName, ENTITY_NAME as entity_name, LEAVE_ID as id 
     from BF_JH_LEAVE_CATEGORY`, (err, result) => {
       if(err){
         console.log(err)
         return
       }
-      const adminLeaveInfo = result.recordset
-      if(!adminLeaveInfo.length) warning.push({message: '查無公司假別，請拉到下方新增公司假別!!'})
-      res.render('index', {adminLeaveInfo, warning, admin_leaveInfo})
+      const adminCategoryInfo = result.recordset
+      if(!adminCategoryInfo.length) warning.push({message: '查無公司假別，請拉到下方新增公司假別!!'})
+      res.render('index', {adminCategoryInfo, warning, admin_category, category})
     })
   }else{
-    request.query(`select *
+    request.query(`select LEAVE_NAME as cnName, ENTITY_NAME as entity_name, LEAVE_ID as id 
     from BF_JH_LEAVE_CATEGORY
     where LEAVE_NAME like '%%${search}%%'`, (err, result) => {
       if(err){
         console.log(err)
         return
       }
-      const adminLeaveInfo = result.recordset
-      if(!adminLeaveInfo.length) warning.push({message: '查無此假別!'})
-      res.render('index', {adminLeaveInfo, warning, search, admin_leaveInfo})
+      const adminCategoryInfo = result.recordset
+      if(!adminCategoryInfo.length) warning.push({message: '查無此假別!'})
+      res.render('index', {adminCategoryInfo, warning, search, admin_category, category})
     })
   }
   

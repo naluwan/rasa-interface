@@ -104,26 +104,28 @@ router.get('/new/insert', isAdmin, (req, res) => {
 
 // 徵厲害 admin 顯示新增補助類別頁面
 router.get('/new', isAdmin, (req, res) => {
-  const admin_new_subsidyInfo = true
-  res.render('index', {admin_new_subsidyInfo})
+  const admin_new_category = true
+  const category = 'subsidy'
+  res.render('index', {admin_new_category, category})
 })
 
 router.get('/', isAdmin, (req, res) => {
   const {search} = req.query
-  const admin_subsidyInfo = true
+  const admin_category = true
+  const category = 'subsidy'
   const warning = []
   const request = new sql.Request(pool)
   const regex = /\{|\[|\]|\'|\"\;|\:\?|\\|\/|\.|\,|\>|\<|\=|\+|\-|\(|\)|\!|\@|\#|\$|\%|\^|\&|\*|\`|\~/g
   if(!search){
-    request.query(`select *
+    request.query(`select SUBSIDY_NAME as cnName, ENTITY_NAME as entity_name, SUBSIDY_ID as id 
     from BF_JH_SUBSIDY_CATEGORY`, (err, result) => {
       if(err){
         console.log(err)
         return
       }
-      const adminSubsidyInfo = result.recordset
-      if(!adminSubsidyInfo.length) warning.push({message: '查無公司補助類別，請拉到下方新增公司補助類別!!!'})
-      res.render('index', {adminSubsidyInfo, warning, admin_subsidyInfo})
+      const adminCategoryInfo = result.recordset
+      if(!adminCategoryInfo.length) warning.push({message: '查無公司補助類別，請拉到下方新增公司補助類別!!!'})
+      res.render('index', {adminCategoryInfo, warning, admin_category, category})
     })
   }else{
     // 驗證搜尋字串是否有非法字元
@@ -132,16 +134,16 @@ router.get('/', isAdmin, (req, res) => {
       return res.redirect('/admin_subsidyInfo')
     }
 
-    request.query(`select *
+    request.query(`select SUBSIDY_NAME as cnName, ENTITY_NAME as entity_name, SUBSIDY_ID as id
     from BF_JH_SUBSIDY_CATEGORY
     where SUBSIDY_NAME like '%%${search}%%'`, (err, result) => {
       if(err){
         console.log(err)
         return
       }
-      const adminSubsidyInfo = result.recordset
-      if(!adminSubsidyInfo.length) warning.push({message: '查無此補助!'})
-      res.render('index', {adminSubsidyInfo, warning, search, admin_subsidyInfo})
+      const adminCategoryInfo = result.recordset
+      if(!adminCategoryInfo.length) warning.push({message: '查無此補助!'})
+      res.render('index', {adminCategoryInfo, warning, search, admin_category, category})
     })
   }
 })
