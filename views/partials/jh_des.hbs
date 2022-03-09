@@ -1,0 +1,40 @@
+{{#if jh_des}}
+<!-- jh_des -->
+<div class="jh_des">
+  <h1>{{#is category 'cpnyinfo'}}公司{{/is}}{{#is category 'position'}}職缺{{/is}}{{#is category 'leave'}}假別{{/is}}{{#is category 'subsidy'}}補助{{/is}}資訊</h1>
+  {{> message}}
+  <div id="data-panel">
+    {{#each desInfo}}
+    <div>
+      <span>
+        <div>
+          <span>資訊名稱：</span>
+          <span title="{{this.name}}">{{this.name}}</span>
+        </div>
+        <div>
+          <span>英文名稱：</span>
+          <span title="{{this.entity_name}}">{{this.entity_name}}</span>
+        </div>
+        <div>
+          <span>資訊內容：</span>
+          <span title="{{this.des}}">{{this.des}}</span>
+        </div>
+      </span>
+      <span>
+        {{#is ../category 'cpnyinfo'}}<input type="button" class="btn btn-primary" onclick="Method.common.page('/jh_cpnyInfo/{{ this.entity_name }}/edit')" value="編輯">{{/is}}
+        {{#is ../category 'position'}}<input type="button" class="btn btn-primary" onclick="Method.common.page('/jh_position/{{ this.entity_name}}/edit')" value="編輯">{{/is}}
+        {{#is ../category 'leave'}}<input type="button" class="btn btn-primary" onclick="Method.common.page('/jh_leave/{{ this.entity_name}}/edit')" value="編輯">{{/is}}
+        {{#is ../category 'subsidy'}}<input type="button" class="btn btn-primary" onclick="Method.common.page('/jh_subsidy/{{ this.entity_name}}/edit')" value="編輯">{{/is}}
+        <input type="button" id="del" class="btn btn-danger" data-title="{{this.name}}" data-infoId="{{this.infoId}}" value="刪除">
+      </span>
+    </div>
+    {{/each}}
+  </div>
+  <div class="footButton">
+    {{#is category 'cpnyinfo'}} <input type="button" class="btn btn-warning" onclick="Method.common.page('/jh_cpnyInfo/new')" value="新增公司資訊">{{/is}}
+    {{#is category 'position'}}<input type="button" class="btn btn-warning" onclick="Method.common.page('/jh_position/new')" value="新增職缺資訊">{{/is}}
+    {{#is category 'leave'}}<input type="button" class="btn btn-warning" onclick="Method.common.page('/jh_leave/new')" value="新增假別資訊">{{/is}}
+    {{#is category 'subsidy'}}<input type="button" class="btn btn-warning" onclick="Method.common.page('/jh_subsidy/new')" value="新增補助資訊">{{/is}}
+  </div>
+</div>
+{{/if}}
