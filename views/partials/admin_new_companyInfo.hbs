@@ -2,12 +2,12 @@
 <!-- admin_new_companyInfo -->
 <div class="admin_new_companyInfo">
   <h1>新增資訊類別</h1>
-  <form action="/admin_companyInfo" method="POST">
+  <form action="/admin_companyInfo" Method="POST">
     <div>
       {{> message}}
       <div>
         <label>資訊名稱</label>
-        <input type="text" class="form-control" name="info_name" placeholder="請輸入資訊名稱" value="{{info_name}}" required>
+        <input type="text" class="form-control" name="cnName" placeholder="請輸入資訊名稱" value="{{info_name}}" required>
       </div>
 
       <div>
@@ -15,9 +15,9 @@
         <input type="text" class="form-control" name="entity_name" placeholder="請輸入資訊英文名稱" value="{{entity_name}}" required>
       </div>
     </div>
-    <div class="text-center mt-3">
-      <a href="javascript:;" class="btn btn-primary" onclick="page('/admin_companyInfo')">取消</a>
-      <button type="submit" class="btn btn-info confirm-btn">新增</button>
+    <div class="formButton">
+      <input type="button" id="cancel" class="btn btn-primary" onclick="Method.common.page('/admin_companyInfo')" value="取消">
+      <input type="submit" id="add" class="btn btn-info confirm-btn" value="新增">
     </div>
   </form>
 </div>

@@ -18,15 +18,15 @@
         <div>
           <div>
             <label>帳號資料:</label>
-            <input type="button" class="btn btn-success" onclick="page('/admin_company')" value="設定">
+            <input type="button" class="btn btn-success" onclick="Method.common.page('/admin_company')" value="設定">
           </div> 
           <div>
             <label>資訊類別:</label>
-            <input type="button" class="btn btn-success" onclick="page('/admin_companyInfo')" value="設定">
+            <input type="button" class="btn btn-success" onclick="Method.common.page('/admin_companyInfo')" value="設定">
           </div> 
           <div>
             <label>職缺類別:</label>
-            <input type="button" class="btn btn-success" onclick="page('/admin_positionInfo')" value="設定">
+            <input type="button" class="btn btn-success" onclick="Method.common.page('/admin_positionInfo')" value="設定">
           </div>
           <!--
           <div>
@@ -36,15 +36,15 @@
           --> 
           <div>
             <label>假別類別:</label>
-            <input type="button" class="btn btn-success" onclick="page('/admin_leaveInfo')" value="設定">
+            <input type="button" class="btn btn-success" onclick="Method.common.page('/admin_leaveInfo')" value="設定">
           </div>
           <div>
             <label>補助類別:</label>
-            <input type="button" class="btn btn-success" onclick="page('/admin_subsidyInfo')" value="設定">
+            <input type="button" class="btn btn-success" onclick="Method.common.page('/admin_subsidyInfo')" value="設定">
           </div>
           <div>
             <label>回覆查詢:</label>
-            <input type="button" class="btn btn-success" onclick="page('/admin_search')" value="設定">
+            <input type="button" class="btn btn-success" onclick="Method.common.page('/admin_search')" value="設定">
           </div>
         </div>
       </span>
@@ -162,22 +162,22 @@
         <div>
           <div>
             <label>公司資訊:</label>
-            <input type="button" class="btn btn-success" onclick="page('/jh_cpnyInfo')" value="設定">
+            <input type="button" class="btn btn-success" onclick="Method.common.page('/jh_cpnyInfo')" value="設定">
           </div>
 
           <div>
             <label>職缺設定:</label>
-            <input type="button" class="btn btn-success" onclick="page('/jh_position')" value="設定">
+            <input type="button" class="btn btn-success" onclick="Method.common.page('/jh_position')" value="設定">
           </div>
 
           <div>
             <label>補助津貼:</label>
-            <input type="button" class="btn btn-success" onclick="page('/jh_subsidy')" value="設定">
+            <input type="button" class="btn btn-success" onclick="Method.common.page('/jh_subsidy')" value="設定">
           </div>
 
           <div>
             <label>假別設定:</label>
-            <input type="button" class="btn btn-success" onclick="page('/jh_leave')" value="設定">
+            <input type="button" class="btn btn-success" onclick="Method.common.page('/jh_leave')" value="設定">
           </div>
 
           {{!-- <div>
@@ -227,7 +227,7 @@
         </div>
         <div class="text-center">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
-          <form action="/train" method="post" style="display:inline-block;" id="delete-form">
+          <form action="/train" Method="post" style="display:inline-block;" id="delete-form">
             <button type="submit" class="btn btn-danger">訓練</button>
           </form>
         </div>

@@ -17,7 +17,11 @@
 
     </div>
     <div class="formButton">
-      <input id="cancel" class="btn btn-primary" onclick="page('/admin_companyInfo')" value="取消">
+
+      {{#is category 'cpnyinfo'}}<input id="cancel" type="button" class="btn btn-primary" onclick="Method.common.page('/admin_companyInfo')" value="取消">{{/is}}
+      {{#is category 'position'}}<input id="cancel" type="button" class="btn btn-primary" onclick="Method.common.page('/admin_positionInfo')" value="取消">{{/is}}
+      {{#is category 'leave'}}<input id="cancel" type="button" class="btn btn-primary" onclick="Method.common.page('/admin_leaveInfo')" value="取消">{{/is}}
+      {{#is category 'subsidy'}}<input id="cancel" type="button" class="btn btn-primary" onclick="Method.common.page('/admin_subsidyInfo')" value="取消">{{/is}}
       <input id="save" type="submit" class="btn btn-info" data-infoid="{{infoCategory.id}}" value="儲存">
     </div>
   </form>

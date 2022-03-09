@@ -3,21 +3,26 @@
 <div class="admin_edit_search">
   <h1>編輯資訊</h1>
   {{> message}}
-  <form action="/admin_search/{{cpnyId}}/{{table}}/{{adminSearch_id}}?_method=PUT" method="POST">
+  <form action="/admin_search/{{cpnyId}}/{{table}}/{{adminSearch_id}}?_Method=PUT" Method="POST">
 
-        <div>
-          <label for="category">資訊名稱</label>
-          <input type="text" id="adminSearch_name" name="adminSearch_name" class="form-control" placeholder="請輸入資訊名稱" value="{{adminSearchInfo.adminSearch_name}}">
+      <div>
+        <label for="category">資訊名稱</label>
+        <input type="text" name="cnName" class="form-control" placeholder="請輸入資訊名稱" value="{{adminSearchInfo.adminSearch_name}}" disabled>
       </div>
 
-        <div>
-          <label>資訊內容</label>
-          <textarea type="text" class="form-control" name="adminSearch_des" placeholder="請輸入資訊內容" aria-label="inputDes" aria-describedby="des" rows="10" required>{{ adminSearchInfo.adminSearch_des }}</textarea>
+      <div>
+        <label for="category">英文名稱</label>
+        <input type="text" name="entity_name" class="form-control" placeholder="請輸入英文名稱" value="{{adminSearchInfo.adminSearch_entity_name}}" disabled>
       </div>
 
-    <div class="text-center mt-3">
-      <a href="/admin_search/filter?companyFilter={{cpnyId}}&tableFilter={{table}}&search=" class="btn btn-primary">取消</a>
-      <button type="submit" class="btn btn-info">儲存</button>
+      <div>
+        <label>資訊內容</label>
+        <textarea type="text" class="form-control" name="des" placeholder="請輸入資訊內容" aria-label="inputDes" aria-describedby="des" rows="10" required>{{ adminSearchInfo.adminSearch_des }}</textarea>
+      </div>
+
+    <div class="formButton">
+      <input id="cancel" type="button" class="btn btn-primary" onclick="Method.common.page('/admin_search')" value="取消">
+      <input id="save" type="submit" class="btn btn-info" data-infoId="{{adminSearchInfo.infoId}}" value="儲存">
     </div>
   </form>
 </div>

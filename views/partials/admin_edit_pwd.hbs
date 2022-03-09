@@ -4,20 +4,20 @@
   <div>
     <h1 class="text-center mt-3">修改{{adminCompanyInfo.CPY_NAME}}密碼</h1>
     {{> message}}
-    <form action="/admin_company/password/{{adminCompanyInfo.CPY_ID}}?_method=PUT" method="POST">
+    <form action="/admin_company/password/{{adminCompanyInfo.CPY_ID}}?_Method=PUT" Method="POST">
       <div>
         <label for="password">新密碼</label>
-        <input type="password" id="password" name="password" class="form-control" placeholder="請輸入密碼" required>
+        <input type="password" name="password" class="form-control" placeholder="請輸入密碼" required>
       </div>
 
       <div>
         <label for="confirmPassword">再次輸入密碼</label>
-        <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" placeholder="請再次輸入密碼" required>
+        <input type="password" name="confirmPassword" class="form-control" placeholder="請再次輸入密碼" required>
       </div>
 
-      <div class="text-center footButton">
-        <a href="javascript:;" class="btn btn-primary" onclick="page('/admin_company')">取消</a>
-        <button type="submit" class="btn btn-info" id="confirm-create">儲存</button>
+      <div class="formButton">
+        <input id="cancel" class="btn btn-primary" onclick="Method.common.page('/admin_company')" value="取消">
+        <input id="save" type="submit" class="btn btn-info" value="儲存">
       </div>
     </form>
   </div>

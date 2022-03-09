@@ -2,7 +2,7 @@
 <!-- jh_new_leave -->
 <div class="jh_new_leave">
   <h1>新增假別資訊</h1>
-  <form action="/jh_leave" method="POST">
+  <form action="/jh_leave" Method="POST">
     <div>
       {{> message}}
       <div>
@@ -22,7 +22,7 @@
 
     </div>
     <div class="formButton">
-      <input id="cancel" class="btn btn-primary" onclick="page('/jh_leave')" value="取消">
+      <input id="cancel" class="btn btn-primary" onclick="Method.common.page('/jh_leave')" value="取消">
       <input id="add" type="submit" class="btn btn-info" value="新增">
     </div>
   </form>

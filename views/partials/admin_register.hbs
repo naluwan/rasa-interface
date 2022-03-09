@@ -3,10 +3,10 @@
 <div class="admin_register">
   <h1>註冊帳號</h1>
   {{> message}}
-  <form {{#if isAdmin}}action="/admin_company/new"{{else}}action="/users/register"{{/if}} method="post">
+  <form action="">
     <div>
-      <label for="cpy_no">公司統編</label>
-      <input type="text" id="cpy_no" name="cpy_no" class="form-control" placeholder="請輸入公司統編" value="{{ cpy_no }}" required>
+      <label for="cpy_no">公司代號</label>
+      <input type="text" id="cpy_no" name="cpy_no" class="form-control" placeholder="請輸入公司代號或統編" value="{{ cpy_no }}" required>
     </div>
 
     <div>
@@ -64,9 +64,9 @@
       <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" placeholder="請再次輸入密碼" value="{{ confirmPassword }}" required>
     </div>
 
-    <div class="text-center mt-3">
-      <a href="javascript:;" class="btn btn-primary" role="button" onclick="page('/admin_company')">返回</a>
-      <button type="submit" class="btn btn-info">註冊</button><br>
+    <div class="formButton">
+      <input id="cancel" type="button" class="btn btn-primary" onclick="Method.common.page('/admin_company')" value="返回">
+      <input id="add" type="submit" class="btn btn-info" value="新增">
     </div>
   </form>
   {{#unless isAdmin}}

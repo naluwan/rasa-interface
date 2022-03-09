@@ -2,21 +2,21 @@
 <!--admin_new_subsidyInfo-->
 <div class="admin_new_subsidyInfo">
   <h1>新增補助類別</h1>
-  <form action="/admin_subsidyInfo" method="POST">
+  <form action="/admin_subsidyInfo" Method="POST">
     <div>
       {{> message}}
       <div>
         <label>補助名稱</label>
-        <input type="text" class="form-control" name="name" placeholder="請輸入補助類別名稱" value="{{name}}" required>
+        <input type="text" class="form-control" name="cnName" placeholder="請輸入補助類別名稱" value="{{name}}" required>
       </div>
       <div>
         <label>補助英文名稱</label>
         <input type="text" class="form-control" name="entity_name" placeholder="請輸入補助類別英文名稱" value="{{entity_name}}" required>
       </div>
     </div>
-    <div class="text-center mt-3">      
-      <a href="javascript:;" class="btn btn-primary" onclick="page('/admin_subsidyInfo')">取消</a>
-      <button type="submit" class="btn btn-info">新增</button>
+    <div class="formButton">      
+      <input type="button" id="cancel" class="btn btn-primary" onclick="Method.common.page('/admin_subsidyInfo')" value="取消">
+      <input type="add" id="save" class="btn btn-info" value="新增">
     </div>
   </form>
 </div>

@@ -8,7 +8,7 @@
       {{#each adminCompanyInfo}}
       <div>
         <span>
-          <h2>{{this.CPY_NAME}}</h2>
+          <h2 title="{{this.CPY_NAME}}">{{this.CPY_NAME}}</h2>
           <div>
             <span>公司代碼(公司統編)：</span>
             <span title="{{this.CPY_ID}}">{{ this.CPY_ID}}</span>
@@ -17,10 +17,10 @@
             <span>EMAIL(登入帳號)：</span>
             <span title="{{this.EMAIL}}">{{ this.EMAIL }}</span>
           </div>
-          <div>
+          <!--<div>
             <span>產業類別：</span>
             <span title="{{this.INDUSTRY_NAME}}">{{ this.INDUSTRY_NAME }}</span>
-          </div>
+          </div>-->
           <div>
             <span>客服使用者：</span>
             <span>{{#if this.ISHR}}是{{else}}否{{/if}}</span>
@@ -31,40 +31,17 @@
           </div>
         </span>
         <span>
-          <a href="javascript:;" class="btn btn-primary" onclick="page('/admin_company/{{ this.CPY_ID }}/edit')">編輯</a>
-          <a href="javascript:;" class="btn btn-info" onclick="page('/admin_company/{{ this.CPY_ID }}/edit/password')">修改密碼</a>
-          <button class=" btn btn-danger" id="admin-delete-user-btn" data-toggle="modal" data-target="#deleteModal" data-id="{{ this.CPY_ID }}" data-name="{{ this.CPY_NAME }}" data-category="admin_company">刪除</button>
+          <input type="button" id="edit" class="btn btn-primary" onclick="Method.common.page('/admin_company/{{ this.CPY_ID }}/edit')" value="編輯">
+          <input type="button" id="repwd" class="btn btn-info" data-title="{{this.CPY_NAME}}" data-info="/admin_company/{{ this.CPY_ID }}/edit/password'" value="修改密碼">
+          <input type="button" id="del" class="btn btn-danger" data-title="{{this.CPY_NAME}}" data-infoId="{{this.CPY_ID}}" value="刪除">
         </span>
       </div>
       {{/each}}
     </div>
   </div>
-  <div class="text-center footButton">
-    <a href="javascript:;" class="btn btn-warning" id="create-btn" onclick="page('/admin_company/new')">新增使用者</a>
+  <div class="footButton">
+    <input type="button" class="btn btn-warning" onclick="Method.common.page('/admin_company/new')" value="新增使用者">
   </div>
 </div>
 
-<!-- Modal -->
-<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle"
-  aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalScrollableTitle">刪除資訊</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <p>確定要刪除<strong id="delete-position">{{ this.CPY_NAME }}</strong>?</p> 
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
-        <form action="/admin_company/{{ this.CPY_ID }}" method="post" style="display:inline-block;" id="delete-form">
-          <button type="submit" class="btn btn-danger">確定</button>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
 {{/if}}

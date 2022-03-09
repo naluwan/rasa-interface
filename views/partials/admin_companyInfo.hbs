@@ -1,17 +1,17 @@
 {{#if admin_companyInfo}}
 <!--admin_companyInfo-->
 <div class="admin_companyInfo">
+  <style id="searchCss"></style>
   <h1>資訊類別</h1>
-  <form action="/admin_companyInfo" class="searchBar">
+  <div class="searchBar">
     <input type="text" name="search" id="search" value="{{search}}" placeholder="搜尋關鍵字">
-    <button type="submit" class=" btn btn-info">查詢</button>
-  </form> 
+  </div> 
   <div>
     {{> message}}
     <div>
       <div id="data-panel">
         {{#each adminCompanyInfo}}
-        <div>
+        <div data-search="{{this.CPNYINFO_NAME}} {{this.ENTITY_NAME}}">
             <span>
               <div>
                 <span>資訊名稱：</span>
@@ -25,41 +25,17 @@
               
             </span>
             <span>
-              <a href="javascript:;" class="btn btn-primary" onclick="page('/admin_companyInfo/{{ this.CPNYINFO_ID }}/edit')">編輯</a>
-              <button class=" btn btn-danger" id="admin-delete-user-btn" data-toggle="modal" data-target="#deleteModal" data-id="{{ this.CPNYINFO_ID }}" data-name="{{ this.CPNYINFO_NAME }}" data-category="admin_companyInfo">刪除</button>
+              <input type="button" id="edit" class="btn btn-primary" onclick="Method.common.page('/admin_companyInfo/{{ this.ENTITY_NAME }}/edit')" value="編輯">
+              <input type="button" id="del" class="btn btn-danger" value="刪除" data-title="{{this.CPNYINFO_NAME}}" data-infoId="{{this.CPNYINFO_ID}}">
             </span>
         </div>
         {{/each}}
       </div>
     </div>
   </div>
-  <div class="text-center footButton">
-    <a href="javascript:;" class="btn btn-warning" onclick="page('/admin_companyInfo/new')">新增資訊</a>
+  <div class="footButton">
+    <input type="button" class="btn btn-warning" onclick="Method.common.page('/admin_companyInfo/new')" value="新增資訊">
   </div>
     
-</div>
-
-<!-- Modal -->
-<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle"
-  aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalScrollableTitle">刪除資訊</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <p>確定要刪除<strong id="delete-position">{{ this.CPNYINFO_NAME }}</strong>?</p> 
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
-        <form action="/admin_companyInfo/{{ this.CPNYINFO_ID }}" method="post" style="display:inline-block;" id="delete-form">
-          <button type="submit" class="btn btn-danger">確定</button>
-        </form>
-      </div>
-    </div>
-  </div>
 </div>
 {{/if}}

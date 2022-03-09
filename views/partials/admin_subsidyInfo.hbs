@@ -1,16 +1,16 @@
 {{#if admin_subsidyInfo}}
 <!--admin_subsidyInfo-->
 <div class="admin_subsidyInfo">
+  <style id="searchCss"></style>
   <h1>補助類別</h1>
-  <form action="/admin_subsidyInfo" class="searchBar">
+  <div class="searchBar">
     <input type="text" name="search" id="search" value="{{search}}" placeholder="搜尋關鍵字">
-    <button type="submit" class=" btn btn-info">查詢</button>
-  </form>
+  </div> 
 
   {{> message}}
   <div id="data-panel">
     {{#each adminSubsidyInfo}}
-    <div>
+    <div data-search="{{this.SUBSIDY_NAME}} {{this.ENTITY_NAME}}">
       <span>
         <div>
           <span>補助名稱：</span>
@@ -22,40 +22,16 @@
         </div>
       </span>
       <span>
-        <button class=" btn btn-danger" id="admin-delete-user-btn" data-toggle="modal" data-target="#deleteModal" data-id="{{ this.SUBSIDY_ID }}" data-name="{{ this.SUBSIDY_NAME }}" data-category="admin_subsidyInfo">
-            刪除
-        </button>
+        <input type="button" id="edit" class="btn btn-primary" onclick="Method.common.page('/admin_subsidyInfo/{{ this.ENTITY_NAME }}/edit')" value="編輯">
+        <input type="button" id="del" class="btn btn-danger" value="刪除" data-title="{{this.SUBSIDY_NAME}}" data-infoId="{{this.SUBSIDY_ID}}">
       </span>
     </div>
     {{/each}}
   </div>
 
-  <div class="text-center mt-3">
-    <a href="javascript:;" class="btn btn-warning" onclick="page('/admin_subsidyInfo/new')">新增資訊</a>
+  <div class="footButton">
+    <input type="button" class="btn btn-warning" onclick="Method.common.page('/admin_subsidyInfo/new')" value="新增資訊">
   </div>
 </div>
 
-<!-- Modal -->
-<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle"
-  aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalScrollableTitle">刪除資訊</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <p>確定要刪除<strong id="delete-position">{{ this.SUBSIDY_NAME }}</strong>?</p> 
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
-        <form action="/adminSubsidyInfo/{{ this.SUBSIDY_ID }}" method="post" style="display:inline-block;" id="delete-form">
-          <button type="submit" class="btn btn-danger">確定</button>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
 {{/if}}

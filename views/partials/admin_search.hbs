@@ -2,9 +2,9 @@
 <!--admin_search-->
 <div class="admin_search">
   <h1>查詢各公司回覆資料</h1>
-  <form action="/admin_search/filter" class="searchBar">
+  <form action="" class="searchBar">
     <label for="companyFilter">公司：</label>
-    <select name="companyFilter" id="companyFilter">
+    <select name="companyFilter" id="companyFilter" required>
       <option value="" selected hidden>請選擇</option>
       {{#each adminCompany}}
       {{#isnt this.CPY_NAME 'Admin'}}
@@ -14,12 +14,12 @@
     </select>
 
     <label for="tableFilter">類別：</label>
-    <select name="tableFilter" id="tableFilter">
+    <select name="tableFilter" id="tableFilter" required>
       <option value="" selected hidden>請選擇</option>
-      <option value="CPNYINFO" {{#is tableFilter 'CPNYINFO'}} selected {{/is}}>公司資訊</option>
-      <option value="POSITION" {{#is tableFilter 'POSITION'}} selected {{/is}}>職缺資訊</option>
-      <option value="SUBSIDY" {{#is tableFilter 'SUBSIDY'}} selected {{/is}}>補助資訊</option>
-      <option value="LEAVE" {{#is tableFilter 'LEAVE'}} selected {{/is}}>假別資訊</option>
+      <option value="cpnyinfo" {{#is tableFilter 'cpnyinfo'}} selected {{/is}}>公司資訊</option>
+      <option value="position" {{#is tableFilter 'position'}} selected {{/is}}>職缺資訊</option>
+      <option value="subsidy" {{#is tableFilter 'subsidy'}} selected {{/is}}>補助資訊</option>
+      <option value="leave" {{#is tableFilter 'leave'}} selected {{/is}}>假別資訊</option>
       <!-- <option value="GREET" {{#is tableFilter 'GREET'}} selected {{/is}}>問候資訊</option>
       <option value="DEFAULT" {{#is tableFilter 'DEFAULT'}} selected {{/is}}>預設回覆</option> -->
     </select>
@@ -27,7 +27,7 @@
     <label for="search">搜尋：</label>
     <input type="text" name="search" id="search" value="{{search}}" placeholder="搜尋關鍵字(可空白)">
   
-    <button type="submit" class=" btn btn-info">查詢</button>
+    <input type="submit" class="btn btn-info" value="查詢">
   </form> 
   {{> message}}
   <div id="data-panel">
@@ -49,39 +49,16 @@
       </span>
 
       <span>
-        <a href="javascript:;" class="btn btn-primary" onclick="page('/admin_search/{{this.CPY_ID}}/{{../tableFilter}}/{{ this.adminSearch_id}}/edit')">編輯</a>
+        <input type="button" id="edit" class="btn btn-primary" onclick="Method.common.page('/admin_search/{{../tableFilter}}/{{ this.adminSearch_entity_name }}/{{this.infoId}}/edit')" value="編輯">
         {{!-- 設置data名稱，在資料傳遞時都會把名稱轉成全部小寫，所以設定名稱時，全部小寫就好 --}}
-        <button class=" btn btn-danger" id="adminSearch-delete-btn" data-toggle="modal" data-target="#deleteModal" data-id="{{ this.adminSearch_id }}" data-name="{{ this.adminSearch_name }}" data-cpnyid="{{this.CPY_ID}}" data-table="{{../tableFilter}}" data-cpyname="{{this.CPY_NAME}}" data-category="admin_search">刪除</button>
+        <input type="button" id="del" class="btn btn-danger" data-title="{{this.adminSearch_name}}" data-infoId="{{this.infoId}}" data-category="{{../tableFilter}}" value="刪除">
       </span>
     </div>
     {{/each}}
   </div>
-  <div class="text-center footButton">
-    <a href="javascript:;" class="btn btn-warning" onclick="page('/admin_search/new')">新增資訊</a>
+  <div class="footButton">
+    <input type="button" class="btn btn-warning" onclick="Method.common.page('/admin_search/new')" value="新增資訊">
   </div>
 </div>
 
-<!-- Modal -->
-<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle"
-  aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalScrollableTitle">刪除資訊</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <p>確定要刪除<strong id="delete-position">{{ this.adminSearch_name }}</strong>?</p> 
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
-        <form action="/admin_search/{{ this.adminSearch_id }}" method="post" style="display:inline-block;" id="delete-form">
-          <button type="submit" class="btn btn-danger">確定</button>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
 {{/if}}
