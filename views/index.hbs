@@ -165,13 +165,13 @@
           </div>
 
           <div>
-            <label>補助津貼:</label>
-            <input type="button" class="btn btn-success" onclick="Method.common.page('/jh_subsidy')" value="設定">
+            <label>假別設定:</label>
+            <input type="button" class="btn btn-success" onclick="Method.common.page('/jh_leave')" value="設定">
           </div>
 
           <div>
-            <label>假別設定:</label>
-            <input type="button" class="btn btn-success" onclick="Method.common.page('/jh_leave')" value="設定">
+            <label>補助津貼:</label>
+            <input type="button" class="btn btn-success" onclick="Method.common.page('/jh_subsidy')" value="設定">
           </div>
 
           {{!-- <div>
@@ -189,18 +189,9 @@
     <!-- user jh 右側畫面 -->
     <span class="setting">
       {{> jh_index}}
-      {{> jh_position}}
-      {{> jh_new_position}}
-      {{> jh_edit_position}}
-      {{> jh_cpnyInfo}}
-      {{> jh_new_cpnyInfo}}
-      {{> jh_edit_cpnyInfo}}
-      {{> jh_subsidy}}
-      {{> jh_new_subsidy}}
-      {{> jh_edit_subsidy}}
-      {{> jh_leave}}
-      {{> jh_new_leave}}
-      {{> jh_edit_leave}}
+      {{> jh_des}}
+      {{> jh_edit_des}}
+      {{> jh_new_des}}
     </span>
   </div>
   {{/if}}
