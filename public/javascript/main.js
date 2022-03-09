@@ -3,70 +3,391 @@ window.onload = function() {
     if(func){
         document.documentElement.setAttribute("class",func.getAttribute("data-func"));
     };
-    deleteButton();
-    saveButton();
-    addButton();
-    repwdButton();
+    Method.button.all();
+    Method.search.keyWord();
 };
 
-//jump page
-function page(url){
-    loading();
-    function back(e){
-        var parse = new DOMParser();
-        var html = parse.parseFromString(e.data,"text/html");
-        if(!html.querySelector(".setting")){
-            history.go(0);
-            return;
-        };
-
-        document.querySelector(".setting").innerHTML = html.querySelector(".setting").innerHTML;
-        history.pushState("","",url);
-        deleteButton();
-        saveButton();
-        addButton();
-        repwdButton();
-        loadingClose();
-    };
-    asyncAjax(location.origin + url,back,true);
+window.onpopstate = function() {
+    Method.common.page(location.pathname,"history");
 };
 
-//async ajax
-function asyncAjax(url,back,async){
-    //url 路徑
-    //back is call back function
-    //async 非同步
+worker = new Worker("/javascript/worker.js");
 
-    if(!back){
-        console.log("missing back function!");
-        return;
+
+Method={};
+
+Method.button={};
+
+//button action
+Method.button.all = function(){
+    Method.button.saveButton();
+    Method.button.addButton();
+    Method.button.delButton();
+    Method.button.repwdButton();
+    Method.button.forgetButton();
+};
+
+//save button
+Method.button.saveButton = function(){
+    if(document.querySelector("#save")){
+        save.onclick = function(event){
+
+            var data = "";
+            var symbol;
+
+            var inputs = document.querySelectorAll("[required]");
+            for(var i=0;i<inputs.length;i++){
+                if(inputs[i].value==""){
+                    return;
+                };
+
+                i == 0 ? symbol = "?" : symbol = "&";
+
+                data += symbol + inputs[i].name + "=" + inputs[i].value;
+            };
+
+            var infoId = this.getAttribute("data-infoId");
+            if(infoId != null){
+                data += "&infoId=" + infoId;
+            };
+            
+            Method.common.loading();
+
+            event.preventDefault();
+                            
+            function back(info){
+
+                var info = JSON.parse(info.data);
+                console.log(info)
+
+                var html = "<h2><div class='sa-icon " + info.status + "'><span></span></div>" + info.message + "</h2>";
+
+                var prevPage = null;
+                if(info.status == "success"){
+                    prevPage = function(){
+                        document.querySelector("#cancel").click();
+                    };
+                };
+
+                Method.common.loadingClose();
+                Method.common.showBox(html,"message","",prevPage);
+            };
+
+            var url = location.href + "/update" + encodeURI(data);
+            console.log(url)
+
+            Method.common.asyncAjax(url,back);
+        };
+    };
+};
+
+//add button
+Method.button.addButton = function(){
+    if(document.querySelector("#add")){
+        add.onclick = function(event){
+            var data="?";
+            var inputs = document.querySelectorAll("[required]");
+            for(var i=0;i<inputs.length;i++){
+                if(inputs[i].value==""){
+                    return;
+                };
+                data += "&" + inputs[i].name + "=" + inputs[i].value;
+            };
+
+            event.preventDefault();
+            
+            Method.common.loading();            
+                            
+            function back(info){
+                var info = JSON.parse(info.data);
+                console.log(info)
+
+                var html = "<h2><div class='sa-icon " + info.status + "'><span></span></div>" + info.message + "</h2>";
+
+                var prevPage = null;
+                if(info.status == "success"){
+                    prevPage = function(){
+                        document.querySelector("#cancel").click();
+                    };
+                };
+                Method.common.loadingClose();
+                Method.common.showBox(html,"message","",prevPage);
+            };
+
+            var url = location.href + "/insert" + encodeURI(data);
+            console.log(url)
+
+            Method.common.asyncAjax(url,back);
+        };
+    };
+};
+
+//del button
+Method.button.delButton = function(){
+
+    var delButton = document.querySelectorAll("#del");
+
+    for(var i=0;i<delButton.length;i++){
+        delButton[i].onclick = function(){
+            run(this);
+        };
     };
 
-    if(!async || !typeof(Worker)){
+    function run(obj){
 
-        if(async && !typeof(Worker)){
-            console.log("Web Worker not supported to use XMLHttpRequest!");
+        var listName = obj.getAttribute("data-title");
+
+        var html = "<h2><div class='sa-icon warning'><span></span></div>確定刪除 " + listName + "</h2>";
+
+        Method.common.showBox(html,"message");
+
+        var content = document.querySelector("#message .content");
+
+        var footButton = document.createElement("div");
+        footButton.setAttribute("class","button");
+        content.appendChild(footButton);
+
+        var cencelButton = document.createElement("button");
+        cencelButton.innerText = "取消";
+        cencelButton.setAttribute("class","btn btn-primary");
+        cencelButton.onclick = function() {
+            document.querySelector("#message").remove();
+        };
+        footButton.appendChild(cencelButton);
+
+        var delButton = document.createElement("button");
+        delButton.innerText = "確定";
+        delButton.setAttribute("class","btn btn-info");
+
+        delButton.onclick = function() {
+            document.querySelector("#message").remove();
+            deleteList();
+        };
+        footButton.appendChild(delButton);
+        
+        function deleteList(){
+            Method.common.loading();
+
+            function back(info){
+                var info = JSON.parse(info.data);
+                console.log(info)
+
+                var html = "<h2><div class='sa-icon " + info.status + "'><span></span></div>" + info.message + "</h2>";
+
+                if(info.status == "success"){
+                    obj.parentNode.parentNode.remove();
+                };
+                Method.common.loadingClose();
+                Method.common.showBox(html,"message");
+            };
+
+            var data = "";
+
+            if(obj.getAttribute("data-category")){
+                data += "&category=" + obj.getAttribute("data-category");
+            };
+            
+            var url = location.href + "/delete?infoId=" + obj.getAttribute("data-infoId") + data;
+            
+            console.log(url)
+
+            Method.common.asyncAjax(url,back);
+        };
+    };
+};
+
+//repwd button
+Method.button.repwdButton = function(){
+
+    var repwdButton = document.querySelectorAll("#repwd");
+
+    for(var i=0;i<repwdButton.length;i++){
+        repwdButton[i].onclick = function(){
+            run(this);
+        };
+    };
+
+    function run(obj){
+
+        var listName = obj.getAttribute("data-title");
+
+        Method.common.showBox("","message");
+
+        var content = document.querySelector("#message .content");
+
+        var h1 = document.createElement("h1");
+        h1.innerText = "修改密碼";
+        content.appendChild(h1);
+
+        var rePassword = document.createElement("form");
+        rePassword.setAttribute("action","");
+        rePassword.setAttribute("name","form");
+        rePassword.setAttribute("id","rePassword");
+        content.appendChild(rePassword);
+
+        var password = document.createElement("input");
+        password.setAttribute("type","password");
+        password.setAttribute("name","password");
+        password.setAttribute("class","form-control");
+        password.setAttribute("placeholder","請輸入新密碼");
+        password.setAttribute("required","");
+        rePassword.appendChild(password);
+
+        var confirmPassword = document.createElement("input");
+        confirmPassword.setAttribute("type","password");
+        confirmPassword.setAttribute("name","confirmPassword");
+        confirmPassword.setAttribute("class","form-control");
+        confirmPassword.setAttribute("placeholder","請再次輸入密碼");
+        confirmPassword.setAttribute("required","");
+        rePassword.appendChild(confirmPassword);
+
+        var footButton = document.createElement("div");
+        footButton.setAttribute("class","button");
+        rePassword.appendChild(footButton);
+
+        var cencelButton = document.createElement("button");
+        cencelButton.innerText = "取消";
+        cencelButton.setAttribute("class","btn btn-primary");
+        cencelButton.onclick = function() {
+            document.querySelector("#message").remove();
+        };
+        footButton.appendChild(cencelButton);
+
+        var saveButton = document.createElement("button");
+        saveButton.innerText = "確定";
+        saveButton.type = "submit";
+        saveButton.setAttribute("class","btn btn-info");
+
+        saveButton.onclick = function(event) {
+
+            function back(info){
+                var info = JSON.parse(info.data);
+                console.log(info)
+
+                var html = "<h2><div class='sa-icon " + info.status + "'><span></span></div>" + info.message + "</h2>";
+
+                if(info.status == "success"){
+                    document.querySelector("#message .content").innerHTML = html;
+                }else{
+                    Method.common.showBox(html,"message","");
+                };
+                Method.common.loadingClose();
+            };
+
+            var data="/repwd?infoId=" + listName;
+            var inputs = document.querySelectorAll("#message [required]");
+            console.log(inputs)
+            for(var i=0;i<inputs.length;i++){
+                
+                if(inputs[i].value==""){
+                    return;
+                };
+
+                data += "&" + inputs[i].name + "=" + inputs[i].value;
+            };
+
+            event.preventDefault();
+
+            Method.common.loading();
+
+            var url = location.href + data;
+            console.log(url)
+
+            Method.common.asyncAjax(url,back);
         };
 
-        var XML = new XMLHttpRequest();
-        XML.onload = function() {
-            if(this.readyState == 4 && this.status == 200){
-                back(this);
+        footButton.appendChild(saveButton);
+        
+    };
+};
+
+//forget button
+Method.button.forgetButton  = function(){
+
+    if(document.querySelector("#forget")){
+
+        document.querySelector("#forget").onclick = function(){
+
+            var html = 
+                '<h1>忘記密碼</h1>'+
+                '<form action="/users/sendResetMail" Method="GET">'+
+                    '<input type="email" class="form-control" name="resetEmail" placeholder="請輸入申請帳號時所填入的E-mail" required>'+
+                    '<div>'+
+                        '<button type="submit" class="btn btn-info">送出</button>'+
+                    '</div>'+
+                '</form>';
+
+            Method.common.showBox(html,"forgetBox");
+        };
+    };
+};
+
+//search
+Method.search={};
+
+Method.search.keyWord = function(){
+
+    if(document.querySelector("#search")){
+
+        if(document.querySelector(".admin_search")){
+            
+            document.querySelector("[type='submit']").onclick = function(event){
+                
+                function back(info){
+                    var info = JSON.parse(info.data);
+                    console.log(info)
+    
+                    var html = "<h2><div class='sa-icon " + info.status + "'><span></span></div>" + info.message + "</h2>";
+    
+                    if(info.status == "success"){
+                        document.querySelector("#message .content").innerHTML = html;
+                    }else{
+                        Method.common.showBox(html,"message","");
+                    };
+                    Method.common.loadingClose();
+                };
+
+                var data = "";
+                var symbol;
+
+                var inputs = document.querySelectorAll("form [name]");
+                for(var i=0;i<inputs.length;i++){
+
+                    i == 0 ? symbol = "?" : symbol = "&";
+
+                    data += symbol + inputs[i].name + "=" + inputs[i].value;
+                };
+
+                event.preventDefault();
+
+                var url = "/admin_search/filter" + data;
+
+                console.log(url)
+                
+                Method.common.page(url,back);
+
+            };
+
+        }else{
+            search.onkeyup = function(){
+
+                searchCss.innerHTML = "#data-panel > :not([data-search*=" + search.value + "]){display:none;}";
+
+                if(document.querySelector("#data-panel").clientHeight == 50){
+                    document.querySelector("#data-panel").setAttribute("class","noList");
+                }else{
+                    document.querySelector("#data-panel").removeAttribute("class");
+                };
             };
         };
-        XML.open("GET", url);
-        XML.send();
-    }else{
-        var worker = new Worker("/javascript/worker.js");
-        worker.postMessage(["asyncAjax",url]);
-        worker.onmessage = function(e){
-            back(e);
-        };
     };
 };
 
+
+Method.common={}
+
 //loading
-function loading(){
+Method.common.loading = function(){
     
     var InpBox = document.createElement("div");
     InpBox.setAttribute("id","loading");
@@ -80,247 +401,12 @@ function loading(){
     
 };
 
-function loadingClose(){
+Method.common.loadingClose = function(){
     document.querySelector("#loading").remove();
 };
 
-//delete button
-function deleteButton(){
-    if(document.querySelector("#del")){
-        document.querySelector("#data-panel").onclick = function(event){
-
-            if(event.target.getAttribute("id") != "del"){
-                return;
-            };
-
-            var listName = event.target.parentNode.previousElementSibling.querySelector("[data-title]").title;
-
-            var html = "<h3 style='text-align:center;'><div class='sa-icon warning'><span></span></div>確定刪除 " + listName + "</h3>";
-
-            showBox(html,"message","");
-
-            var msgBox = document.querySelector("#message .content");
-
-            var footButton = document.createElement("div");
-            footButton.setAttribute("class","button");
-            msgBox.appendChild(footButton);
-
-            var cencelButton = document.createElement("button");
-            cencelButton.innerText = "取消";
-            cencelButton.setAttribute("class","btn btn-primary");
-            cencelButton.onclick = function() {
-                document.querySelector("#message").remove();
-            };
-            footButton.appendChild(cencelButton);
-
-            var delButton = document.createElement("button");
-            delButton.innerText = "確定";
-            delButton.setAttribute("class","btn btn-info");
-
-            delButton.onclick = function() {
-                document.querySelector("#message").remove();
-                deleteList();
-            };
-            footButton.appendChild(delButton);
-            
-            function deleteList(){
-                loading();                            
-                var url = location.href + "/delete?infoId=" + event.target.getAttribute("data-infoId");
-                console.log(url)
-
-                function back(info){
-                    var info = JSON.parse(info.data);
-                    console.log(info)
-
-                    var html = "<h3 style='text-align:center;'><div class='sa-icon " + info.status + "'><span></span></div>" + info.message + "！</h3>";
-
-                    var prevPage = null;
-                    if(info.status == "success"){
-                        prevPage = function(){
-                            event.target.parentNode.parentNode.remove();
-                        };
-                    };
-                    loadingClose();
-                    showBox(html,"message","",prevPage);
-                };
-
-                asyncAjax(url,back,true);
-            };
-        };
-    };
-};
-
-//save button
-function saveButton(){
-    if(document.querySelector("#save")){
-        save.onclick = function(event){
-            var infoId = this.getAttribute("data-infoId");
-            var data="?";
-            var inputs = document.querySelectorAll("[required]");
-            for(var i=0;i<inputs.length;i++){
-                if(inputs[i].value==""){
-                    return;
-                };
-                data += "&" + inputs[i].name + "=" + inputs[i].value;
-            };
-
-            data += "&infoId=" + infoId;
-            
-            loading();
-
-            event.preventDefault();
-                            
-            var url = location.href + "/update" + encodeURI(data);
-            console.log(url)
-
-            function back(info){
-                var info = JSON.parse(info.data);
-                console.log(info)
-
-                var html = "<h3 style='text-align:center;'><div class='sa-icon " + info.status + "'><span></span></div>" + info.message + "！</h3>";
-
-                var prevPage = null;
-                if(info.status == "success"){
-                    prevPage = function(){
-                        document.querySelector("#cancel").click();
-                    };
-                };
-                loadingClose();
-                showBox(html,"message","",prevPage);
-            };
-
-            asyncAjax(url,back,true);
-        };
-    };
-};
-
-//add button
-function addButton(){
-    if(document.querySelector("#add")){
-        add.onclick = function(event){
-            var data="?";
-            var inputs = document.querySelectorAll("[required]");
-            for(var i=0;i<inputs.length;i++){
-                if(inputs[i].value==""){
-                    return;
-                };
-                data += "&" + inputs[i].name + "=" + inputs[i].value;
-            };
-            
-            loading();
-
-            event.preventDefault();
-                            
-            var url = location.href + "/insert" + encodeURI(data);
-            console.log(url)
-
-            function back(info){
-                var info = JSON.parse(info.data);
-                console.log(info)
-
-                var html = "<h3 style='text-align:center;'><div class='sa-icon " + info.status + "'><span></span></div>" + info.message + "！</h3>";
-
-                var prevPage = null;
-                if(info.status == "success"){
-                    prevPage = function(){
-                        document.querySelector("#cancel").click();
-                    };
-                };
-                loadingClose();
-                showBox(html,"message","",prevPage);
-            };
-
-            asyncAjax(url,back,true);
-        };
-    };
-};
-
-//repwd button
-function repwdButton(){
-    if(document.querySelector("#repwd")){
-        document.querySelector("#data-panel").onclick = function(event){
-
-            var listName = event.target.parentNode.previousElementSibling.querySelector("[data-title]").title;
-
-            if(event.target.getAttribute("id") != "repwd"){
-                return;
-            };
-            
-            var html = "<h3 style='text-align:center;'>修改密碼</h3>";
-
-            html += '<form action="" name="form">'+
-                        '<div>'+
-                            '<label for="password">新密碼</label>'+
-                            '<input type="password" name="password" class="form-control" placeholder="請輸入密碼" required>'+
-                        '</div>'+
-                    
-                        '<div>'+
-                            '<label for="confirmPassword">再次輸入密碼</label>'+
-                            '<input type="password" name="confirmPassword" class="form-control" placeholder="請再次輸入密碼" required>'+
-                        '</div>'+
-                    '</form>';
-
-            showBox(html,"message","");
-
-            var msgBox = document.querySelector("#message .content");
-
-            var footButton = document.createElement("div");
-            footButton.setAttribute("class","button");
-            msgBox.appendChild(footButton);
-
-            var cencelButton = document.createElement("button");
-            cencelButton.innerText = "取消";
-            cencelButton.setAttribute("class","btn btn-primary");
-            cencelButton.onclick = function() {
-                document.querySelector("#message").remove();
-            };
-            footButton.appendChild(cencelButton);
-
-            var saveButton = document.createElement("button");
-            saveButton.innerText = "確定";
-            saveButton.setAttribute("class","btn btn-info");
-
-            saveButton.onclick = function() {
-                savePwd();
-            };
-            footButton.appendChild(saveButton);
-            
-            function savePwd(){
-                
-                var data="/repwd?infoId=" + listName;
-                var inputs = document.querySelectorAll("#message [required]");
-                console.log(inputs)
-                for(var i=0;i<inputs.length;i++){
-                    if(inputs[i].value==""){
-                        return;
-                    };
-                    data += "&" + inputs[i].name + "=" + inputs[i].value;
-                };
-
-                var url = location.href + data;
-                console.log(url)
-
-                function back(info){
-                    document.querySelector("#message").remove();
-                    var info = JSON.parse(info.data);
-                    console.log(info)
-
-                    var html = "<h3 style='text-align:center;'><div class='sa-icon " + info.status + "'><span></span></div>" + info.message + "！</h3>";
-
-                    var prevPage = null;
-                    
-                    loadingClose();
-                    showBox(html,"message","",prevPage);
-                };
-                loading();
-                asyncAjax(url,back,true);
-            };
-        };
-    };
-};
-
 //showBox
-function showBox(INFO,ID,CLOSE,FUN){
+Method.common.showBox = function(INFO,ID,CLOSE,FUN){
     
     /*
     INFO =放入彈出視窗的 html
@@ -364,7 +450,7 @@ function showBox(INFO,ID,CLOSE,FUN){
 
     /*區塊外點擊關閉視窗*/
     if(CLOSE == undefined || CLOSE !== "N"){
-        showboxClose(InpBox,FUN);
+        Method.common.showboxClose(InpBox,FUN);
     }else{
         InpBox.classList.add("noClose");
     };
@@ -372,7 +458,7 @@ function showBox(INFO,ID,CLOSE,FUN){
 };
 
 //showBox close
-function showboxClose(inputBox,fun){
+Method.common.showboxClose = function(inputBox,fun){
     var boxBack = document.createElement("span");
     boxBack.setAttribute("style","width:100%;height:100%;display:block;position:fixed;top:0;left:0;");
     inputBox.appendChild(boxBack);
@@ -409,5 +495,64 @@ function showboxClose(inputBox,fun){
         if(fun){
             fun();
         };
+    };
+};
+
+//jump page
+Method.common.page = function(url,type){
+    
+    Method.common.loading();
+
+    function back(e){
+        var parse = new DOMParser();
+        var html = parse.parseFromString(e.data,"text/html");
+        
+        if(document.querySelector(".login")){
+
+            if(!html.querySelector(".container")){
+                history.go(0);
+                return;
+            };
+
+            document.querySelector(".container").innerHTML = html.querySelector(".container").innerHTML;
+
+        };
+
+        if(document.querySelector(".index")){
+            if(!html.querySelector(".setting")){
+                history.go(0);
+                return;
+            };
+
+            document.querySelector(".setting").innerHTML = html.querySelector(".setting").innerHTML;
+        };
+
+        if(!type){
+            history.pushState("","",url);
+        };
+
+        Method.button.all();
+
+        Method.search.keyWord();
+
+        Method.common.loadingClose();
+    };
+    
+    Method.common.asyncAjax(location.origin + url,back);
+};
+
+//async ajax
+Method.common.asyncAjax = function(url,back){
+    //url 路徑
+    //back is call back function
+
+    if(!back){
+        console.log("missing back function!");
+        return;
+    };
+    
+    worker.postMessage(["asyncAjax",url]);
+    worker.onmessage = function(e){
+        back(e);
     };
 };

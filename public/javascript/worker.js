@@ -7,6 +7,7 @@ self.addEventListener("message", function(e) {
                 self.postMessage(this.responseText);
             };
         };
+
         XML.open("GET", e.data[1]);
         XML.send();
     };    
