@@ -14,7 +14,8 @@ router.get('/:entity_name/edit', (req, res) => {
   const {entity_name} = req.params
   const user = res.locals.user
 	const cpnyId = user.CPY_ID
-  const jh_edit_position = true
+  const jh_edit_des = true
+  const category = 'position'
   const request = new sql.Request(pool)
 
   request.query(`select b.POSITION_NAME as name, a.POSITION_DES as des, b.ENTITY_NAME as entity_name, a.INFO_ID as infoId
@@ -27,13 +28,13 @@ router.get('/:entity_name/edit', (req, res) => {
       console.log(err)
       return
     }
-    const positionInfo = result.recordset[0]
-    positionInfo.des = positionInfo.des.replace(/\n/g, "\r")
-    if(!positionInfo){
+    const desInfo = result.recordset[0]
+    desInfo.des = desInfo.des.replace(/\n/g, "\r")
+    if(!desInfo){
       req.flash('error', '查無此職缺，請重新嘗試')
       return res.redirect('/jh_position')
     }
-    res.render('index', {positionInfo, jh_edit_position})
+    res.render('index', {desInfo, jh_edit_des, category})
   })
 })
 
@@ -100,14 +101,10 @@ router.get('/new/insert', async (req, res) => {
 
 // 顯示新增position頁面
 router.get('/new', (req, res) => {
-  const user = res.locals.user
-	const cpnyId = user.CPY_ID
-  const jh_new_position = true
-  const route = 'johnnyHire'
-  const action = 'new'
+  const jh_new_des = true
   const category = 'position'
 
-  res.render('index', {id:cpnyId, jh_new_position, route, action, category})
+  res.render('index', {jh_new_des, category})
 })
 
 
@@ -116,9 +113,11 @@ router.get('/', (req, res) => {
   const user = res.locals.user
 	const cpnyId = user.CPY_ID
   const request = new sql.Request(pool)
+  const jh_des = true
+  const category = 'position'
   const warning = []
 
-  request.query(`select a.POSITION_DES, b.POSITION_NAME, b.POSITION_ID, b.ENTITY_NAME, a.INFO_ID as infoId
+  request.query(`select a.POSITION_DES as des, b.POSITION_NAME as name, b.ENTITY_NAME as entity_name, a.INFO_ID as infoId
   from BF_JH_POSITION a
   left join BF_JH_POSITION_CATEGORY b
   on a.POSITION_ID = b.POSITION_ID
@@ -129,14 +128,13 @@ router.get('/', (req, res) => {
       return
     }
 
-    const positionInfo = result.recordset
-    positionInfo.forEach(info => {
-      info.POSITION_DES = info.POSITION_DES.replace(/\n/g, "\r")
+    const desInfo = result.recordset
+    desInfo.forEach(info => {
+      info.des = info.des.replace(/\n/g, "\r")
     })
-    const jh_position = true
-		if(!positionInfo.length) warning.push({message: '還未新增職缺，請拉到下方點選按鈕新增職缺'})
 
-		return res.render('index', {positionInfo, warning, cpnyId, jh_position})
+		if(!desInfo.length) warning.push({message: '還未新增職缺，請拉到下方點選按鈕新增職缺'})
+		return res.render('index', {desInfo, warning, jh_des, category})
   })
 })
 

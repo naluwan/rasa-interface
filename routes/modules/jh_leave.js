@@ -14,7 +14,8 @@ router.get('/:entity_name/edit', (req, res) => {
   const {entity_name} = req.params
   const user = res.locals.user
 	const cpnyId = user.CPY_ID
-  const jh_edit_leave = true
+  const jh_edit_des = true
+  const category = 'leave'
   const request = new sql.Request(pool)
 
   request.query(`select a.LEAVE_DES as des, b.LEAVE_NAME as name, b.ENTITY_NAME as entity_name, a.INFO_ID as infoId
@@ -28,13 +29,13 @@ router.get('/:entity_name/edit', (req, res) => {
       return
     }
 
-    const leaveInfo = result.recordset[0]
-    leaveInfo.des = leaveInfo.des.replace(/\n/g, "\r")
-    if(!leaveInfo){
+    const desInfo = result.recordset[0]
+    desInfo.des = desInfo.des.replace(/\n/g, "\r")
+    if(!desInfo){
       req.flash('warning_msg', '查無此假別資訊資料，請重新嘗試')
       return res.redirect('/jh_leave')
     }else{
-      res.render('index', {leaveInfo, jh_edit_leave})
+      res.render('index', {desInfo, jh_edit_des, category})
     }
   })
 
@@ -103,14 +104,10 @@ router.get('/new/insert', async (req, res) => {
 
 // 顯示新增假別頁面
 router.get('/new', (req, res) => {
-  const user = res.locals.user
-	const cpnyId = user.CPY_ID
-  const jh_new_leave = true
-  const route = 'johnnyHire'
-  const action = 'new'
+  const jh_new_des = true
   const category = 'leave'
-  
-  res.render('index', {jh_new_leave, id: cpnyId, route, action, category})
+
+  res.render('index', {jh_new_des, category})
 })
 
 // 顯示假別資訊頁面
@@ -118,10 +115,11 @@ router.get('/', (req, res) => {
   const user = res.locals.user
 	const cpnyId = user.CPY_ID
   const request = new sql.Request(pool)
+  const jh_des = true
+  const category = 'leave'
   const warning = []
-  const jh_leave = true
-  
-  request.query(`select a.LEAVE_DES, b.LEAVE_ID, b.LEAVE_NAME, b.ENTITY_NAME, a.INFO_ID as infoId
+
+  request.query(`select a.LEAVE_DES as des, b.LEAVE_NAME as name, b.ENTITY_NAME as entity_name, a.INFO_ID as infoId
   from BF_JH_LEAVE a
   left join BF_JH_LEAVE_CATEGORY b
   on a.LEAVE_ID = b.LEAVE_ID
@@ -131,12 +129,12 @@ router.get('/', (req, res) => {
       console.log(err)
       return
     }
-    const leaveInfo = result.recordset
-    leaveInfo.forEach(info => {
-      info.LEAVE_DES = info.LEAVE_DES.replace(/\n/g, "\r")
+    const desInfo = result.recordset
+    desInfo.forEach(info => {
+      info.des = info.des.replace(/\n/g, "\r")
     })
-    if(!leaveInfo.length) warning.push({message: '還未新增假別資訊，請拉到下方點選按鈕新增假別資訊'})
-    res.render('index', {leaveInfo, warning, jh_leave})
+    if(!desInfo.length) warning.push({message: '還未新增假別資訊，請拉到下方點選按鈕新增假別資訊'})
+    res.render('index', {desInfo, warning, jh_des, category})
   })
 })
 

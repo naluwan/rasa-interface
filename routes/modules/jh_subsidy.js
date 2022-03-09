@@ -14,7 +14,8 @@ router.get('/:entity_name/edit', (req, res) => {
   const {entity_name} = req.params
   const user = res.locals.user
 	const cpnyId = user.CPY_ID
-  const jh_edit_subsidy = true
+  const jh_edit_des = true
+  const category = 'subsidy'
   const request = new sql.Request(pool)
 
   request.query(`select a.SUBSIDY_DES as des, b.SUBSIDY_NAME as name, b.ENTITY_NAME as entity_name, a.INFO_ID as infoId
@@ -27,13 +28,13 @@ router.get('/:entity_name/edit', (req, res) => {
       console.log(err)
       return
     }
-    const subsidyInfo = result.recordset[0]
-    subsidyInfo.des = subsidyInfo.des.replace(/\n/g, "\r")
-    if(!subsidyInfo){
+    const desInfo = result.recordset[0]
+    desInfo.des = desInfo.des.replace(/\n/g, "\r")
+    if(!desInfo){
       req.flash('warning_msg', '查無此補助津貼資料，請重新嘗試')
       return res.redirect('/jh_subsidy')
     }else{
-      res.render('index', {subsidyInfo, jh_edit_subsidy})
+      res.render('index', {desInfo, jh_edit_des, category})
     }
   })
 })
@@ -101,14 +102,10 @@ router.get('/new/insert', async (req, res) => {
 
 // 顯示新增津貼補助畫面
 router.get('/new', (req, res) => {
-  const user = res.locals.user
-	const cpnyId = user.CPY_ID
-  const jh_new_subsidy = true
-  const route = 'johnnyHire'
-  const action = 'new'
+  const jh_new_des = true
   const category = 'subsidy'
 
-  res.render('index', {id:cpnyId, jh_new_subsidy, route, action, category})
+  res.render('index', {jh_new_des, category})
 })
 
 // 顯示補助津貼頁面
@@ -116,9 +113,11 @@ router.get('/', (req, res) => {
   const user = res.locals.user
 	const cpnyId = user.CPY_ID
   const request = new sql.Request(pool)
+  const jh_des = true
+  const category = 'subsidy'
   const warning = []
 
-  request.query(`select a.SUBSIDY_DES, b.SUBSIDY_NAME, b.SUBSIDY_ID, b.ENTITY_NAME, a.INFO_ID as infoId
+  request.query(`select a.SUBSIDY_DES as des, b.SUBSIDY_NAME as name, b.ENTITY_NAME as entity_name, a.INFO_ID as infoId
   from BF_JH_SUBSIDY a
   left join BF_JH_SUBSIDY_CATEGORY b
   on a.SUBSIDY_ID = b.SUBSIDY_ID
@@ -128,13 +127,13 @@ router.get('/', (req, res) => {
       console.log(err)
       return
     }
-    const subsidyInfo = result.recordset
-    subsidyInfo.forEach(info => {
-      info.SUBSIDY_DES = info.SUBSIDY_DES.replace(/\n/g, "\r")
+    const desInfo = result.recordset
+    desInfo.forEach(info => {
+      info.des = info.des.replace(/\n/g, "\r")
     })
-    const jh_subsidy = true
-    if(!subsidyInfo.length) warning.push({message: '還未新增補助津貼，請拉到下方點選按鈕新增補助津貼'})
-    res.render('index', {subsidyInfo, jh_subsidy, warning, cpnyId})
+
+    if(!desInfo.length) warning.push({message: '還未新增補助津貼，請拉到下方點選按鈕新增補助津貼'})
+    res.render('index', {desInfo, jh_des, warning, category})
   })
 })
 
