@@ -1,0 +1,32 @@
+{{#if jh_new_des}}
+<!-- jh_new_des -->
+<div class="jh_new_des ">
+  <h1>新增{{#is category 'cpnyinfo'}}公司{{/is}}{{#is category 'position'}}職缺{{/is}}{{#is category 'leave'}}假別{{/is}}{{#is category 'subsidy'}}補助{{/is}}資訊</h1>
+  <form action="" name="form" id="jh_new_des">
+    {{> message}}
+    <div>
+      <div>
+        <label for="name">{{#is category 'cpnyinfo'}}資訊{{/is}}{{#is category 'position'}}職缺{{/is}}{{#is category 'leave'}}假別{{/is}}{{#is category 'subsidy'}}補助{{/is}}名稱</label>
+        <input type="text" class="form-control" name="cnName" placeholder="請輸入中文名稱" value="{{name}}" required>
+      </div>
+
+      <div>
+        <label for="entity_name">英文名稱</label>
+        <input type="text" class="form-control" name="entity_name" placeholder="請輸入英文名稱" value="{{entity_name}}" required>
+      </div>
+
+      <div>
+        <label for="des">{{#is category 'cpnyinfo'}}資訊{{/is}}{{#is category 'position'}}職缺{{/is}}{{#is category 'leave'}}假別{{/is}}{{#is category 'subsidy'}}補助{{/is}}內容</label>
+        <textarea class="form-control" name="des" placeholder="請輸入{{#is category 'cpnyinfo'}}資訊{{/is}}{{#is category 'position'}}職缺{{/is}}{{#is category 'leave'}}假別{{/is}}{{#is category 'subsidy'}}補助{{/is}}內容" rows="5" required>{{des}}</textarea>
+      </div>
+    </div>
+    <div class="formButton">
+      {{#is category 'cpnyinfo'}}<input id="cancel" type="button" class="btn btn-primary" onclick="Method.common.page('/jh_cpnyInfo')" value="取消">{{/is}}
+      {{#is category 'position'}}<input id="cancel" type="button" class="btn btn-primary" onclick="Method.common.page('/jh_position')" value="取消">{{/is}}
+      {{#is category 'leave'}}<input id="cancel" type="button" class="btn btn-primary" onclick="Method.common.page('/jh_leave')" value="取消">{{/is}}
+      {{#is category 'subsidy'}}<input id="cancel" type="button" class="btn btn-primary" onclick="Method.common.page('/jh_subsidy')" value="取消">{{/is}}
+      <input id="add" type="submit" class="btn btn-info" value="新增">
+    </div>
+  </form>
+</div>
+{{/if}}
