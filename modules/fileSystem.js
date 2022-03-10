@@ -616,11 +616,21 @@ module.exports = {
         "metadata": { "language": "zh", "canonical": true }
       }
 
+      const entity_4_text = `公司有${leave_name}嗎`
+      const entity_4 = {
+        "text": `${entity_4_text}`,
+        "intent": "問假別資訊",
+        "entities": [
+          { "entity": `${entity_name}`, "value": `${entity_4_text}`, "start": 0, "end": entity_4_text.length}
+        ],
+        "metadata": { "language": "zh", "canonical": true }
+      }
+
       const repeatText = nluData.filter(item => item.text == entity_1.text)
       if(repeatText.length){
         console.log(`已有訓練資料： ` + JSON.stringify(repeatText[0]))
       }else{
-        nluData.push(entity_1, entity_2, entity_3)
+        nluData.push(entity_1, entity_2, entity_3, entity_4)
         data.nlu.zh.rasa_nlu_data.common_examples = nluData
         try{
           fs.writeFileSync(path.resolve(__dirname, '../public/trainData/nlu-json.json'), JSON.stringify(data.nlu.zh))
