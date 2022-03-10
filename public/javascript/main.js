@@ -3,6 +3,7 @@ window.onload = function() {
     if(func){
         document.documentElement.setAttribute("class",func.getAttribute("data-func"));
     };
+
     Method.button.all();
     Method.search.keyWord();
 };
@@ -10,6 +11,7 @@ window.onload = function() {
 window.onpopstate = function() {
     Method.common.page(location.pathname,"history");
 };
+
 
 worker = new Worker("/javascript/worker.js");
 
@@ -451,6 +453,8 @@ Method.search.keyWord = function(){
                 console.log(search.value)
 
                 if(search.value == ""){
+                    searchCss.innerHTML="";
+                    document.querySelector("#data-panel").removeAttribute("class");
                     return;
                 }
 
@@ -458,7 +462,7 @@ Method.search.keyWord = function(){
                     msg.remove();
                 };
 
-                var code =  "{}[]',:?/><=+-()!@#$%^&*`~" + '"';
+                var code =  "{}[]',:?/><=+-()!@#$%^&*`~|\\" + '"';
                 var x = [].slice.call(code);
                 var y = [].slice.call(search.value);
                 console.log(x)
@@ -482,7 +486,7 @@ Method.search.keyWord = function(){
                     };
                 };
 
-                searchCss.innerHTML = "#data-panel > :not([data-search*=" + search.value + "]){display:none;}";
+                searchCss.innerHTML = "#data-panel > :not([data-search*='" + search.value + "']){display:none;}";
 
                 if(document.querySelector("#data-panel").clientHeight == 50){
                     document.querySelector("#data-panel").setAttribute("class","noList");
