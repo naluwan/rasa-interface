@@ -2,10 +2,14 @@
 <!-- jh_des -->
 <div class="jh_des">
   <h1>{{#is category 'cpnyinfo'}}公司{{/is}}{{#is category 'position'}}職缺{{/is}}{{#is category 'leave'}}假別{{/is}}{{#is category 'subsidy'}}補助{{/is}}資訊</h1>
+  <style id="searchCss"></style>
+  <div class="searchBar">
+    <input type="text" name="search" id="search" value="{{search}}" placeholder="搜尋關鍵字">
+  </div>
   {{> message}}
   <div id="data-panel">
     {{#each desInfo}}
-    <div>
+    <div data-search="{{this.name}} {{this.entity_name}} {{this.des}}">
       <span>
         <div>
           <span>資訊名稱：</span>
