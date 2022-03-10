@@ -3,8 +3,6 @@
   {{#if isAdmin}}
     {{#is whichRole 'hire'}}
     <div>
-      <div class="mx-auto" id="message-block"></div>
-
       <!-- admin jh 按鈕 -->
       <span class="menu">
         <form action="/roleFilter?_method=PUT" method="POST">
@@ -13,7 +11,7 @@
             <option value="hr" {{#is whichRole 'hr'}} selected {{/is}}>棉花糖客服</option>
           </select>
         </form>
-        <!-- <a href="#" class="btn btn-dark active mx-3" id="train-btn">Train</a> -->
+        <div id="messageBlock"></div>
         <button type="button" id="train" class="btn btn-dark jh-train-btn">執行訓練</button>
         <div>
           <div>
@@ -148,10 +146,9 @@
   {{else}}
 
   <div>
-    <div class="mx-auto" id="message-block"></div>
-
     <!-- user jh 按鈕 -->
     <span class="menu">
+      <div id="messageBlock"></div>
       <button id="train" class="btn btn-dark jh-train-btn" type="button">執行訓練</button>
         <div>
           <div>
@@ -195,28 +192,3 @@
     </span>
   </div>
   {{/if}}
-
-  <!-- Modal -->
-  <div class="modal fade" id="trainModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle"
-    aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalScrollableTitle">資料訓練</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <strong>確定要開始訓練?</strong>
-        </div>
-        <div class="text-center">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
-          <form action="/train" Method="post" style="display:inline-block;" id="delete-form">
-            <button type="submit" class="btn btn-danger">訓練</button>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
