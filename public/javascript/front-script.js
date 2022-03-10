@@ -1,4 +1,4 @@
-const messageBlock = document.querySelector('#message-block')
+const messageBlock = document.querySelector('#messageBlock')
 const csTrainBtn = document.querySelector('.cs-train-btn')
 const jhTrainBtn = document.querySelector('.jh-train-btn')
 const questionDes = document.querySelector('.question-description')
@@ -65,17 +65,8 @@ if(jhTrainBtn){
 	jhTrainBtn.addEventListener('click', e => {
 		const target = e.target
 		if(target.matches('.jh-train-btn')){
-			// console.log('訓練中...')
 			jhTrainBtn.setAttribute('disabled', '')
 			jhTrainBtn.innerHTML = '<i class="fas fa-spinner fast-spin fa-2x"></i>'
-			// messageBlock.innerHTML = `
-			// <div class="alert alert-warning alert-dismissible fade show" role="alert">
-			// 	訓練中.....
-			// 	<button type="button" class="close" data-dismiss="alert" aria-label="Close">
-			// 		<span aria-hidden="true">&times;</span>
-			// 	</button>
-			// </div>
-			// `
 			
 			fetch('http://192.168.11.80:3030/train/jh/trainingData')
 			.then(response => {
@@ -99,14 +90,14 @@ if(jhTrainBtn){
 					.then(result => {
 						jhTrainBtn.removeAttribute('disabled')
 						jhTrainBtn.innerText = '執行訓練'
-						// messageBlock.innerHTML = `
-						// <div class="alert alert-success alert-dismissible fade show" role="alert">
-						// 	訓練完成!!
-						// 	<button type="button" class="close" data-dismiss="alert" aria-label="Close">
-						// 		<span aria-hidden="true">&times;</span>
-						// 	</button>
-						// </div>
-						// `
+						messageBlock.innerHTML = `
+						<div class="alert alert-success alert-dismissible fade show" role="alert">
+							訓練完成
+							<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+						`
 					})
 					.catch(err => console.log(err))
 				})
