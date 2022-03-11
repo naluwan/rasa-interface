@@ -73,7 +73,6 @@ if(jhTrainBtn){
 				return response.json()
 			})
 			.then(data => {
-				console.log(data)
 				fetch('http://192.168.10.108:5005/model/train?save_to_default_model_directory=true&force_training=false',{
 					method: 'post',
 					body: JSON.stringify(data),
@@ -90,14 +89,12 @@ if(jhTrainBtn){
 					.then(result => {
 						jhTrainBtn.removeAttribute('disabled')
 						jhTrainBtn.innerText = '執行訓練'
-						messageBlock.innerHTML = `
-						<div class="alert alert-success alert-dismissible fade show" role="alert">
-							訓練完成
-							<button type="button" class="close" data-dismiss="alert" aria-label="Close">
-								<span aria-hidden="true">&times;</span>
-							</button>
-						</div>
-						`
+
+						// 訓練完成提示框
+						var html = "<h1><div class='sa-icon success'><span></span></div>訓練完成</h1>";
+						Method.common.showBox(html, 'message');
+						
+
 					})
 					.catch(err => console.log(err))
 				})
