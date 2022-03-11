@@ -172,7 +172,7 @@ router.get('/filter', (req, res) => {
       }
       const adminSearchInfo = result.recordset
       adminSearchInfo.forEach(search => {
-        search.adminSearch_des = search.adminSearch_des.replace(/\r\n/g, "\r")
+        search.adminSearch_des = search.adminSearch_des.replace(/\n/g, "\r")
       })
       if(!adminSearchInfo.length){
         warning.push({message: '尚無此回覆資訊，請重新查詢'})
