@@ -95,7 +95,7 @@ router.get('/:table/:entity_name/:infoId/edit', (req, res) => {
   const request = new sql.Request(pool)
   const warning = []
 
-  request.query(`select b.${table}_NAME as adminSearch_name, a.${table}_DES as adminSearch_des, a.INFO_ID as infoId, b.ENTITY_NAME as adminSearch_entity_name
+  request.query(`select b.${table}_NAME as adminSearch_name, a.${table}_DES as adminSearch_des, a.INFO_ID as infoId, b.ENTITY_NAME as adminSearch_entity_name, a.CPY_ID as cpnyId
   from BF_JH_${table} a
   left join BF_JH_${table}_CATEGORY b
   on a.${table}_ID = b.${table}_ID
