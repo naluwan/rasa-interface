@@ -54,15 +54,15 @@ router.get('/:entity/edit/update', isAdmin, (req, res) => {
 })
 
 // 徵厲害 admin 顯示編輯資訊頁面
-router.get('/:entity_name/edit', isAdmin, (req, res) => {
-  const {entity_name} = req.params
+router.get('/:category_id/edit', isAdmin, (req, res) => {
+  const {category_id} = req.params
   const admin_edit_category = true
   const category = 'cpnyinfo'
   const request = new sql.Request(pool)
 
   request.query(`select CPNYINFO_NAME as name, ENTITY_NAME as entity_name, CPNYINFO_ID as id 
   from BF_JH_CPNYINFO_CATEGORY
-  where ENTITY_NAME = '${entity_name}'`, (err, result) => {
+  where CPNYINFO_ID = ${category_id}`, (err, result) => {
     if(err){
       console.log(err)
       return
