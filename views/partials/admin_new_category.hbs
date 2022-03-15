@@ -1,16 +1,34 @@
 {{#if admin_new_category}}
 <!-- admin_new_category -->
 <div class="admin_new_category">
-  <h1>新增{{#is category 'cpnyinfo'}}資訊{{/is}}{{#is category 'position'}}職缺{{/is}}{{#is category 'leave'}}假別{{/is}}{{#is category 'subsidy'}}補助{{/is}}類別</h1>
+  <h1>新增
+    {{#is category 'cpnyinfo'}}資訊{{/is}}
+    {{#is category 'position'}}職缺{{/is}}
+    {{#is category 'leave'}}假別{{/is}}
+    {{#is category 'subsidy'}}補助{{/is}}
+    類別
+  </h1>
   <form name="form" id="admin_new_category" action="">
     <div>
       {{> message}}
       <div>
-        <label>{{#is category 'cpnyinfo'}}資訊{{/is}}{{#is category 'position'}}職缺{{/is}}{{#is category 'leave'}}假別{{/is}}{{#is category 'subsidy'}}補助{{/is}}名稱</label>
+        <label>
+          {{#is category 'cpnyinfo'}}資訊{{/is}}
+          {{#is category 'position'}}職缺{{/is}}
+          {{#is category 'leave'}}假別{{/is}}
+          {{#is category 'subsidy'}}補助{{/is}}
+          名稱
+        </label>
         <input type="text" class="form-control" name="cnName" placeholder="請輸入中文名稱" value="{{info_name}}" required>
       </div>
       <div>
-        <label>{{#is category 'cpnyinfo'}}資訊{{/is}}{{#is category 'position'}}職缺{{/is}}{{#is category 'leave'}}假別{{/is}}{{#is category 'subsidy'}}補助{{/is}}英文名稱</label>
+        <label>
+          {{#is category 'cpnyinfo'}}資訊{{/is}}
+          {{#is category 'position'}}職缺{{/is}}
+          {{#is category 'leave'}}假別{{/is}}
+          {{#is category 'subsidy'}}補助{{/is}}
+          英文名稱
+        </label>
         <input type="text" class="form-control" name="entity_name" placeholder="請輸入英文名稱" value="{{entity_name}}" required>
       </div>
     </div>

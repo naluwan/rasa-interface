@@ -21,7 +21,7 @@
       </div>
 
     <div class="formButton">
-      <input id="cancel" type="button" class="btn btn-primary" onclick="Method.common.page('/admin_search')" value="取消">
+      <input id="cancel" type="button" class="btn btn-primary" onclick="Method.common.page('/admin_search/filter?companyFilter={{adminSearchInfo.cpnyId}}&tableFilter={{table}}&search=')" value="取消">
       <input id="save" type="submit" class="btn btn-info" data-infoId="{{adminSearchInfo.infoId}}" value="儲存">
     </div>
   </form>

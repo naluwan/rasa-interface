@@ -23,7 +23,7 @@
       </span>
       
       <span>
-      {{#is ../category 'cpnyinfo'}}<input type="button" id="edit" class="btn btn-primary" onclick="Method.common.page('/admin_companyInfo/{{ this.entity_name }}/edit')" value="編輯">{{/is}}
+      {{#is ../category 'cpnyinfo'}}<input type="button" id="edit" class="btn btn-primary" onclick="Method.common.page('/admin_companyInfo/{{ this.id }}/edit')" value="編輯">{{/is}}
       {{#is ../category 'position'}}<input type="button" id="edit" class="btn btn-primary" onclick="Method.common.page('/admin_positionInfo/{{ this.entity_name }}/edit')" value="編輯">{{/is}}
       {{#is ../category 'leave'}}<input type="button" id="edit" class="btn btn-primary" onclick="Method.common.page('/admin_leaveInfo/{{ this.entity_name }}/edit')" value="編輯">{{/is}}
       {{#is ../category 'subsidy'}}<input type="button" id="edit" class="btn btn-primary" onclick="Method.common.page('/admin_subsidyInfo/{{ this.entity_name }}/edit')" value="編輯">{{/is}}

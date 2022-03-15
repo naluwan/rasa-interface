@@ -32,22 +32,6 @@
             </select>
           </div>
 
-          <!-- 選完公司後，產業類別直接由API帶入 -->
-          <!--
-          <div>
-            <label>產業類別</label>
-            <select name="industry_select" id="industry_select" class="form-control">
-              <option value="" selected hidden>請選擇</option>
-              {{#each industryInfo}}
-              <option value="{{this.INDUSTRY_ID}}" {{#is this.INDUSTRY_NAME 'Admin'}} hidden {{/is}} 
-              {{#is ../adminCompany.INDUSTRY_NO this.INDUSTRY_ID}} selected {{/is}}>
-              {{this.INDUSTRY_NAME}}
-              </option>
-              {{/each}}
-            </select>
-          </div>
-          -->
-
           <div id="adminSearch-block">
             <label>資訊名稱</label>
             <input type="text" class="form-control" name="cnName" placeholder="請輸資料名稱" value="{{cnName}}" required>
