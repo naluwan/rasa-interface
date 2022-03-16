@@ -7,7 +7,60 @@ const pool = require('../../config/connectPool')
 const {fsJhWriteInfo, fsJhWritePosition, fsWriteSubsidy, fsWriteLeave} = require('../../modules/fileSystem')
 const {setInfoDict, setPositionDict} = require('../../modules/setDict')
 const {randomNum, checkNum} = require('../../modules/randomNum')
-const {insertDes, updateDes, deleteDes} = require('../../modules/useSql')
+const {insertDes, updateDes, deleteDes, insertCategory} = require('../../modules/useSql')
+
+// 增加同義字功能API
+router.get('/:infoId/newCategory/insert', (req, res) => {
+  const {cnName, entity_name} = req.query
+  const request = new sql.Request(pool)
+
+  if(!cnName || !entity_name) return res.send({status: 'warning', message: '所有欄位都是必填的'})
+
+  const data = {
+    category: 'position',
+    cnName,
+    entity_name
+  }
+
+  const fsFunc = {
+    fsJhWriteInfo,
+    fsJhWritePosition,
+    fsWriteLeave,
+    fsWriteSubsidy,
+    setInfoDict,
+    setPositionDict
+  }
+
+  insertCategory(request, sql, res, data, fsFunc)
+})
+
+// 顯示增加同義字頁面
+router.get('/:infoId/newCategory', (req, res) => {
+  const {infoId} = req.params
+  const user = res.locals.user
+	const cpnyId = user.CPY_ID 
+  const jh_new_category = true
+  const category = 'position'
+  const request = new sql.Request(pool)
+
+  request.query(`select b.ENTITY_NAME as entity_name
+  from BF_JH_POSITION a
+  left join BF_JH_POSITION_CATEGORY b
+  on a.POSITION_ID = b.POSITION_ID
+  where a.INFO_ID = '${infoId}'
+  and a.CPY_ID = '${cpnyId}'`, (err, result) => {
+    if(err){
+      console.log(err)
+      return
+    }
+    try {
+      const entity_name = result.recordset[0]['entity_name']
+      res.render('index', {jh_new_category, entity_name, infoId, category})
+    } catch (error) {
+      return res.send('<pre>{"status":"warning","message":"查無此資料，請重新嘗試"}</pre>')
+    }
+  })
+})
 
 // 顯示編輯職缺頁面
 router.get('/:entity_name/edit', (req, res) => {
@@ -29,12 +82,12 @@ router.get('/:entity_name/edit', (req, res) => {
       return
     }
     const desInfo = result.recordset[0]
-    desInfo.des = desInfo.des.replace(/\n/g, "\r")
     if(!desInfo){
-      req.flash('error', '查無此職缺，請重新嘗試')
-      return res.redirect('/jh_position')
+      return res.send('<pre>{"status":"warning","message":"查無此職缺，請重新嘗試"}</pre>')
+    }else{
+      desInfo.des = desInfo.des.replace(/\n/g, "\r")
+      res.render('index', {desInfo, jh_edit_des, category})
     }
-    res.render('index', {desInfo, jh_edit_des, category})
   })
 })
 
