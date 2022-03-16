@@ -82,13 +82,14 @@
 
 /*common*/
 
+
 body,
 html {margin: 0;padding: 0;height: 100%;}
 
 body{font-family:"微軟正黑體";font-weight: inherit;opacity:0;animation: fadein .5s .5s forwards;}
 body{background: url(/images/bg.png),url(/images/robot.png) -25% bottom/auto 100% no-repeat fixed,url(/images/bg1.png) 113% -41% no-repeat fixed,url(/images/bg2.png)  right bottom no-repeat fixed,#f1f1f1;}
 
-footer{background: rgb(0 0 0 / 60%);width: 100%;padding: 10px;position: fixed;bottom: 0;color:#fff;line-height: 22px;margin-bottom: 0;text-align: center;}
+footer{background: rgb(0 0 0 / 60%);width: 100%;padding: 10px;position: fixed;bottom: 0;color:#fff;line-height: 22px;margin-bottom: 0;text-align: center;left: 0;}
 
 ::-webkit-scrollbar {width: 0px;}
 ::placeholder{color:#999;}
@@ -114,7 +115,7 @@ textarea,
 .btn{border-radius:5px;font-size:16px;white-space: nowrap;padding: 5px 15px;font-weight: inherit;}
 .form-control{background:#f9f9f9;padding: 10px;height: 40px;display: block;width: 100%;border: 1px solid #ccc;}
 
-.footButton{position:sticky;bottom:45px;margin-top: 20px;text-align:center;padding-top: 20px;border-top: 1px solid #ccc;}
+.footButton{position:sticky;bottom: 40px;margin-top: 0px;text-align:center;padding: 10px 0 10px;border-top: 1px solid #ccc;background: #fff;}
 
 .formButton{margin-top:30px;text-align:center;}
 .formButton > input{width: 120px;margin:0 5px}
@@ -221,10 +222,6 @@ header nav .btn{padding:10px 20px;border-radius: 5px;}
 .adminSearch h2 + div + div{position: absolute;right: 15px;top: 10px;}
 .adminSearch #data-panel h2 + div > span{display:block;min-height:90px;}
 
-/*admin_search*/
-.admin_search #data-panel{min-height:inherit;}
-
-
 /*admin_company*/
 .admin_company #data-panel > div{display: inline-block;width:inherit;margin: 0 0 20px 0;width: calc(100% / 2 - 3px);}
 .admin_company #data-panel > div > span:nth-of-type(1){width: calc(100% - 126px);}
@@ -233,7 +230,7 @@ header nav .btn{padding:10px 20px;border-radius: 5px;}
 .admin_company #data-panel > div > span:nth-of-type(1) > div > span:nth-of-type(2){width: calc(100% - 155px);}
 .admin_company #data-panel > div > span:nth-of-type(2){width: 120px;}
 .admin_company h2{font-size: 22px;color: #d9534f;}
-.admin_company #data-panel > div > span:nth-of-type(2) > *{width: 100%;margin: 10px 0;}
+.admin_company #data-panel > div > span:nth-of-type(2) > *{width: 100%;margin: 5px 0;padding: 10px 0;}
 
 #message #rePassword input{margin: 20px 0 0;}
 
@@ -247,6 +244,9 @@ header nav .btn{padding:10px 20px;border-radius: 5px;}
 .jh_cpnyInfo #data-panel > div{width:100%;}
 .jh_cpnyInfo #data-panel > div > span:first-of-type > div:last-of-type > span:first-of-type{vertical-align: top;}
 .jh_cpnyInfo #data-panel > div > span:first-of-type > div:last-of-type > span:last-of-type{white-space: pre-line;text-overflow: inherit;overflow: inherit;}
+
+/*jh_des*/
+.jh_des #data-panel > div > span:nth-of-type(2) > *{padding: 2px 0;margin:3px 0;}
 
 /*animation*/
 @keyframes fadein {from {opacity: 0;}100% {opacity: 1;}}

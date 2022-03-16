@@ -1,5 +1,6 @@
 window.onload = function() {
     var func = document.querySelector("[data-func]");
+    console.log(func)
     if(func){
         document.documentElement.setAttribute("class",func.getAttribute("data-func"));
     };
@@ -11,7 +12,6 @@ window.onload = function() {
 window.onpopstate = function() {
     Method.common.page(location.pathname,"history");
 };
-
 
 worker = new Worker("/javascript/worker.js");
 
@@ -408,7 +408,13 @@ Method.search.keyWord = function(){
 
     if(document.querySelector("#search")){
 
-        if(document.querySelector(".admin_search")){
+        if(document.querySelector(".admin_search") || document.querySelector(".cs_function") || document.querySelector(".cs_question")){
+
+            if(document.querySelector("#categorySelect")){
+                categorySelect.onchange = function(){
+                    Method.search.question();
+                };
+            };
             
             document.querySelector("[type='submit']").onclick = function(event){
                 
@@ -423,11 +429,22 @@ Method.search.keyWord = function(){
                     }else{
                         Method.common.showBox(html,"message","");
                     };
+                    
                     Method.common.loadingClose();
                 };
 
                 var data = "";
                 var symbol;
+
+                var required = document.querySelectorAll("form [required]");
+
+                for(var i=0;i<required.length;i++){
+
+                    if(required[i].value == ""){
+                        return;
+                    };
+                };
+
 
                 var inputs = document.querySelectorAll("form [name]");
                 for(var i=0;i<inputs.length;i++){
@@ -439,7 +456,21 @@ Method.search.keyWord = function(){
 
                 event.preventDefault();
 
-                var url = "/admin_search/filter" + data;
+                var url = "";
+
+                if(document.querySelector(".admin_search")){
+                    url += "/admin_search/filter";
+                };
+                
+                if(document.querySelector(".cs_function")){
+                    url += "/cs_function/filter";
+                };
+
+                if(document.querySelector(".cs_question")){
+                    url += "/cs_question/filter";
+                };
+
+                url += data;
 
                 console.log(url)
                 
@@ -498,6 +529,36 @@ Method.search.keyWord = function(){
     };
 };
 
+Method.search.question = function(){
+
+    function back(info){
+
+        var info = JSON.parse(info.data);
+
+        console.log("info",info);
+
+        if(info.status != "success"){
+            var html = "<h2><div class='sa-icon " + info.status + "'><span></span></div>" + info.message + "</h2>";
+            Method.common.showBox(html,"message");
+            return;
+        };
+
+        functionSelect.innerHTML = "";
+
+        for(var i=0;i<info.data.length;i++){
+            var option = document.createElement("option");
+            option.value = info.data[i].FUNCTION_ID;
+            option.innerText = info.data[i].FUNCTION_NAME;
+            functionSelect.appendChild(option);
+        };
+
+    };
+
+    var url = location.origin + "/cs_question/getData?category_id=" + categorySelect.value;
+    Method.common.asyncAjax(url,back);
+
+}
+
 
 Method.common={}
 
@@ -517,7 +578,7 @@ Method.common.loading = function(){
 };
 
 Method.common.loadingClose = function(){
-    document.querySelector("#loading").remove();
+    document.querySelector("#loading") && document.querySelector("#loading").remove();
 };
 
 //showBox
@@ -616,12 +677,28 @@ Method.common.showboxClose = function(inputBox,fun){
 //jump page
 Method.common.page = function(url,type){
     
-    Method.common.loading();
+    function back(info){
 
-    function back(e){
         var parse = new DOMParser();
-        var html = parse.parseFromString(e.data,"text/html");
-        
+        var html = parse.parseFromString(info.data,"text/html");
+
+        //異常
+        if(html.querySelector("pre")){
+            Method.common.loadingClose();
+            var info = JSON.parse(html.querySelector("pre").innerHTML);
+            var html = "<h2><div class='sa-icon " + info.status + "'><span></span></div>" + info.message + "</h2>";
+
+            function cancel(){
+                if(document.querySelector("#cancel")){
+                    document.querySelector("#cancel").click();
+                };
+            };
+
+            Method.common.showBox(html,"message","",cancel);
+            return;
+        };
+
+        //登入
         if(document.querySelector(".login")){
 
             if(!html.querySelector(".container")){
@@ -633,24 +710,31 @@ Method.common.page = function(url,type){
 
         };
 
+        //內頁
         if(document.querySelector(".index")){
+            
             if(!html.querySelector(".setting")){
                 history.go(0);
                 return;
             };
-
+            
             document.querySelector(".setting").innerHTML = html.querySelector(".setting").innerHTML;
+
+            if(!type){
+                history.pushState("","",url);
+            };
+    
+            if(document.querySelector("#categorySelect")){
+                Method.search.question();
+            };
+    
+            Method.button.all();
+    
+            Method.search.keyWord();
+    
+            Method.common.loadingClose();
+
         };
-
-        if(!type){
-            history.pushState("","",url);
-        };
-
-        Method.button.all();
-
-        Method.search.keyWord();
-
-        Method.common.loadingClose();
     };
     
     Method.common.asyncAjax(location.origin + url,back);
