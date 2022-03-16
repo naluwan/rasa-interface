@@ -4,6 +4,7 @@ const app = express()
 
 const sql = require('mssql')
 const pool = require('../../config/connectPool')
+const {authenticator} = require('../../middleware/auth')
 
 router.put('/roleFilter', (req, res) => {
 	const {roleFilter} = req.body
@@ -19,6 +20,7 @@ router.put('/roleFilter', (req, res) => {
 		return res.redirect('/')
 	})
 })
+
 
 router.get('/', (req, res) => {
 	const isAdmin = res.locals.isAdmin
@@ -72,30 +74,7 @@ router.get('/', (req, res) => {
 			})
 		}
 	}else{
-		request.query(`select * 
-		from BF_CS_FUNCTION
-		where TRAINED = 1
-		and SHOW = 1`, (err, result) => {
-			if(err){
-				console.log(err)
-				return
-			}
-			const functionInfo = result.recordset
-			const trainFunction = functionInfo.length
-
-			request.query(`select *
-			from BF_CS_QUESTION
-			where TRAINED = 1
-			and SHOW = 1`, (err, result) => {
-				if(err){
-					console.log(err)
-					return
-				}
-				const questionInfo = result.recordset
-				const trainQuestion = questionInfo.length
-				return res.render('index', {cpny_name: user.CPY_NAME, jh_index, trainQuestion, trainFunction})
-			})
-		})
+		return res.render('index', {cpny_name: user.CPY_NAME, jh_index})
 	}
 })
 
