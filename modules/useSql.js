@@ -189,8 +189,7 @@ module.exports = {
 
     request.query(`select * 
     from ${table_category}
-    where ${category_id} = ${data.infoId}
-    and ENTITY_NAME = '${data.entity}'`, (err, result) => {
+    where ${category_id} = ${data.infoId}`, (err, result) => {
       if(err){
         console.log(err)
         return
