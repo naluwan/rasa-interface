@@ -69,8 +69,7 @@ router.get('/:category_id/edit', isAdmin, (req, res) => {
     }
     const infoCategory = result.recordset[0]
     if(!infoCategory){
-      req.flash('error', '找不到此公司資訊類別，請重新嘗試!!')
-      return res.redirect('/admin_companyInfo')
+      return res.send('<pre>{"status":"warning","message":"找不到此公司資訊類別，請重新嘗試"}</pre>')
     }else{
       res.render('index', {admin_edit_category, infoCategory, category})
     }
@@ -122,7 +121,7 @@ router.get('/', isAdmin, (req, res) => {
       return
     }
     const adminCategoryInfo = result.recordset
-    if(!adminCategoryInfo.length) warning.push({message: '查無公司資訊類別，請拉到下方新增公司資訊類別!'})
+    if(!adminCategoryInfo.length) return res.send('<pre>{"status":"warning","message":"查無公司資訊類別，請拉到下方新增公司資訊類別"}</pre>')
     res.render('index', {adminCategoryInfo, warning, admin_category, category})
   })
 })

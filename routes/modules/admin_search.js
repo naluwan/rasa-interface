@@ -55,7 +55,6 @@ router.get('/new/insert', isAdmin, async (req, res) => {
 
 // 徵厲害 admin 顯示新增頁面
 router.get('/new', (req, res) => {
-  const warning = []
   const admin_new_search = true
   const request = new sql.Request(pool)
 
@@ -67,8 +66,8 @@ router.get('/new', (req, res) => {
       return
     }
     const adminCompany = result.recordset
-    if(adminCompany.length == 1) warning.push({message: '還未新增公司，請先註冊公司帳號!'})
-    res.render('index', {adminCompany, warning, admin_new_search})
+    if(adminCompany.length == 1) return res.send('<pre>{"status":"warning","message":"還未新增公司，請先註冊公司帳號"}</pre>')
+    res.render('index', {adminCompany, admin_new_search})
   })
 })
 
@@ -106,11 +105,10 @@ router.get('/:table/:entity_name/:infoId/edit', (req, res) => {
       return
     }
     const adminSearchInfo = result.recordset[0]
-    adminSearchInfo.adminSearch_des = adminSearchInfo.adminSearch_des.replace(/\n/g, "\r")
     if(!adminSearchInfo){
-      req.flash('warning_msg', '查無此筆資料，請重新嘗試!!')
-      return res.redirect(`/admin_search/filter?companyFilter=${cpnyId}&tableFilter=${table}&search=`)
+      return res.send('<pre>{"status":"warning","message":"查無此筆資料，請重新嘗試"}</pre>')
     }else{
+      adminSearchInfo.adminSearch_des = adminSearchInfo.adminSearch_des.replace(/\n/g, "\r")
       res.render('index', {adminSearchInfo, table, entity_name, admin_edit_search})
     }
   })
@@ -126,13 +124,11 @@ router.get('/filter', (req, res) => {
   const regex = /\{|\[|\]|\'|\"\;|\:\?|\\|\/|\.|\,|\>|\<|\=|\+|\-|\(|\)|\!|\@|\#|\$|\%|\^|\&|\*|\`|\~/g
 
   if(regex.test(search) || regex.test(companyFilter) || regex.test(tableFilter)){
-    req.flash('warning_msg', '搜尋字串包含非法字元，請重新嘗試')
-    return res.redirect('/admin_search')
+    return res.send('<pre>{"status":"warning","message":"搜尋字串包含非法字元，請重新嘗試"}</pre>')
   }
 
   if(search && (!companyFilter || !tableFilter)){
-    req.flash('warning_msg', '請先選擇公司及分類再進行查詢')
-    return res.redirect('/admin_search')
+    return res.send('<pre>{"status":"warning","message":"請先選擇公司及分類再進行查詢"}</pre>')
   }
 
   // 獲取所有公司資料 => 選取公司的下拉選單
@@ -147,12 +143,10 @@ router.get('/filter', (req, res) => {
 
     // 如果使用者只有一間(代表只有admin帳戶)
     if(adminCompany.length == 1){
-      req.flash('error', '還未新增公司，請先註冊公司帳號')
-      return res.redirect('/admin_search')
+      return res.send('<pre>{"status":"warning","message":"還未新增公司，請先註冊公司帳號"}</pre>')
     }
     if(!companyFilter || !tableFilter){
-      warning.push({message: '公司和類別都是必選的'})
-      return res.render('index', {adminCompany, companyFilter, tableFilter, warning, admin_search})
+      return res.send('<pre>{"status":"warning","message":"公司和類別都是必選的"}</pre>')
     }
     
     request.query(`select a.CPY_ID, c.CPY_NAME, a.${tableFilter}_ID as adminSearch_id, a.${tableFilter}_DES as adminSearch_des, b.${tableFilter}_NAME as adminSearch_name, b.ENTITY_NAME as adminSearch_entity_name, a.INFO_ID as infoId
@@ -175,8 +169,7 @@ router.get('/filter', (req, res) => {
         search.adminSearch_des = search.adminSearch_des.replace(/\n/g, "\r")
       })
       if(!adminSearchInfo.length){
-        warning.push({message: '尚無此回覆資訊，請重新查詢'})
-        return res.render('index', { adminCompany, companyFilter, tableFilter, search, warning, admin_search})
+        return res.send('<pre>{"status":"warning","message":"尚無此回覆資訊，請重新查詢"}</pre>')
       }else{
         res.render('index', {adminSearchInfo, adminCompany, companyFilter, tableFilter, search, admin_search})
       }
@@ -201,8 +194,7 @@ router.get('/', (req, res) => {
 
     // 如果使用者只有一間(代表只有admin帳戶)
     if(adminCompany.length == 1){
-      req.flash('error', '還未新增公司，請先註冊公司帳號!!')
-      return res.redirect('/')
+      return res.send('<pre>{"status":"warning","message":"還未新增公司，請先註冊公司帳號"}</pre>')
     }
     res.render('index', {adminCompany, admin_search})
   })

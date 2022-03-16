@@ -54,23 +54,22 @@ router.get('/:entity/edit/update', isAdmin, (req, res) => {
 })
 
 // 徵厲害 admin 顯示編輯假別類別頁面
-router.get('/:entity_name/edit', isAdmin, (req, res) => {
-  const {entity_name} = req.params
+router.get('/:category_id/edit', isAdmin, (req, res) => {
+  const {category_id} = req.params
   const admin_edit_category = true
   const category = 'leave'
   const request = new sql.Request(pool)
 
   request.query(`select LEAVE_NAME as name, ENTITY_NAME as entity_name, LEAVE_ID as id 
   from BF_JH_LEAVE_CATEGORY
-  where ENTITY_NAME = '${entity_name}'`, (err, result) => {
+  where LEAVE_ID = ${category_id}`, (err, result) => {
     if(err){
       console.log(err)
       return
     }
     const infoCategory = result.recordset[0]
     if(!infoCategory){
-      req.flash('error', '找不到此公司資訊類別，請重新嘗試')
-      return res.redirect('/admin_leaveInfo')
+      return res.send('<pre>{"status":"warning","message":"找不到此公司資訊類別，請重新嘗試"}</pre>')
     }else{
       res.render('index', {admin_edit_category, infoCategory, category})
     }
@@ -122,7 +121,7 @@ router.get('/', isAdmin, (req, res) => {
       return
     }
     const adminCategoryInfo = result.recordset
-    if(!adminCategoryInfo.length) warning.push({message: '查無公司假別，請拉到下方新增公司假別!!'})
+    if(!adminCategoryInfo.length) return res.send('<pre>{"status":"warning","message":"查無公司假別，請拉到下方新增公司假別"}</pre>')
     res.render('index', {adminCategoryInfo, warning, admin_category, category})
   })
 })

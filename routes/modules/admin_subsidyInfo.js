@@ -54,15 +54,15 @@ router.get('/:entity/edit/update', isAdmin, (req, res) => {
 })
 
 // 徵厲害 admin 顯示編輯補助類別頁面
-router.get('/:entity_name/edit', isAdmin, (req, res) => {
-  const {entity_name} = req.params
+router.get('/:category_id/edit', isAdmin, (req, res) => {
+  const {category_id} = req.params
   const admin_edit_category = true
   const category = 'subsidy'
   const request = new sql.Request(pool)
 
   request.query(`select SUBSIDY_NAME as name, ENTITY_NAME as entity_name, SUBSIDY_ID as id 
   from BF_JH_SUBSIDY_CATEGORY
-  where ENTITY_NAME = '${entity_name}'`, (err, result) => {
+  where SUBSIDY_ID = ${category_id}`, (err, result) => {
     if(err){
       console.log(err)
       return

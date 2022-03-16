@@ -185,8 +185,7 @@ router.get('/:cpnyId/edit', isAdmin, (req, res) => {
       }
       const adminCompanyInfo = result.recordset[0]
       if(!adminCompanyInfo) {
-        req.flash('error', '查無此公司，請重新嘗試!!')
-        return res.redirect('/admin_company')
+        return res.send('<pre>{"status":"warning","message":"查無此公司，請重新嘗試"}</pre>')
       }
       res.render('index', {adminCompanyInfo, route, id: cpnyId, admin_edit_company, category, action})
     })

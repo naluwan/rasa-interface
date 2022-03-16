@@ -54,23 +54,22 @@ router.get('/:entity/edit/update', isAdmin, (req, res) => {
 })
 
 // 徵厲害 admin 顯示編輯職缺類別頁面
-router.get('/:entity_name/edit', isAdmin, (req, res) => {
-  const {entity_name} = req.params
+router.get('/:category_id/edit', isAdmin, (req, res) => {
+  const {category_id} = req.params
   const admin_edit_category = true
   const category = 'position'
   const request = new sql.Request(pool)
 
   request.query(`select POSITION_NAME as name, ENTITY_NAME as entity_name, POSITION_ID as id 
   from BF_JH_POSITION_CATEGORY
-  where ENTITY_NAME = '${entity_name}'`, (err, result) => {
+  where POSITION_ID = ${category_id}`, (err, result) => {
     if(err){
       console.log(err)
       return
     }
     const infoCategory = result.recordset[0]
     if(!infoCategory){
-      req.flash('error', '找不到此公司資訊類別，請重新嘗試')
-      return res.redirect('/admin_positionInfo')
+      return res.send('<pre>{"status":"warning","message":"找不到此公司資訊類別，請重新嘗試"}</pre>')
     }else{
       res.render('index', {admin_edit_category, infoCategory, category})
     }
@@ -111,7 +110,6 @@ router.get('/new', isAdmin, (req, res) => {
 
 router.get('/', isAdmin, (req, res) => {
   const request = new sql.Request(pool)
-  const warning = []
   const admin_category = true
   const category = 'position'
 
@@ -124,8 +122,8 @@ router.get('/', isAdmin, (req, res) => {
     }
 
     const adminCategoryInfo = result.recordset 
-    if(adminCategoryInfo.length == 0) warning.push({message: '查無職缺類別，請拉到下方新增職缺類別'})
-    return res.render('index', {adminCategoryInfo, admin_category, warning, category})
+    if(adminCategoryInfo.length == 0) return res.send('<pre>{"status":"warning","message":"查無職缺類別，請拉到下方新增職缺類別"}</pre>')
+    return res.render('index', {adminCategoryInfo, admin_category, category})
   })
 })
 
