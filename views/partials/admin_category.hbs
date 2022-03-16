@@ -24,9 +24,9 @@
       
       <span>
       {{#is ../category 'cpnyinfo'}}<input type="button" id="edit" class="btn btn-primary" onclick="Method.common.page('/admin_companyInfo/{{ this.id }}/edit')" value="編輯">{{/is}}
-      {{#is ../category 'position'}}<input type="button" id="edit" class="btn btn-primary" onclick="Method.common.page('/admin_positionInfo/{{ this.entity_name }}/edit')" value="編輯">{{/is}}
-      {{#is ../category 'leave'}}<input type="button" id="edit" class="btn btn-primary" onclick="Method.common.page('/admin_leaveInfo/{{ this.entity_name }}/edit')" value="編輯">{{/is}}
-      {{#is ../category 'subsidy'}}<input type="button" id="edit" class="btn btn-primary" onclick="Method.common.page('/admin_subsidyInfo/{{ this.entity_name }}/edit')" value="編輯">{{/is}}
+      {{#is ../category 'position'}}<input type="button" id="edit" class="btn btn-primary" onclick="Method.common.page('/admin_positionInfo/{{ this.id }}/edit')" value="編輯">{{/is}}
+      {{#is ../category 'leave'}}<input type="button" id="edit" class="btn btn-primary" onclick="Method.common.page('/admin_leaveInfo/{{ this.id }}/edit')" value="編輯">{{/is}}
+      {{#is ../category 'subsidy'}}<input type="button" id="edit" class="btn btn-primary" onclick="Method.common.page('/admin_subsidyInfo/{{ this.id }}/edit')" value="編輯">{{/is}}
         <input type="button" id="del" class="btn btn-danger" value="刪除" data-title="{{this.cnName}}" data-infoId="{{this.id}}">
       </span>
     </div>
