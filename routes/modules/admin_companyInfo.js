@@ -108,6 +108,7 @@ router.get('/new', isAdmin, (req, res) => {
   res.render('index', {admin_new_category, category})
 })
 
+// 徵厲害 admin 顯示公司資訊類別頁面
 router.get('/', isAdmin, (req, res) => {
   const warning = []
   const request = new sql.Request(pool)
