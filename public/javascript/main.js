@@ -1,6 +1,6 @@
 window.onload = function() {
     var func = document.querySelector("[data-func]");
-    console.log(func)
+    
     if(func){
         document.documentElement.setAttribute("class",func.getAttribute("data-func"));
     };
@@ -10,7 +10,9 @@ window.onload = function() {
 };
 
 window.onpopstate = function() {
-    Method.common.page(location.pathname,"history");
+    var history = location.pathname;
+    console.log(history)
+    Method.common.page(history,"history");
 };
 
 worker = new Worker("/javascript/worker.js");
@@ -406,9 +408,9 @@ Method.search={};
 
 Method.search.keyWord = function(){
 
-    if(document.querySelector("#search")){
+    if(document.querySelector("#search") || document.querySelector("#answer")){
 
-        if(document.querySelector(".admin_search") || document.querySelector(".cs_function") || document.querySelector(".cs_question")){
+        if(document.querySelector(".admin_search") || document.querySelector(".cs_function") || document.querySelector(".cs_question") || document.querySelector(".cs_new_question")){
 
             if(document.querySelector("#categorySelect")){
                 categorySelect.onchange = function(){
@@ -417,21 +419,6 @@ Method.search.keyWord = function(){
             };
             
             document.querySelector("[type='submit']").onclick = function(event){
-                
-                function back(info){
-                    var info = JSON.parse(info.data);
-                    console.log(info)
-    
-                    var html = "<h2><div class='sa-icon " + info.status + "'><span></span></div>" + info.message + "</h2>";
-    
-                    if(info.status == "success"){
-                        document.querySelector("#message .content").innerHTML = html;
-                    }else{
-                        Method.common.showBox(html,"message","");
-                    };
-                    
-                    Method.common.loadingClose();
-                };
 
                 var data = "";
                 var symbol;
@@ -474,14 +461,12 @@ Method.search.keyWord = function(){
 
                 console.log(url)
                 
-                Method.common.page(url,back);
+                Method.common.page(url,"search");
 
             };
 
         }else{
             search.onkeyup = function(){
-
-                console.log(search.value)
 
                 if(search.value == ""){
                     searchCss.innerHTML="";
@@ -496,22 +481,13 @@ Method.search.keyWord = function(){
                 var code =  "{}[]',:?/><=+-()!@#$%^&*`~|\\" + '"';
                 var x = [].slice.call(code);
                 var y = [].slice.call(search.value);
-                console.log(x)
-                console.log(x.includes(search.value))
 
                 for(var i=0;i<y.length;i++){
                     if(x.includes(y[i])){
                         search.value = search.value.replace(y[i],"");
-                        
-                        var html =
-                        '<div id="msg" class="alert alert-warning alert-dismissible fade show" role="alert">'+
-                            '請輸入文字!'+
-                            '<button type="button" class="close" data-dismiss="alert" aria-label="Close">'+
-                                '<span aria-hidden="true">×</span>'+
-                            '</button>'+
-                        '</div>';
-                        
-                    document.querySelector(".searchBar").insertAdjacentHTML("beforeend",html);
+
+                        var html = "<h2><div class='sa-icon warning'><span></span></div>請輸入文字</h2>";
+                        Method.common.showBox(html,"message");
 
                     return;
                     };
@@ -676,6 +652,8 @@ Method.common.showboxClose = function(inputBox,fun){
 
 //jump page
 Method.common.page = function(url,type){
+
+    Method.common.loading();
     
     function back(info){
 
@@ -703,11 +681,12 @@ Method.common.page = function(url,type){
 
             if(!html.querySelector(".container")){
                 history.go(0);
+                Method.common.loadingClose();
                 return;
             };
 
             document.querySelector(".container").innerHTML = html.querySelector(".container").innerHTML;
-
+            Method.common.loadingClose();
         };
 
         //內頁
@@ -715,26 +694,33 @@ Method.common.page = function(url,type){
             
             if(!html.querySelector(".setting")){
                 history.go(0);
+                Method.common.loadingClose();
                 return;
-            };
-            
-            document.querySelector(".setting").innerHTML = html.querySelector(".setting").innerHTML;
+            };            
 
-            if(!type){
-                history.pushState("","",url);
+            if(type == "search"){
+                document.querySelector("#data-panel").innerHTML = html.querySelector("#data-panel").innerHTML;
+                Method.common.loadingClose();
+            }else{
+
+                if(type != "history"){
+                    history.pushState("","",url);
+                };
+                
+                document.querySelector(".setting").innerHTML = html.querySelector(".setting").innerHTML;
+
+                if(document.querySelector("#categorySelect")){
+                    Method.search.question();
+                };
+
+                Method.search.keyWord();
+                Method.common.loadingClose();
             };
-    
-            if(document.querySelector("#categorySelect")){
-                Method.search.question();
-            };
-    
+
             Method.button.all();
-    
-            Method.search.keyWord();
-    
-            Method.common.loadingClose();
-
+            
         };
+
     };
     
     Method.common.asyncAjax(location.origin + url,back);
