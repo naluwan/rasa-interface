@@ -409,5 +409,65 @@ module.exports = {
         return res.send({status: 'error', message: '查無此類別，請重新嘗試'})
       }
     })
+  },
+  querySynonym: (res, desInfo, jh_des, warning, category) => {
+    axios.get('http://localhost:3030/train/jh/trainingData')
+    .then(response => {
+      return response.data
+    })
+    .then(data => {
+      const nluSynonyms = data.nlu.zh.rasa_nlu_data.entity_synonyms
+      return nluSynonyms
+    })
+    .then(synonymsData => {
+      desInfo.forEach(info => {
+        info.synonymsList = synonymsData.filter(item => {
+          // 僅回傳同義詞value等於entity_name且同義詞陣列長度大於1的item
+          // 如果同義詞陣列等於1，代表只剩下主類別自己一個，等於沒有同義詞，故不回傳
+          if(item.value == info.entity_name && item.synonyms.length > 1) return item
+        })
+        info.des = info.des.replace(/\n/g, "\r")
+      })
+
+      switch (category) {
+        case 'cpnyinfo':
+          if(!desInfo.length){
+            warning.push({message: '還未新增公司資訊，請拉到下方點選按鈕新增公司資訊'})
+            warning.push({message: 'ex.地址、電話、簡介、福利、上班時間等公司相關資訊'})
+          }
+          break;
+        case 'position':
+          if(!desInfo.length) warning.push({message: '還未新增職缺，請拉到下方點選按鈕新增職缺'})
+          break;
+        case 'subsidy':
+          if(!desInfo.length) warning.push({message: '還未新增補助津貼，請拉到下方點選按鈕新增補助津貼'})
+        break;
+        default:
+          if(!desInfo.length) warning.push({message: '還未新增假別資訊，請拉到下方點選按鈕新增假別資訊'})
+          break;
+      }
+      
+      res.render('index', {desInfo, warning, jh_des, category})  
+    })
+    .catch(err => console.log(err))
+  },
+  queryEditSynonym: (res, desInfo, jh_edit_des, category) => {
+    axios.get('http://localhost:3030/train/jh/trainingData')
+    .then(response => {
+      return response.data
+    })
+    .then(data => {
+      const nluSynonyms = data.nlu.zh.rasa_nlu_data.entity_synonyms
+      return nluSynonyms
+    })
+    .then(synonymsData => {
+      desInfo.synonymsList = synonymsData.filter(item => {
+        if(item.value == desInfo.entity_name && item.synonyms.length > 1) return item
+      })
+      desInfo.des = desInfo.des.replace(/\n/g, "\r")
+      
+      res.render('index', {desInfo, jh_edit_des, category})  
+    })
+    .catch(err => console.log(err))
   }
 }
