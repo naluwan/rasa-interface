@@ -86,17 +86,7 @@ module.exports = {
     .catch(err => console.log(err))
   },
   // 新增客服功能寫檔
-  fsWriteFunction: (category, function_name, entity_name, request) => {
-    const category_name = {
-      1: {name: '人事', entity: 'personnel'},
-      2: {name: '考勤', entity: 'attendance'},
-      3: {name: '保險', entity: 'insurance'},
-      4: {name: '薪資', entity: 'salary'},
-      5: {name: '額外', entity: 'otherCategory'},
-    }
-    // console.log(category_name[category])
-    const currentCategory = category_name[category]
-
+  fsWriteFunction: (categoryName, categoryEntity, function_name, entity_name, request) => {
     axios.get('http://localhost:3030/train/cs/trainingData')
     .then(response => {
       return response.data
@@ -105,7 +95,8 @@ module.exports = {
       // console.log(JSON.stringify(data.nlu.zh.rasa_nlu_data.common_examples))
       // console.log(data)
       const nluData = data.nlu.zh.rasa_nlu_data.common_examples
-      const newFunction = {
+
+      const entity_1 = {
         "text": `${function_name}`,
         "intent": "分類加功能",
         "entities": [
@@ -114,36 +105,44 @@ module.exports = {
         "metadata": { "language": "zh", "canonical": true }
       }
 
-      const repeatText = nluData.filter(item => item.text == newFunction.text)
+      const entity_2_text = `${categoryName}的${function_name}`
+      const entity_2 = {
+        "text": entity_2_text,
+        "intent": "分類加功能",
+        "entities": [
+          { "entity": `function`, "value": `${entity_name}`, "start": 3, "end": entity_2_text.length},
+          { "entity": "category", "value": `${categoryEntity}`, "start": 0, "end": categoryName.length }
+        ],
+        "metadata": { "language": "zh", "canonical": true }
+      }
+
+      const entity_3_text = `我想查${function_name}的問題`
+      const entity_3 = {
+        "text": entity_3_text,
+        "intent": "分類加功能",
+        "entities": [
+          { "entity": `function`, "value": `${entity_name}`, "start": 3, "end": function_name.length + 3}
+        ],
+        "metadata": { "language": "zh", "canonical": true }
+        }
+
+      const entity_4_text = `想問${categoryName}${function_name}的問題`
+      const entity_4 = {
+        "text": entity_4_text,
+        "intent": "分類加功能",
+        "entities": [
+          { "entity": `function`, "value": `${entity_name}`, "start": categoryName.length + 2 , "end": function_name.length + categoryName.length + 2},
+          { "entity": "category", "value": `${categoryEntity}`, "start": 2, "end":  categoryName.length + 2 }
+        ],
+        "metadata": { "language": "zh", "canonical": true }
+      }
+
+      const repeatText = nluData.filter(item => item.text == entity_1.text)
 
       if(repeatText.length){
         return console.log(`資料重複： ` + JSON.stringify(repeatText[0]))
       }else{
-        nluData.push(newFunction)
-        data.nlu.zh.rasa_nlu_data.common_examples = nluData
-        return data
-        }
-    })
-    .then(data => {
-      if(!data.nlu) return
-      nluData = data.nlu.zh.rasa_nlu_data.common_examples
-      const text = `${currentCategory.name}的${function_name}`
-
-      const newMultiEntities = {
-        "text": text,
-        "intent": "分類加功能",
-        "entities": [
-          { "entity": "function", "value": `${entity_name}`, "start": 3, "end": text.length },
-          { "entity": "category", "value": `${currentCategory.entity}`, "start": 0, "end": 2 }
-        ],
-        "metadata": { "language": "zh" }
-      }
-
-      const repeatText = nluData.filter(item => item.text == newMultiEntities.text)
-      if(repeatText.length){
-        console.log(`資料重複： ` + JSON.stringify(repeatText[0]))
-      }else{
-        nluData.push(newMultiEntities)
+        nluData.push(entity_1, entity_2, entity_3, entity_4)
         data.nlu.zh.rasa_nlu_data.common_examples = nluData
         try{
           fs.writeFileSync(path.resolve(__dirname, '../public/trainData/nlu-json.json'), JSON.stringify(data.nlu.zh))
@@ -345,7 +344,7 @@ module.exports = {
         "text": entity_2_text,
         "intent": "職缺",
         "entities": [
-          { "entity": `${entity_name}`, "value": entity_2_text, "start": 0, "end": entity_2_text.length}
+          { "entity": `${entity_name}`, "value": `${position_name}`, "start": 0, "end": position_name.length}
         ],
         "metadata": { "language": "zh", "canonical": true }
       }
@@ -355,7 +354,7 @@ module.exports = {
         "text": entity_3_text,
         "intent": "職缺",
         "entities": [
-          { "entity": `${entity_name}`, "value": entity_3_text, "start": 0, "end": entity_3_text.length}
+          { "entity": `${entity_name}`, "value": `${position_name}`, "start": 4, "end": position_name.length + 4}
         ],
         "metadata": { "language": "zh", "canonical": true }
       }
@@ -440,7 +439,7 @@ module.exports = {
           return
         }
       })
-    })
+    }).catch(err => console.log(err))
   },
   // 徵厲害新增公司資訊寫檔
   fsJhWriteInfo: (info_name, entity_name, request) => {
@@ -465,7 +464,7 @@ module.exports = {
         "text": `${entity_2_text}`,
         "intent": "問公司資訊",
         "entities": [
-          { "entity": `${entity_name}`, "value": `${entity_2_text}`, "start": 0, "end": entity_2_text.length}
+          { "entity": `${entity_name}`, "value": `${info_name}`, "start": 4, "end": info_name.length + 4}
         ],
         "metadata": { "language": "zh", "canonical": true }
       }
@@ -475,7 +474,7 @@ module.exports = {
         "text": `${entity_3_text}`,
         "intent": "問公司資訊",
         "entities": [
-          { "entity": `${entity_name}`, "value": `${entity_3_text}`, "start": 0, "end": entity_3_text.length}
+          { "entity": `${entity_name}`, "value": `${info_name}`, "start": 4, "end":info_name.length + 4}
         ],
         "metadata": { "language": "zh", "canonical": true }
       }
@@ -485,7 +484,7 @@ module.exports = {
         "text": `${entity_4_text}`,
         "intent": "問公司資訊",
         "entities": [
-          { "entity": `${entity_name}`, "value": `${entity_4_text}`, "start": 0, "end": entity_4_text.length}
+          { "entity": `${entity_name}`, "value": `${info_name}`, "start": 5, "end": info_name.length + 5}
         ],
         "metadata": { "language": "zh", "canonical": true }
       }
@@ -514,7 +513,7 @@ module.exports = {
           return
         }
       })
-    })
+    }).catch(err => console.log(err))
   },
   // 徵厲害新增補助津貼寫檔
   fsWriteSubsidy: (subsidy_name, entity_name, request) => {
@@ -538,7 +537,7 @@ module.exports = {
         "text": `${entity_2_text}`,
         "intent": "問補助資訊",
         "entities": [
-          { "entity": `${entity_name}`, "value": `${entity_2_text}`, "start": 0, "end": entity_2_text.length}
+          { "entity": `${entity_name}`, "value": `${subsidy_name}`, "start": 4, "end": subsidy_name.length + 4}
         ],
         "metadata": { "language": "zh", "canonical": true }
       }
@@ -548,7 +547,7 @@ module.exports = {
         "text": `${entity_3_text}`,
         "intent": "問補助資訊",
         "entities": [
-          { "entity": `${entity_name}`, "value": `${entity_3_text}`, "start": 0, "end": entity_3_text.length}
+          { "entity": `${entity_name}`, "value": `${subsidy_name}`, "start": 4, "end": subsidy_name.length + 4}
         ],
         "metadata": { "language": "zh", "canonical": true }
       }
@@ -577,7 +576,7 @@ module.exports = {
           return
         }
       })
-    })
+    }).catch(err => console.log(err))
   },
     // 徵厲害新增假別寫檔
   fsWriteLeave: (leave_name, entity_name, request) => {
@@ -601,7 +600,7 @@ module.exports = {
         "text": `${entity_2_text}`,
         "intent": "問假別資訊",
         "entities": [
-          { "entity": `${entity_name}`, "value": `${entity_2_text}`, "start": 0, "end": entity_2_text.length}
+          { "entity": `${entity_name}`, "value": `${leave_name}`, "start": 4, "end": leave_name.length + 4}
         ],
         "metadata": { "language": "zh", "canonical": true }
       }
@@ -611,7 +610,7 @@ module.exports = {
         "text": `${entity_3_text}`,
         "intent": "問假別資訊",
         "entities": [
-          { "entity": `${entity_name}`, "value": `${entity_3_text}`, "start": 0, "end": entity_3_text.length}
+          { "entity": `${entity_name}`, "value": `${leave_name}`, "start": 4, "end": leave_name.length + 4}
         ],
         "metadata": { "language": "zh", "canonical": true }
       }
@@ -621,7 +620,7 @@ module.exports = {
         "text": `${entity_4_text}`,
         "intent": "問假別資訊",
         "entities": [
-          { "entity": `${entity_name}`, "value": `${entity_4_text}`, "start": 0, "end": entity_4_text.length}
+          { "entity": `${entity_name}`, "value": `${leave_name}`, "start": 3, "end": leave_name.length + 3}
         ],
         "metadata": { "language": "zh", "canonical": true }
       }
@@ -650,7 +649,7 @@ module.exports = {
           return
         }
       })
-    })
+    }).catch(err => console.log(err))
   },
   // 徵厲害admin刪除類別nlu訓練資料
   fsJhDeleteNlu: (infoCheck, intent, request) => {
