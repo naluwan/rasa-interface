@@ -12,7 +12,7 @@ module.exports = app => {
 
   passport.use(new LocalStrategy({usernameField: 'email', passReqToCallback: true}, (req, email, password, done) => {
     const request = new sql.Request(pool)
-    request.query(`select CPY_ID, CPY_NAME, EMAIL, PASSWORD, INDUSTRY_NO, ISADMIN
+    request.query(`select CPY_ID, CPY_NAME, EMAIL, PASSWORD, ISADMIN
     from BOTFRONT_USERS_INFO
     where EMAIL = '${email}'`, (err, result) => {
       if(err){
@@ -22,15 +22,11 @@ module.exports = app => {
 
       const user = result.recordset[0]
       // console.log(user)
-      if(!user) {
-        return done(null, false, {message: '這個Email還未註冊!!'})
-      }
+      if(!user) return done(null, false, {message: '這個Email還未註冊'})
+      
       return bcrypt.compare(password, user.PASSWORD).then(isMatch => {
-        if(!isMatch) {
-          return done(null, false, {message: '帳號或密碼錯誤!!'})
-        }else{
-          return done(null, user)
-        }
+        if(!isMatch) return done(null, false, {message: '帳號或密碼錯誤'})
+        return done(null, user)
       }).catch(err => console.log(err))
     })
   }))
@@ -49,7 +45,6 @@ module.exports = app => {
         return
       }
       const user = result.recordset[0]
-      // console.log(user)
       done(null, user)
     })
   })
