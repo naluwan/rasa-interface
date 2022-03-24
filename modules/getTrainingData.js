@@ -68,13 +68,19 @@ module.exports = {
               const configYml = yaml.dump(configData)
               const fragmentsYml = yaml.dump(fragmentsData)
               const zh = nluData
+              let model = ''
               // console.log(zh)
+              if(table == 'BF_JH_TRAINING_DATA'){
+                model = 'model-johnnyHire'
+              }else{
+                model = 'model-customerService'
+              }
               let data = {
                 'config': {configYml},
                 'nlu': {zh},
                 'domain': domainYml,
                 'fragments': fragmentsYml,
-                'fixed_model_name': 'model-97090920',
+                'fixed_model_name': model,
                 'load_model_after': true
               }
               // console.log(data)
