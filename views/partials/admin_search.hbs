@@ -3,9 +3,10 @@
 <div class="admin_search">
   <h1>查詢各公司回覆資料</h1>
   <form action="" class="searchBar">
+    
     <label for="companyFilter">公司：</label>
     <select name="companyFilter" id="companyFilter" required>
-      <option value="" selected hidden>請選擇</option>
+      <option value="" selected>請選擇</option>
       {{#each adminCompany}}
       {{#isnt this.CPY_NAME 'Admin'}}
       <option value="{{this.CPY_ID}}" {{#is this.CPY_ID ../companyFilter}} selected {{/is}}>{{this.CPY_NAME}}</option>
@@ -15,7 +16,7 @@
 
     <label for="tableFilter">類別：</label>
     <select name="tableFilter" id="tableFilter" required>
-      <option value="" selected hidden>請選擇</option>
+      <option value="" selected>請選擇</option>
       <option value="cpnyinfo" {{#is tableFilter 'cpnyinfo'}} selected {{/is}}>公司資訊</option>
       <option value="position" {{#is tableFilter 'position'}} selected {{/is}}>職缺資訊</option>
       <option value="subsidy" {{#is tableFilter 'subsidy'}} selected {{/is}}>補助資訊</option>

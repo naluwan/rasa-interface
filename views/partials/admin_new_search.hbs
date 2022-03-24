@@ -8,7 +8,7 @@
             <div>
               <label>公司</label>
               <select name="cpnyId" id="cpnyId" class="form-control" required>
-                <option value="" selected hidden>請選擇</option>
+                <option value="" selected>請選擇</option>
                 {{#each adminCompany}}
                 {{#isnt this.CPY_NAME 'Admin'}}
                 <option value="{{this.CPY_ID}}" {{#is this.CPY_ID ../cpnyId}} selected {{/is}}>
@@ -22,7 +22,7 @@
           <div>
             <label>資訊類別</label>
             <select name="category" id="category" class="form-control" required>
-              <option value="" selected hidden>請選擇</option>
+              <option value="" selected>請選擇</option>
               <option value="cpnyinfo" {{#is category 'cpnyinfo'}} selected {{/is}}>公司資訊</option>
               <option value="position" {{#is category 'position'}} selected {{/is}}>職缺資訊</option>
               <option value="subsidy" {{#is category 'subsidy'}} selected {{/is}}>補助資訊</option>

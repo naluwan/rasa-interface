@@ -4,7 +4,7 @@
   <h1>{{#is category 'cpnyinfo'}}資訊{{/is}}{{#is category 'position'}}職缺{{/is}}{{#is category 'leave'}}假別{{/is}}{{#is category 'subsidy'}}補助{{/is}}類別</h1>
   <style id="searchCss"></style>
   <div class="searchBar">
-    <input type="text" name="search" id="search" value="{{search}}" placeholder="搜尋關鍵字">
+    <input type="text" name="search" id="search" value="{{search}}" placeholder="搜尋關鍵字" class="form-control">
   </div>
   {{> message}}
   <div id="data-panel">
@@ -23,10 +23,10 @@
       </span>
       
       <span>
-      {{#is ../category 'cpnyinfo'}}<input type="button" id="edit" class="btn btn-primary" onclick="Method.common.page('/admin_companyInfo/{{ this.id }}/edit')" value="編輯">{{/is}}
-      {{#is ../category 'position'}}<input type="button" id="edit" class="btn btn-primary" onclick="Method.common.page('/admin_positionInfo/{{ this.id }}/edit')" value="編輯">{{/is}}
-      {{#is ../category 'leave'}}<input type="button" id="edit" class="btn btn-primary" onclick="Method.common.page('/admin_leaveInfo/{{ this.id }}/edit')" value="編輯">{{/is}}
-      {{#is ../category 'subsidy'}}<input type="button" id="edit" class="btn btn-primary" onclick="Method.common.page('/admin_subsidyInfo/{{ this.id }}/edit')" value="編輯">{{/is}}
+        {{#is ../category 'cpnyinfo'}}<input type="button" id="edit" class="btn btn-primary" onclick="Method.common.page('/admin_companyInfo/{{ this.id }}/edit')" value="編輯">{{/is}}
+        {{#is ../category 'position'}}<input type="button" id="edit" class="btn btn-primary" onclick="Method.common.page('/admin_positionInfo/{{ this.id }}/edit')" value="編輯">{{/is}}
+        {{#is ../category 'leave'}}<input type="button" id="edit" class="btn btn-primary" onclick="Method.common.page('/admin_leaveInfo/{{ this.id }}/edit')" value="編輯">{{/is}}
+        {{#is ../category 'subsidy'}}<input type="button" id="edit" class="btn btn-primary" onclick="Method.common.page('/admin_subsidyInfo/{{ this.id }}/edit')" value="編輯">{{/is}}
         <input type="button" id="del" class="btn btn-danger" value="刪除" data-title="{{this.cnName}}" data-infoId="{{this.id}}">
       </span>
     </div>

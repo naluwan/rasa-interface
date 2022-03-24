@@ -1,22 +1,21 @@
 {{#if admin_edit_category}}
 <!-- admin_edit_category -->
 <div class="admin_edit_category">
-  <h1>編輯
-    {{#is category 'cpnyinfo'}}資訊{{/is}}
-    {{#is category 'position'}}職缺{{/is}}
-    {{#is category 'leave'}}假別{{/is}}
-    {{#is category 'subsidy'}}補助{{/is}}
+  <h1>
+    {{#is category 'cpnyinfo'}}編輯資訊{{/is}}
+    {{#is category 'position'}}編輯職缺{{/is}}
+    {{#is category 'leave'}}編輯假別{{/is}}
+    {{#is category 'subsidy'}}編輯補助{{/is}}
   </h1>
   <form action="" name="form">
       {{> message}}
       <div>
         <div>
           <label for="cnName">
-            {{#is category 'cpnyinfo'}}資訊{{/is}}
-            {{#is category 'position'}}職缺{{/is}}
-            {{#is category 'leave'}}假別{{/is}}
-            {{#is category 'subsidy'}}補助{{/is}}
-            名稱
+            {{#is category 'cpnyinfo'}}資訊名稱{{/is}}
+            {{#is category 'position'}}職缺名稱{{/is}}
+            {{#is category 'leave'}}假別名稱{{/is}}
+            {{#is category 'subsidy'}}補助名稱{{/is}}
           </label>
           <input type="text" class="form-control" name="cnName" id="cnName" placeholder="請輸入中文名稱" value="{{infoCategory.name}}" required>
         </div>

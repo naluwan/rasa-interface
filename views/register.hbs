@@ -3,27 +3,32 @@
   <div class="register">
     <h1>註冊帳號</h1>
     {{> message}}
+
     <form action="" name="form" id="user">
-        <input type="text" id="cpy_no" name="cpy_no" class="form-control" placeholder="請輸入公司代號或統編" value="{{ cpy_no }}" required>
+        
+      <input type="text" id="cpy_no" name="cpy_no" class="form-control" placeholder="請輸入公司代號或統編" value="{{ cpy_no }}" required>
 
-        <input type="text" id="cpy_name" name="cpy_name" class="form-control" placeholder="請輸入公司名稱" value="{{ cpy_name }}" required>
+      <input type="text" id="cpy_name" name="cpy_name" class="form-control" placeholder="請輸入公司名稱" value="{{ cpy_name }}" required>
 
-        <input type="email" id="email" name="email" class="form-control" placeholder="請輸入信箱" value="{{ email }}" required>
+      <input type="email" id="email" name="email" class="form-control" placeholder="請輸入信箱" value="{{ email }}" required>
 
-        <input type="password" id="password" name="password" class="form-control" placeholder="請輸入密碼" value="{{ password }}" required>
+      <input type="password" id="password" name="password" class="form-control" placeholder="請輸入密碼" value="{{ password }}" required>
 
-        <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" placeholder="請再次輸入密碼" value="{{ confirmPassword }}" required>
+      <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" placeholder="請再次輸入密碼" value="{{ confirmPassword }}" required>
 
       <div>
+
         <div>
           <button id="add" type="submit" class="btn btn-info">註冊</button>
         </div>
 
         <div class="account">
           已經有帳號了?
-          <a href="javascript:;" onclick="Method.common.page('/')" style="color: blue;">登入</a>
+          <a href="javascript:;" onclick="Method.common.page('/')">登入</a>
         </div>
+
       </div>
+
     </form>
   </div>
 </div>
