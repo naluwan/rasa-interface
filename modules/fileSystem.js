@@ -670,6 +670,30 @@ module.exports = {
       }
       // 讀取最新的訓練資料檔並回傳
       const newNluData =  yaml.load(fs.readFileSync(path.resolve(__dirname, '../public/trainData/nlu-json.json'), 'utf8'))
+      return newNluData
+    })
+    .then(data => {
+      // 找出同義詞並刪除
+      data.rasa_nlu_data.entity_synonyms = data.rasa_nlu_data.entity_synonyms.map(item => {
+        const index = item.synonyms.indexOf(infoCheck)
+        if(index != -1){
+          item.synonyms.splice(index, 1)
+        }
+        return item
+      })
+
+      // 同義詞僅回傳有值的，沒值代表同義詞或主類別被刪除光了
+      data.rasa_nlu_data.entity_synonyms = data.rasa_nlu_data.entity_synonyms.filter(item => {
+        return item.synonyms.length != 0
+      })
+
+      try{
+        fs.writeFileSync(path.resolve(__dirname, '../public/trainData/nlu-json.json'), JSON.stringify(data))
+      } catch(err){
+        console.log(err)
+      }
+      // 讀取最新的訓練資料檔並回傳
+      const newNluData =  yaml.load(fs.readFileSync(path.resolve(__dirname, '../public/trainData/nlu-json.json'), 'utf8'))
       return JSON.stringify(newNluData)
     })
     .then(data => {
