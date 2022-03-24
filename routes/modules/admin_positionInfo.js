@@ -105,6 +105,7 @@ router.get('/new/insert', isAdmin, (req, res) => {
 router.get('/new', isAdmin, (req, res) => {
   const admin_new_category = true
   const category = 'position'
+  const warning = []
   res.render('index', {admin_new_category, category})
 })
 
@@ -113,6 +114,7 @@ router.get('/', isAdmin, (req, res) => {
   const request = new sql.Request(pool)
   const admin_category = true
   const category = 'position'
+  const warning = []
 
   // 如果沒有搜尋字串，顯示所有結果
   request.query(`select POSITION_NAME as cnName, ENTITY_NAME as entity_name, POSITION_ID as id 
@@ -123,8 +125,8 @@ router.get('/', isAdmin, (req, res) => {
     }
 
     const adminCategoryInfo = result.recordset 
-    if(adminCategoryInfo.length == 0) return res.send('<pre>{"status":"warning","message":"查無職缺類別，請拉到下方新增職缺類別"}</pre>')
-    return res.render('index', {adminCategoryInfo, admin_category, category})
+    if(adminCategoryInfo.length == 0) warning.push({message: '查無職缺類別，請拉到下方新增職缺類別!!!'})
+    return res.render('index', {adminCategoryInfo, admin_category, category, warning})
   })
 })
 

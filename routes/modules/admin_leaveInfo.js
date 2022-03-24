@@ -122,7 +122,7 @@ router.get('/', isAdmin, (req, res) => {
       return
     }
     const adminCategoryInfo = result.recordset
-    if(!adminCategoryInfo.length) return res.send('<pre>{"status":"warning","message":"查無公司假別，請拉到下方新增公司假別"}</pre>')
+    if(!adminCategoryInfo.length) warning.push({message: '查無職缺類別，請拉到下方新增職缺類別!!!'})
     res.render('index', {adminCategoryInfo, warning, admin_category, category})
   })
 })
