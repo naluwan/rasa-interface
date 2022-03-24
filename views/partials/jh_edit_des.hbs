@@ -1,47 +1,39 @@
 {{#if jh_edit_des}}
 <!-- jh_edit_des -->
 <div class="jh_edit_des">
-  <h1>編輯
-    {{#is category 'cpnyinfo'}}公司{{/is}}
-    {{#is category 'position'}}職缺{{/is}}
-    {{#is category 'leave'}}假別{{/is}}
-    {{#is category 'subsidy'}}補助{{/is}}
-    資訊
-  </h1>
+  <h1>編輯{{#is category 'cpnyinfo'}}公司{{/is}}{{#is category 'position'}}職缺{{/is}}{{#is category 'leave'}}假別{{/is}}{{#is category 'subsidy'}}補助{{/is}}資訊</h1>
   <form action="" name="form">
     {{> message}}
     <div>
       <div>
         <label for="cnName">
-          {{#is category 'cpnyinfo'}}資訊{{/is}}
-          {{#is category 'position'}}職缺{{/is}}
-          {{#is category 'leave'}}假別{{/is}}
-          {{#is category 'subsidy'}}補助{{/is}}
-          名稱
+          {{#is category 'cpnyinfo'}}資訊名稱{{/is}}
+          {{#is category 'position'}}職缺名稱{{/is}}
+          {{#is category 'leave'}}假別名稱{{/is}}
+          {{#is category 'subsidy'}}補助名稱{{/is}}
         </label>
-        <input type="text" class="form-control" name="cnName" placeholder="請輸入中文名稱" value="{{desInfo.name}}" disabled>
+        <input type="text" class="form-control" name="cnName" id="cnName" placeholder="請輸入中文名稱" value="{{desInfo.name}}" disabled>
       </div>
 
       <div>
-        <label for="position_des">
-          {{#is category 'cpnyinfo'}}資訊{{/is}}
-          {{#is category 'position'}}職缺{{/is}}
-          {{#is category 'leave'}}假別{{/is}}
-          {{#is category 'subsidy'}}補助{{/is}}
-          英文名稱
+        <label for="entity_name">
+          {{#is category 'cpnyinfo'}}資訊英文名稱{{/is}}
+          {{#is category 'position'}}職缺英文名稱{{/is}}
+          {{#is category 'leave'}}假別英文名稱{{/is}}
+          {{#is category 'subsidy'}}補助英文名稱{{/is}}
         </label>
-        <input class="form-control" name="entity_name" placeholder="請輸入英文名稱" value="{{desInfo.entity_name}}" required disabled>
+        <input class="form-control" name="entity_name" id="entity_name" placeholder="請輸入英文名稱" value="{{desInfo.entity_name}}" required disabled>
       </div>
 
       <div>
-        <label for="position_des">資訊內容</label>
-        <textarea class="form-control" name="des" 
-        placeholder="請輸入
-        {{#is category 'cpnyinfo'}}資訊{{/is}}
-        {{#is category 'position'}}職缺{{/is}}
-        {{#is category 'leave'}}假別{{/is}}
-        {{#is category 'subsidy'}}補助{{/is}}
-        內容" rows="5" required>{{desInfo.des}}</textarea>
+        <label for="synonyms">同義詞</label>
+        <input class="form-control" name="synonyms" id="synonyms" placeholder="請輸入同義詞" value="{{#unless desInfo.synonymsList}}無{{else}}{{#each desInfo.synonymsList}}{{this.synonyms}}{{/each}}{{/unless}}" required disabled>
+      </div>
+
+      <div>
+        <label for="des">資訊內容</label>
+        <textarea class="form-control" name="des" id="des"
+        placeholder="請輸入{{#is category 'cpnyinfo'}}資訊{{/is}}{{#is category 'position'}}職缺{{/is}}{{#is category 'leave'}}假別{{/is}}{{#is category 'subsidy'}}補助{{/is}}內容" rows="5" required>{{desInfo.des}}</textarea>
       </div>
     </div>
     <div class="formButton">
