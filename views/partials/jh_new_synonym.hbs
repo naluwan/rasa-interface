@@ -1,0 +1,41 @@
+{{#if jh_new_synonym}}
+<!-- jh_new_category -->
+<div class="jh_new_synonym">
+  <h1>
+    {{#is category 'cpnyinfo'}}新增資訊同義詞{{/is}}
+    {{#is category 'position'}}新增職缺同義詞{{/is}}
+    {{#is category 'leave'}}新增假別同義詞{{/is}}
+    {{#is category 'subsidy'}}新增補助同義詞{{/is}}
+  </h1>
+  {{> message}}
+  <form name="form" id="jh_new_category" action="">
+    <div>
+
+      <div>
+        <label>主類別名稱</label>
+        <input type="text" class="form-control" name="cnName" placeholder="請輸入中文名稱" value="{{cnName}}" required disabled>
+      </div>
+
+      <div>
+        <label> 主類別英文名稱</label>
+        <input type="text" class="form-control" name="entity_name" placeholder="請輸入英文名稱" value="{{entity_name}}" required disabled>
+      </div>
+
+      <div>
+        <label>
+          {{cnName}}同義詞
+        </label>
+        <input type="text" class="form-control" name="synonym" placeholder="請輸入同義字" value="{{synonym}}" required>
+      </div>
+      
+    </div>
+    <div class="formButton">
+      {{#is category 'cpnyinfo'}}<input id="cancel" type="button" class="btn btn-primary" onclick="Method.common.page('/jh_cpnyInfo')" value="取消">{{/is}}
+      {{#is category 'position'}}<input id="cancel" type="button" class="btn btn-primary" onclick="Method.common.page('/jh_position')" value="取消">{{/is}}
+      {{#is category 'leave'}}<input id="cancel" type="button" class="btn btn-primary" onclick="Method.common.page('/jh_leave')" value="取消">{{/is}}
+      {{#is category 'subsidy'}}<input id="cancel" type="button" class="btn btn-primary" onclick="Method.common.page('/jh_subsidy')" value="取消">{{/is}}
+      <input type="submit" id="add" class="btn btn-info" value="新增">
+    </div>
+  </form>
+</div>
+{{/if}}
