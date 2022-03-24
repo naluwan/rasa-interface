@@ -116,4 +116,13 @@ router.get('/trainingComplete', (req, res) => {
   })
 })
 
+// 徵厲害 - 查看rasa核心狀況
+router.get('/jh/status', (req, res) => {
+  axios.get('http://192.168.10.108:5005/status')
+  .then(response => {
+    return res.json(response.data.num_active_training_jobs)
+  })
+  .catch(err => console.log(err))
+})
+
 module.exports = router
