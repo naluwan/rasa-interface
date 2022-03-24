@@ -7,6 +7,13 @@ window.onload = function() {
 
     Method.button.all();
     Method.search.keyWord();
+    Method.common.heightLight();
+    Method.common.train();
+    
+};
+
+window.onfocus = function() {
+    Method.common.train();
 };
 
 window.onpopstate = function() {
@@ -27,6 +34,7 @@ Method.button.all = function(){
     Method.button.saveButton();
     Method.button.addButton();
     Method.button.delButton();
+    Method.button.closeButton();
     Method.button.repwdButton();
     Method.button.forgetButton();
     Method.button.resetPwd();
@@ -106,7 +114,7 @@ Method.button.addButton = function(){
             function back(info){
                 var info = JSON.parse(info.data);
                 console.log(info)
-
+                
                 var html = "<h2><div class='sa-icon " + info.status + "'><span></span></div>" + info.message + "</h2>";
 
                 var prevPage = null;
@@ -205,6 +213,15 @@ Method.button.delButton = function(){
             console.log(url)
 
             Method.common.asyncAjax(url,back);
+        };
+    };
+};
+
+//close button
+Method.button.closeButton = function(){
+    if(document.querySelector("button.close")){
+        document.querySelector("button.close").onclick = function(){
+            this.parentNode.remove();
         };
     };
 };
@@ -408,98 +425,101 @@ Method.search={};
 
 Method.search.keyWord = function(){
 
-    if(document.querySelector("#search") || document.querySelector("#answer")){
+    if(!document.querySelector("#search")){
+        return;
+    };
 
-        if(document.querySelector(".admin_search") || document.querySelector(".cs_function") || document.querySelector(".cs_question") || document.querySelector(".cs_new_question")){
+    if(document.querySelector("form select[required]")){
 
-            if(document.querySelector("#categorySelect")){
-                categorySelect.onchange = function(){
-                    Method.search.question();
+        //admin_search
+        //cs_function
+        //cs_question
+        //cs_new_question"
+
+        if(document.querySelector("#categorySelect")){
+            categorySelect.onchange = function(){
+                Method.search.question();
+            };
+        };
+        
+        document.querySelector("[type='submit']").onclick = function(event){
+
+            var data = "";
+
+            var required = document.querySelectorAll("form [required]");
+
+            for(var i=0;i<required.length;i++){
+                //必填未填中止
+                if(required[i].value == ""){
+                    return;
                 };
+            };
+
+
+            var inputs = document.querySelectorAll("form [name]");
+            var symbol;
+            for(var i=0;i<inputs.length;i++){
+                i == 0 ? symbol = "?" : symbol = "&";
+                data += symbol + inputs[i].name + "=" + inputs[i].value;
+            };
+
+            event.preventDefault();
+
+            var url = "";
+
+            if(document.querySelector(".admin_search")){
+                url += "/admin_search/filter";
             };
             
-            document.querySelector("[type='submit']").onclick = function(event){
-
-                var data = "";
-                var symbol;
-
-                var required = document.querySelectorAll("form [required]");
-
-                for(var i=0;i<required.length;i++){
-
-                    if(required[i].value == ""){
-                        return;
-                    };
-                };
-
-
-                var inputs = document.querySelectorAll("form [name]");
-                for(var i=0;i<inputs.length;i++){
-
-                    i == 0 ? symbol = "?" : symbol = "&";
-
-                    data += symbol + inputs[i].name + "=" + inputs[i].value;
-                };
-
-                event.preventDefault();
-
-                var url = "";
-
-                if(document.querySelector(".admin_search")){
-                    url += "/admin_search/filter";
-                };
-                
-                if(document.querySelector(".cs_function")){
-                    url += "/cs_function/filter";
-                };
-
-                if(document.querySelector(".cs_question")){
-                    url += "/cs_question/filter";
-                };
-
-                url += data;
-
-                console.log(url)
-                
-                Method.common.page(url,"search");
-
+            if(document.querySelector(".cs_function")){
+                url += "/cs_function/filter";
             };
 
-        }else{
-            search.onkeyup = function(){
+            if(document.querySelector(".cs_question")){
+                url += "/cs_question/filter";
+            };
 
-                if(search.value == ""){
-                    searchCss.innerHTML="";
-                    document.querySelector("#data-panel").removeAttribute("class");
+            url += data;
+
+            console.log(url)
+            
+            Method.common.page(url,"search");
+
+        };
+
+    }else{
+
+        search.onkeyup = function(){
+
+            if(search.value == ""){
+                searchCss.innerHTML="";
+                document.querySelector("#data-panel").removeAttribute("class");
+                return;
+            };
+
+            if(document.querySelector("#msg")){
+                msg.remove();
+            };
+
+            var code =  "{}[]',:?/><=+-()!@#$%^&*`~|\\" + '"';
+            var x = [].slice.call(code);
+            var y = [].slice.call(search.value);
+
+            for(var i=0;i<y.length;i++){
+                if(x.includes(y[i])){
+                    search.value = search.value.replace(y[i],"");
+                    var html = "<h2><div class='sa-icon warning'><span></span></div>請輸入文字</h2>";
+                    Method.common.showBox(html,"message");
                     return;
-                }
-
-                if(document.querySelector("#msg")){
-                    msg.remove();
                 };
+            };
 
-                var code =  "{}[]',:?/><=+-()!@#$%^&*`~|\\" + '"';
-                var x = [].slice.call(code);
-                var y = [].slice.call(search.value);
+            searchCss.innerHTML = "#data-panel > :not([data-search*='" + search.value + "']){display:none;}";
 
-                for(var i=0;i<y.length;i++){
-                    if(x.includes(y[i])){
-                        search.value = search.value.replace(y[i],"");
-
-                        var html = "<h2><div class='sa-icon warning'><span></span></div>請輸入文字</h2>";
-                        Method.common.showBox(html,"message");
-
-                    return;
-                    };
-                };
-
-                searchCss.innerHTML = "#data-panel > :not([data-search*='" + search.value + "']){display:none;}";
-
-                if(document.querySelector("#data-panel").clientHeight == 50){
-                    document.querySelector("#data-panel").setAttribute("class","noList");
-                }else{
-                    document.querySelector("#data-panel").removeAttribute("class");
-                };
+            if(document.querySelector("#data-panel").clientHeight == 50){
+                document.querySelector("#data-panel").setAttribute("class","noList");
+            }else{
+                document.querySelector("#data-panel").removeAttribute("class");
             };
         };
     };
@@ -533,7 +553,7 @@ Method.search.question = function(){
     var url = location.origin + "/cs_question/getData?category_id=" + categorySelect.value;
     Method.common.asyncAjax(url,back);
 
-}
+};
 
 
 Method.common={}
@@ -704,11 +724,13 @@ Method.common.page = function(url,type){
             }else{
 
                 if(type != "history"){
+                    //不是搜尋列 加入瀏覽紀錄
                     history.pushState("","",url);
                 };
                 
                 document.querySelector(".setting").innerHTML = html.querySelector(".setting").innerHTML;
 
+                //
                 if(document.querySelector("#categorySelect")){
                     Method.search.question();
                 };
@@ -718,7 +740,7 @@ Method.common.page = function(url,type){
             };
 
             Method.button.all();
-            
+            Method.common.heightLight();
         };
 
     };
@@ -740,4 +762,42 @@ Method.common.asyncAjax = function(url,back){
     worker.onmessage = function(e){
         back(e);
     };
+};
+
+//主類別高亮
+Method.common.heightLight = function(){
+    if(document.querySelector(".des")){
+        var des = document.querySelectorAll(".des");
+        for(var i=0;i<des.length;i++){
+            if(des[i].getAttribute("title").match("主類別")){
+                des[i].parentNode.parentNode.parentNode.classList.add("highlight");
+            };
+        };
+    };
+};
+
+//訓練過渡
+Method.common.train = function(){
+
+    var train = document.querySelector("#train");
+
+    if(train){
+
+        function back(data){
+            if(data.data != "0"){
+                train.setAttribute("disabled","");
+            }else{
+                train.removeAttribute("disabled");
+                return;
+            };
+    
+            setTimeout(function(){
+                Method.common.train();
+            },5000)
+        };
+        
+        Method.common.asyncAjax("/train/jh/status",back);
+
+    };
+    
 };
