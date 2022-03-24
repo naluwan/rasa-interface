@@ -54,11 +54,11 @@ module.exports = {
       } catch (error) {
         // 新增類別不存在
         // 先驗證nlu訓練檔中有沒有資料
-        axios.get('http://localhost:3030/train/jh/trainingData')
-        .then(response => {
-          return response.data
-        })
-        .then(data => {
+        // axios.get('http://localhost:3030/train/jh/trainingData')
+        // .then(response => {
+        //   return response.data
+        // })
+        // .then(data => {
           // const nluData = data.nlu.zh.rasa_nlu_data.common_examples
           // const targetCategory = nluData.filter(item => item.text == infoData.cnName)
           // if(targetCategory.length){
@@ -153,7 +153,7 @@ module.exports = {
               })
             })
           })
-        })
+        // })
         .catch(err => console.log(err))
       }
     })
