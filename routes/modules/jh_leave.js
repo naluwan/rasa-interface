@@ -4,22 +4,24 @@ const router = express.Router()
 const sql = require('mssql')
 const pool = require('../../config/connectPool')
 
-const {fsJhWriteInfo, fsJhWritePosition, fsWriteSubsidy, fsWriteLeave} = require('../../modules/fileSystem')
+const {fsJhWriteInfo, fsJhWritePosition, fsWriteSubsidy, fsWriteLeave, fsJsAddSynonyms} = require('../../modules/fileSystem')
 const {setInfoDict, setPositionDict} = require('../../modules/setDict')
 const {randomNum, checkNum} = require('../../modules/randomNum')
-const {insertDes, updateDes, deleteDes, insertCategory} = require('../../modules/useSql')
+const {insertDes, updateDes, deleteDes, insertCategory, querySynonym, queryEditSynonym} = require('../../modules/useSql')
 
 // 增加同義字功能API
-router.get('/:infoId/newCategory/insert', (req, res) => {
-  const {cnName, entity_name} = req.query
+router.get('/:infoId/queryCategory/insert', (req, res) => {
+  const {cnName, entity_name, synonym} = req.query
   const request = new sql.Request(pool)
 
   if(!cnName || !entity_name) return res.send({status: 'warning', message: '所有欄位都是必填的'})
+  if(cnName == synonym) return res.send({status: 'warning', message: '同義字重複'})
 
-  const data = {
+  const infoData = {
     category: 'leave',
     cnName,
-    entity_name
+    entity_name,
+    synonym
   }
 
   const fsFunc = {
@@ -28,22 +30,23 @@ router.get('/:infoId/newCategory/insert', (req, res) => {
     fsWriteLeave,
     fsWriteSubsidy,
     setInfoDict,
-    setPositionDict
+    setPositionDict,
+    insertCategory
   }
 
-  insertCategory(request, sql, res, data, fsFunc)
+  fsJsAddSynonyms(request, sql, res, infoData, fsFunc)  
 })
 
 // 顯示增加同義字頁面
-router.get('/:infoId/newCategory', (req, res) => {
+router.get('/:infoId/queryCategory', (req, res) => {
   const {infoId} = req.params
   const user = res.locals.user
 	const cpnyId = user.CPY_ID 
-  const jh_new_category = true
+  const jh_new_synonym = true
   const category = 'leave'
   const request = new sql.Request(pool)
 
-  request.query(`select b.ENTITY_NAME as entity_name
+  request.query(`select b.LEAVE_NAME as cnName, b.ENTITY_NAME as entity_name
   from BF_JH_LEAVE a
   left join BF_JH_LEAVE_CATEGORY b
   on a.LEAVE_ID = b.LEAVE_ID
@@ -54,8 +57,9 @@ router.get('/:infoId/newCategory', (req, res) => {
       return
     }
     try {
+      const cnName = result.recordset[0]['cnName']
       const entity_name = result.recordset[0]['entity_name']
-      res.render('index', {jh_new_category, entity_name, infoId, category})
+      res.render('index', {jh_new_synonym, cnName, entity_name, infoId, category})
     } catch (error) {
       return res.send('<pre>{"status":"warning","message":"查無此資料，請重新嘗試"}</pre>')
     }
@@ -86,8 +90,7 @@ router.get('/:entity_name/edit', (req, res) => {
     if(!desInfo){
       return res.send('<pre>{"status":"warning","message":"查無此假別資訊資料，請重新嘗試"}</pre>')
     }else{
-      desInfo.des = desInfo.des.replace(/\n/g, "\r")
-      res.render('index', {desInfo, jh_edit_des, category})
+      queryEditSynonym(res, desInfo, jh_edit_des, category)
     }
   })
 
@@ -182,11 +185,7 @@ router.get('/', (req, res) => {
       return
     }
     const desInfo = result.recordset
-    desInfo.forEach(info => {
-      info.des = info.des.replace(/\n/g, "\r")
-    })
-    if(!desInfo.length) warning.push({message: '還未新增假別資訊，請拉到下方點選按鈕新增假別資訊'})
-    res.render('index', {desInfo, warning, jh_des, category})
+    querySynonym(res, desInfo, jh_des, warning, category)
   })
 })
 
