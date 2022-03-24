@@ -1,23 +1,22 @@
 {{#if jh_new_des}}
 <!-- jh_new_des -->
 <div class="jh_new_des ">
-  <h1>新增
-    {{#is category 'cpnyinfo'}}公司{{/is}}
-    {{#is category 'position'}}職缺{{/is}}
-    {{#is category 'leave'}}假別{{/is}}
-    {{#is category 'subsidy'}}補助{{/is}}
-    資訊
+  <h1>
+    {{#is category 'cpnyinfo'}}新增公司資訊{{/is}}
+    {{#is category 'position'}}新增職缺資訊{{/is}}
+    {{#is category 'leave'}}新增假別資訊{{/is}}
+    {{#is category 'subsidy'}}新增補助資訊{{/is}}
+    
   </h1>
   <form action="" name="form" id="jh_new_des">
     {{> message}}
     <div>
       <div>
         <label for="name">
-          {{#is category 'cpnyinfo'}}資訊{{/is}}
-          {{#is category 'position'}}職缺{{/is}}
-          {{#is category 'leave'}}假別{{/is}}
-          {{#is category 'subsidy'}}補助{{/is}}
-          名稱
+          {{#is category 'cpnyinfo'}}資訊名稱{{/is}}
+          {{#is category 'position'}}職缺名稱{{/is}}
+          {{#is category 'leave'}}假別名稱{{/is}}
+          {{#is category 'subsidy'}}補助名稱{{/is}}
         </label>
         <input type="text" class="form-control" name="cnName" placeholder="請輸入中文名稱" value="{{name}}" required>
       </div>
@@ -29,11 +28,10 @@
 
       <div>
         <label for="des">
-          {{#is category 'cpnyinfo'}}資訊{{/is}}
-          {{#is category 'position'}}職缺{{/is}}
-          {{#is category 'leave'}}假別{{/is}}
-          {{#is category 'subsidy'}}補助{{/is}}
-          內容
+          {{#is category 'cpnyinfo'}}資訊內容{{/is}}
+          {{#is category 'position'}}職缺內容{{/is}}
+          {{#is category 'leave'}}假別內容{{/is}}
+          {{#is category 'subsidy'}}補助內容{{/is}}
         </label>
         <textarea class="form-control" name="des" placeholder="請輸入{{#is category 'cpnyinfo'}}資訊{{/is}}{{#is category 'position'}}職缺{{/is}}{{#is category 'leave'}}假別{{/is}}{{#is category 'subsidy'}}補助{{/is}}內容" rows="5" required>{{des}}</textarea>
       </div>
