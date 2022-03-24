@@ -169,8 +169,9 @@ router.get('/logout', (req, res) => {
       return
     }
     req.logOut()
-    req.flash('success_msg', '你已經成功登出')
     res.redirect('/users/login')
+    req.session.destroy()
+    
   })
 })
 
