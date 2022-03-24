@@ -283,17 +283,19 @@ module.exports = {
     })
   },
   // 徵厲害 admin 新增類別
-  insertCategory: (request, sql, res, data, fsFunc) => {
+  insertCategory: (request, sql, res, infoData, fsFunc) => {
     // 設定sql table、欄位名稱
-    const table = `BF_JH_${data.category.toUpperCase()}`
-    const table_category = `BF_JH_${data.category.toUpperCase()}_CATEGORY`
-    const category_id = `${data.category.toUpperCase()}_ID`
-    const category_name = `${data.category.toUpperCase()}_NAME`
-    const category_des = `${data.category.toUpperCase()}_DES`
+    const table = `BF_JH_${infoData.category.toUpperCase()}`
+    const table_category = `BF_JH_${infoData.category.toUpperCase()}_CATEGORY`
+    const category_id = `${infoData.category.toUpperCase()}_ID`
+    const category_name = `${infoData.category.toUpperCase()}_NAME`
+    const category_des = `${infoData.category.toUpperCase()}_DES`
+
+    if(infoData.synonym) infoData.cnName = infoData.synonym
 
     request.query(`select * 
     from ${table_category}
-    where ${category_name} = '${data.cnName}'`, (err, result) => {
+    where ${category_name} = '${infoData.cnName}'`, (err, result) => {
       if(err){
         console.log(err)
         return
@@ -303,36 +305,57 @@ module.exports = {
       if(infoCheck){
         return res.send({status: 'warning', message: '類別重複，請重新嘗試'})
       }else{
-        request.input('cnName', sql.NVarChar(200), decodeURI(data.cnName))
-        .input('entity_name', sql.NVarChar(200), data.entity_name)
+        axios.get('http://localhost:3030/train/jh/trainingData')
+        .then(response => {
+          return response.data
+        })
+        .then(data => {
+          // const nluData = data.nlu.zh.rasa_nlu_data.common_examples
+          // const targetCategory = nluData.filter(item => item.text == infoData.cnName)
+
+          // if(targetCategory.length){
+          //   request.input('targetName', sql.NVarChar(200), targetCategory[0].text)
+          //   .input('targetEntity', sql.NVarChar(200), targetCategory[0].entities[0].entity)
+          //   .query(`insert into ${table_category} (${category_name}, ENTITY_NAME) 
+          //   values (@targetName, @targetEntity)`, (err, result) => {
+          //     if(err){
+          //       console.log(err)
+          //       return
+          //     }
+          //   })
+          //   return res.send({status: 'success', message: '新增類別成功'})
+          // }
+
+          request.input('cnName', sql.NVarChar(200), decodeURI(infoData.cnName))
+          .input('entity_name', sql.NVarChar(200), infoData.entity_name)
         .query(`insert into ${table_category} (${category_name}, ENTITY_NAME) 
         values (@cnName, @entity_name)`, (err, result) => {
           if(err){
             console.log(err)
             return
           }
-
           // 寫檔及寫入dict
-          switch(data.category){
+            switch(infoData.category){
             case 'cpnyinfo':
-              fsFunc.fsJhWriteInfo(data.cnName, data.entity_name, request)
-              fsFunc.setInfoDict(data.cnName)
+                fsFunc.fsJhWriteInfo(infoData.cnName, infoData.entity_name, request)
+                fsFunc.setInfoDict(infoData.cnName)
               break
             case 'position':
-              fsFunc.fsJhWritePosition(data.cnName, data.entity_name, request)
-              fsFunc.setPositionDict(data.cnName)
+                fsFunc.fsJhWritePosition(infoData.cnName, infoData.entity_name, request)
+                fsFunc.setPositionDict(infoData.cnName)
               break
             case 'subsidy':
-              fsFunc.fsWriteSubsidy(data.cnName, data.entity_name, request)
-              fsFunc.setInfoDict(data.cnName)
+                fsFunc.fsWriteSubsidy(infoData.cnName, infoData.entity_name, request)
+                fsFunc.setInfoDict(infoData.cnName)
               break
             default:
-              fsFunc.fsWriteLeave(data.cnName, data.entity_name, request)
-              fsFunc.setInfoDict(data.cnName)
+                fsFunc.fsWriteLeave(infoData.cnName, infoData.entity_name, request)
+                fsFunc.setInfoDict(infoData.cnName)
               break
           }
-
+            if(infoData.synonym) return
           res.send({status: 'success', message: '新增類別成功'})
+          })
         })
       }
     })
