@@ -159,7 +159,7 @@ router.get('/filter', (req, res) => {
     and (b.${tableFilter}_NAME like '%%${search}%%'
     or b.ENTITY_NAME like '%%${search}%%'
     or a.${tableFilter}_DES like '%%${search}%%')
-    order by b.${tableFilter}_ID ASC`, (err, result) => {
+    order by b.ENTITY_NAME ASC`, (err, result) => {
       if(err){
         console.log(err)
         return

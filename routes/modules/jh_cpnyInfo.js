@@ -180,7 +180,7 @@ router.get('/', (req, res) => {
   left join BF_JH_CPNYINFO_CATEGORY b
   on a.CPNYINFO_ID = b.CPNYINFO_ID
   where CPY_ID = '${cpnyId}'
-  order by b.CPNYINFO_ID ASC`, (err, result) => {
+  order by b.ENTITY_NAME ASC`, (err, result) => {
     if(err){
       console.log(err)
       return

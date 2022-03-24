@@ -177,7 +177,7 @@ router.get('/', (req, res) => {
   left join BF_JH_SUBSIDY_CATEGORY b
   on a.SUBSIDY_ID = b.SUBSIDY_ID
   where CPY_ID = '${cpnyId}'
-  order by b.SUBSIDY_ID ASC`, (err, result) => {
+  order by b.ENTITY_NAME ASC`, (err, result) => {
     if(err){
       console.log(err)
       return

@@ -179,7 +179,7 @@ router.get('/', (req, res) => {
   left join BF_JH_LEAVE_CATEGORY b
   on a.LEAVE_ID = b.LEAVE_ID
   where a.CPY_ID = ${cpnyId}
-  order by b.LEAVE_ID ASC`, (err, result) => {
+  order by b.ENTITY_NAME ASC`, (err, result) => {
     if(err){
       console.log(err)
       return

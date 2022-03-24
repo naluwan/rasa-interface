@@ -118,7 +118,8 @@ router.get('/', isAdmin, (req, res) => {
 
   // 如果沒有搜尋字串，顯示所有結果
   request.query(`select POSITION_NAME as cnName, ENTITY_NAME as entity_name, POSITION_ID as id 
-  from BF_JH_POSITION_CATEGORY`, (err, result) => {
+  from BF_JH_POSITION_CATEGORY
+  order by ENTITY_NAME ASC`, (err, result) => {
     if(err){
       console.log(err)
       return

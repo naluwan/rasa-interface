@@ -116,7 +116,8 @@ router.get('/', isAdmin, (req, res) => {
   const request = new sql.Request(pool)
 
   request.query(`select LEAVE_NAME as cnName, ENTITY_NAME as entity_name, LEAVE_ID as id 
-  from BF_JH_LEAVE_CATEGORY`, (err, result) => {
+  from BF_JH_LEAVE_CATEGORY
+  order by ENTITY_NAME ASC`, (err, result) => {
     if(err){
       console.log(err)
       return
