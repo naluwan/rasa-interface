@@ -747,5 +747,74 @@ module.exports = {
       })
     })
     .catch(err => console.log(err))
+  },
+  // 徵厲害 新增同義詞
+  fsJsAddSynonyms: (request, sql, res, infoData, fsFunc) => {
+    axios.get('http://localhost:3030/train/jh/trainingData')
+    .then(response => {
+      return response.data
+    })
+    .then(data => {
+      // 抓取同義詞資料
+      const nluSynonyms = data.nlu.zh.rasa_nlu_data.entity_synonyms
+      // 篩選是否有重複同義詞
+      // 用中文做篩選，因為中文不能重複
+      const synonymNameCheck = nluSynonyms.filter(item => {
+        const cnNameCheck = item.synonyms.filter(itemCnName => itemCnName == infoData.synonym)
+        if(cnNameCheck.length){
+          return item
+        }
+      })
+
+      // 有重複同義詞，直接return
+      if(synonymNameCheck.length){
+        return 
+      }else{
+        // 沒有重複同義詞時，查看是否有同義詞類別
+        // 同義詞類別是用entity_name來做區別
+        // 例如address同義詞類別，裡面的同義字可以有［地址，公司位置］
+        const synonymEntityCheck = nluSynonyms.filter(item => item.value == infoData.entity_name)
+
+        if(synonymEntityCheck.length){
+          // 有同義詞類別時，將同義詞塞進同義詞陣列中
+          synonymEntityCheck[0].synonyms.push(infoData.synonym)
+          const newNlu = nluSynonyms.filter(item => item.value != infoData.entity_name)
+          newNlu.push(synonymEntityCheck[0])
+          data.nlu.zh.rasa_nlu_data.entity_synonyms = newNlu
+          try{
+            fs.writeFileSync(path.resolve(__dirname, '../public/trainData/nlu-json.json'), JSON.stringify(data.nlu.zh))
+          } catch(err){
+            console.log(err)
+          }
+        }else{
+          // 沒有同義詞類別時，直接創建一個新的同義詞類別
+          nluSynonyms.push({value: infoData.entity_name, synonyms: [infoData.cnName, infoData.synonym]})
+          data.nlu.zh.rasa_nlu_data.entity_synonyms = nluSynonyms
+          try{
+            fs.writeFileSync(path.resolve(__dirname, '../public/trainData/nlu-json.json'), JSON.stringify(data.nlu.zh))
+          } catch(err){
+            console.log(err)
+          }
+        }
+        const newNluData =  yaml.load(fs.readFileSync(path.resolve(__dirname, '../public/trainData/nlu-json.json'), 'utf8'))
+        return JSON.stringify(newNluData)
+      }
+    })
+    .then(data => {
+      // 判斷data是否有值，如果前面有重複同義詞，會直接return，造成data是空值
+      if(!data) return res.send({status: 'warning', message: '同義字重複'})
+
+      request.query(`update BF_JH_TRAINING_DATA
+      set DATA_CONTENT = '${data}'
+      where DATA_NAME = 'nlu-json'`, (err, result) => {
+        if(err){
+          console.log(err)
+          return
+        }
+        fsFunc.insertCategory(request, sql, res, infoData, fsFunc)
+        res.send({status: 'success', message: '新增同義字成功'})
+      })
+    })
+    .catch(err => console.log(err))
   }
 }
