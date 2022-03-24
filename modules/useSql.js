@@ -97,62 +97,62 @@ module.exports = {
           //     })
           //   })
           // }
-        // 類別不存在時先新增類別
+          // 類別不存在時先新增類別
           request.input('cnName', sql.NVarChar(200), infoData.cnName)
           .input('entity_name', sql.NVarChar(200), infoData.entity_name)
-        .query(`insert into ${table_category} (${category_name}, ENTITY_NAME) 
-        values (@cnName, @entity_name)`, (err, result) => {
-          if(err){
-            console.log(err)
-            return
-          }
-
-          // 寫檔及寫入dict
-            switch(infoData.category){
-            case 'cpnyinfo':
-                fsFunc.fsJhWriteInfo(infoData.cnName, infoData.entity_name, request)
-                fsFunc.setInfoDict(infoData.cnName)
-              break
-            case 'position':
-                fsFunc.fsJhWritePosition(infoData.cnName, infoData.entity_name, request)
-                fsFunc.setPositionDict(infoData.cnName)
-              break
-            case 'subsidy':
-                fsFunc.fsWriteSubsidy(infoData.cnName, infoData.entity_name, request)
-                fsFunc.setInfoDict(infoData.cnName)
-              break
-            default:
-                fsFunc.fsWriteLeave(infoData.cnName, infoData.entity_name, request)
-                fsFunc.setInfoDict(infoData.cnName)
-              break
-          }
-
-          // 取得剛新增的類別id
-          request.query(`select ${category_id} as id
-          from ${table_category}
-            where ${category_name} = '${infoData.cnName}'
-            and ENTITY_NAME = '${infoData.entity_name}'`, (err, result) => {
+          .query(`insert into ${table_category} (${category_name}, ENTITY_NAME) 
+          values (@cnName, @entity_name)`, (err, result) => {
             if(err){
               console.log(err)
               return
             }
 
-            const des_id = result.recordset[0][`id`]
+            // 寫檔及寫入dict
+            switch(infoData.category){
+              case 'cpnyinfo':
+                fsFunc.fsJhWriteInfo(infoData.cnName, infoData.entity_name, request)
+                fsFunc.setInfoDict(infoData.cnName)
+                break
+              case 'position':
+                fsFunc.fsJhWritePosition(infoData.cnName, infoData.entity_name, request)
+                fsFunc.setPositionDict(infoData.cnName)
+                break
+              case 'subsidy':
+                fsFunc.fsWriteSubsidy(infoData.cnName, infoData.entity_name, request)
+                fsFunc.setInfoDict(infoData.cnName)
+                break
+              default:
+                fsFunc.fsWriteLeave(infoData.cnName, infoData.entity_name, request)
+                fsFunc.setInfoDict(infoData.cnName)
+                break
+            }
 
-              request.input('cpnyId', sql.NVarChar(200), infoData.cpnyId)
-            .input('des_id', sql.NVarChar(200), des_id)
-              .input('des', sql.NVarChar(2000), decodeURI(infoData.des))
-              .input('num', sql.NVarChar(200), infoData.num)
-              .query(`insert into ${table} (CPY_ID, ${category_id}, ${category_des}, INFO_ID) 
-            values (@cpnyId, @des_id, @des, @num)`, (err, result) => {
+            // 取得剛新增的類別id
+            request.query(`select ${category_id} as id
+            from ${table_category}
+            where ${category_name} = '${infoData.cnName}'
+            and ENTITY_NAME = '${infoData.entity_name}'`, (err, result) => {
               if(err){
                 console.log(err)
                 return
               }
-              res.send({status: 'success', message: '新增資訊成功'})
+
+              const des_id = result.recordset[0][`id`]
+
+              request.input('cpnyId', sql.NVarChar(200), infoData.cpnyId)
+              .input('des_id', sql.NVarChar(200), des_id)
+              .input('des', sql.NVarChar(2000), decodeURI(infoData.des))
+              .input('num', sql.NVarChar(200), infoData.num)
+              .query(`insert into ${table} (CPY_ID, ${category_id}, ${category_des}, INFO_ID) 
+              values (@cpnyId, @des_id, @des, @num)`, (err, result) => {
+                if(err){
+                  console.log(err)
+                  return
+                }
+                res.send({status: 'success', message: '新增資訊成功'})
+              })
             })
           })
-        })
         })
         .catch(err => console.log(err))
       }
@@ -328,33 +328,33 @@ module.exports = {
 
           request.input('cnName', sql.NVarChar(200), decodeURI(infoData.cnName))
           .input('entity_name', sql.NVarChar(200), infoData.entity_name)
-        .query(`insert into ${table_category} (${category_name}, ENTITY_NAME) 
-        values (@cnName, @entity_name)`, (err, result) => {
-          if(err){
-            console.log(err)
-            return
-          }
-          // 寫檔及寫入dict
+          .query(`insert into ${table_category} (${category_name}, ENTITY_NAME) 
+          values (@cnName, @entity_name)`, (err, result) => {
+            if(err){
+              console.log(err)
+              return
+            }
+            // 寫檔及寫入dict
             switch(infoData.category){
-            case 'cpnyinfo':
+              case 'cpnyinfo':
                 fsFunc.fsJhWriteInfo(infoData.cnName, infoData.entity_name, request)
                 fsFunc.setInfoDict(infoData.cnName)
-              break
-            case 'position':
+                break
+              case 'position':
                 fsFunc.fsJhWritePosition(infoData.cnName, infoData.entity_name, request)
                 fsFunc.setPositionDict(infoData.cnName)
-              break
-            case 'subsidy':
+                break
+              case 'subsidy':
                 fsFunc.fsWriteSubsidy(infoData.cnName, infoData.entity_name, request)
                 fsFunc.setInfoDict(infoData.cnName)
-              break
-            default:
+                break
+              default:
                 fsFunc.fsWriteLeave(infoData.cnName, infoData.entity_name, request)
                 fsFunc.setInfoDict(infoData.cnName)
-              break
-          }
+                break
+            }
             if(infoData.synonym) return
-          res.send({status: 'success', message: '新增類別成功'})
+            res.send({status: 'success', message: '新增類別成功'})
           })
         })
       }
