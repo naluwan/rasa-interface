@@ -11,7 +11,7 @@ if(csTrainBtn){
 			csTrainBtn.setAttribute('disabled', '')
 			csTrainBtn.innerHTML = '<i class="fas fa-spinner fast-spin fa-2x"></i>'
 			
-			fetch('http://192.168.11.80:3030/train/cs/trainingData')
+			fetch('http://192.168.10.113:3030/train/cs/trainingData')
 			.then(response => {
 				return response.json()
 			})
@@ -25,7 +25,7 @@ if(csTrainBtn){
 					mode: 'no-cors',
 				})
 				.then(response => {
-					fetch('http://192.168.11.80:3030/train/trainingComplete')
+					fetch('http://192.168.10.113:3030/train/trainingComplete')
 					.then(response => {
 						return response.json()
 					})
@@ -50,42 +50,56 @@ if(jhTrainBtn){
 	jhTrainBtn.addEventListener('click', e => {
 		const target = e.target
 		if(target.matches('.jh-train-btn')){
-			jhTrainBtn.setAttribute('disabled', '')
-			jhTrainBtn.innerHTML = '<i class="fas fa-spinner fast-spin fa-2x"></i>'
-			
-			fetch('http://192.168.11.80:3030/train/jh/trainingData')
+
+			fetch('http://192.168.10.113:3030/train/jh/status',{
+				mode: 'no-cors',
+			})
 			.then(response => {
+				console.log(response)
 				return response.json()
 			})
 			.then(data => {
-				fetch('http://192.168.10.108:5005/model/train?save_to_default_model_directory=true&force_training=false',{
-					method: 'post',
-					body: JSON.stringify(data),
-					headers: {
-						"content-type": "application/json",
-					},
-					mode: 'no-cors',
-				})
-				.then(response => {
-					fetch('http://192.168.11.80:3030/train/trainingComplete')
+				if(data != '0'){
+					Method.common.train()
+					var html = "<h2><div class='sa-icon success'><span></span></div>機器人已在訓練中，請稍後重試</h2>";
+					Method.common.showBox(html, 'message');
+				}else{
+					jhTrainBtn.setAttribute('disabled', '')
+			
+					fetch('http://192.168.10.113:3030/train/jh/trainingData')
 					.then(response => {
 						return response.json()
 					})
-					.then(result => {
-						jhTrainBtn.removeAttribute('disabled')
-						jhTrainBtn.innerText = '執行訓練'
+					.then(data => {
+						fetch('http://192.168.10.108:5005/model/train?save_to_default_model_directory=true&force_training=false',{
+							method: 'post',
+							body: JSON.stringify(data),
+							headers: {
+								"content-type": "application/json",
+							},
+							mode: 'no-cors',
+						})
+						.then(response => {
+							fetch('http://192.168.10.113:3030/train/trainingComplete')
+							.then(response => {
+								return response.json()
+							})
+							.then(result => {
+								jhTrainBtn.removeAttribute('disabled')
 
-						// 訓練完成提示框
-						var html = "<h1><div class='sa-icon success'><span></span></div>訓練完成</h1>";
-						Method.common.showBox(html, 'message');
-						
+								// 訓練完成提示框
+								var html = "<h1><div class='sa-icon success'><span></span></div>訓練完成</h1>";
+								Method.common.showBox(html, 'message');
+								
 
+							})
+							.catch(err => console.log(err))
+						})
+						.catch(err => console.log(err))
 					})
 					.catch(err => console.log(err))
-				})
-				.catch(err => console.log(err))
+				}
 			})
-			.catch(err => console.log(err))
 		}
 	})
 }
