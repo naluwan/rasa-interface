@@ -1,60 +1,48 @@
 {{#if errors}}
 {{#each errors}}
-	<div class="alert alert-danger alert-dismissible fade show" role="alert">
+	<div class="alert alert-danger">
 	{{this.message}}
-		<button type="button" class="close" data-dismiss="alert" aria-label="Close">
-			<span aria-hidden="true">&times;</span>
-		</button>
+		<button type="button" class="close"></button>
 	</div>
 {{/each}}
 {{/if}}
 
 {{#if warning}}
 {{#each warning}}
-	<div class="alert alert-warning alert-dismissible fade show" role="alert">
+	<div class="alert alert-warning">
 	{{this.message}}
-		<button type="button" class="close" data-dismiss="alert" aria-label="Close">
-			<span aria-hidden="true">&times;</span>
-		</button>
+		<button type="button" class="close"></button>
 	</div>
 {{/each}}
 {{/if}}
 
 {{#if success}}
 {{#each success}}
-	<div class="alert alert-success alert-dismissible fade show" role="alert">
+	<div class="alert alert-success">
 	{{this.message}}
-		<button type="button" class="close" data-dismiss="alert" aria-label="Close">
-			<span aria-hidden="true">&times;</span>
-		</button>
+		<button type="button" class="close"></button>
 	</div>
 {{/each}}
 {{/if}}
 
 {{!-- 這邊的錯誤提醒只會有一個，沒有用到#each，所以不需要用this.XXX，直接將本體印出即可 --}}
 {{#if warning_msg}}
-	<div class="alert alert-warning alert-dismissible fade show" role="alert">
+	<div class="alert alert-warning">
 	{{warning_msg}}
-		<button type="button" class="close" data-dismiss="alert" aria-label="Close">
-			<span aria-hidden="true">&times;</span>
-		</button>
+		<button type="button" class="close"></button>
 	</div>
 {{/if}}
 
 {{#if success_msg}}
-	<div class="alert alert-success alert-dismissible fade show" role="alert">
+	<div class="alert alert-success">
 	{{success_msg}}
-		<button type="button" class="close" data-dismiss="alert" aria-label="Close">
-			<span aria-hidden="true">&times;</span>
-		</button>
+		<button type="button" class="close"></button>
 	</div>
 {{/if}}
 
 {{#if errorMsg}}
-	<div class="alert alert-danger alert-dismissible fade show" role="alert">
+	<div class="alert alert-danger">
 	{{errorMsg}}
-		<button type="button" class="close" data-dismiss="alert" aria-label="Close">
-			<span aria-hidden="true">&times;</span>
-		</button>
+		<button type="button" class="close"></button>
 	</div>
 {{/if}}
