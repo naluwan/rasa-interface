@@ -8,34 +8,7 @@ const sql = require('mssql')
 const pool = require('../../config/connectPool')
 const {getTrainingData} = require('../../modules/getTrainingData')
 
-// 舊版抓取training data
-// router.get('/', (req, res) => {
-//   // 載入training data
-//   const nluData = yaml.load(fs.readFileSync(path.resolve(__dirname, '../../public/trainData/nlu-json.json'), 'utf8'))
-//   const configData = yaml.load(fs.readFileSync(path.resolve(__dirname, '../../public/trainData/config.yml'), "utf8"))
-//   const domainData = yaml.load(fs.readFileSync(path.resolve(__dirname, '../../public/trainData/domain.yml'), 'utf8'))
-//   const fragmentsData = yaml.load(fs.readFileSync(path.resolve(__dirname, '../../public/trainData/fragments.yml'), 'utf8'))
-
-//   // 轉換格式
-//   let nlu = yaml.dump(nluData)
-//   let domain = yaml.dump(domainData)
-//   let config = yaml.dump(configData)
-//   let fragments = yaml.dump(fragmentsData)
-//   const zh = nluData
-  
-//   let data = {
-//     'config': {config},
-//     'nlu': {zh},
-//     'domain': domain,
-//     'fragments': fragments,
-//     'fixed_model_name': 'model-97090920',
-//     'load_model_after': true
-//   }
-//   // console.log(data)
-//   return res.json(data)
-// })
-
-// 新版抓取cs training data
+// 棉花糖 抓取cs training data
 router.get('/cs/trainingData', (req, res) =>{
   getTrainingData('BF_CS_TRAINING_DATA')
   .then(data => {
@@ -44,6 +17,7 @@ router.get('/cs/trainingData', (req, res) =>{
   .catch(err => console.log(err))
 })
 
+// 徵厲害 抓取jh training data
 router.get('/jh/trainingData', (req, res) => {
   getTrainingData('BF_JH_TRAINING_DATA')
   .then(data => {
@@ -54,71 +28,12 @@ router.get('/jh/trainingData', (req, res) => {
 
 // 訓練完成
 router.get('/trainingComplete', (req, res) => {
-  // console.log(`開始更改新增資料狀態`)
-  const request = new sql.Request(pool)
-
-  const trainArray = []
-
-  request.query(`select * 
-  from BF_CS_QUESTION
-  where TRAINED = 0`, (err, result) => {
-    if(err){
-      console.log(err)
-      return
-    }
-    const notTrainQuestion = result.recordset
-    // console.log(`not train question：` + notTrainQuestion)
-    if(notTrainQuestion.length){
-      notTrainQuestion.forEach(question => {
-        request.query(`update BF_CS_QUESTION
-        set TRAINED = 1
-        where QUESTION_ID = ${question.QUESTION_ID}
-        and FUNCTION_ID = ${question.FUNCTION_ID}`, (err, result) => {
-          if(err){
-            console.log(err)
-            return
-          }
-        })
-      })
-      trainArray.push({question: '問答資訊訓練完成!'})
-    }else{
-      trainArray.push({question: '沒有新增問答資訊!'})
-    }
-
-    request.query(`select *
-    from BF_CS_FUNCTION
-    where TRAINED = 0` , (err, result) => {
-      if(err){
-        console.log(err)
-        return
-      }
-
-      const notTrainFunction = result.recordset
-      // console.log(`not train function：` + notTrainQuestion)
-      if(notTrainFunction.length){
-        notTrainFunction.forEach(functions => {
-          request.query(`update BF_CS_FUNCTION
-          set TRAINED = 1
-          where FUNCTION_ID = ${functions.FUNCTION_ID}
-          and CATEGORY_ID = ${functions.CATEGORY_ID}`, (err, result) => {
-            if(err){
-              console.log(err)
-              return
-            }
-          })
-        })
-        trainArray.push({functions: '功能訓練完成!'})
-      }else{
-        trainArray.push({functions: '沒有新增功能!'})
-      }
-      return res.send(trainArray)
-    })
-  })
+  res.json({status: 'success', message: '訓練完成'})
 })
 
 // 徵厲害 - 查看rasa核心狀況
 router.get('/jh/status', (req, res) => {
-  axios.get('http://192.168.10.108:5005/status')
+  axios.get('http://192.168.11.109:5005/status')
   .then(response => {
     return res.json(response.data.num_active_training_jobs)
   })
