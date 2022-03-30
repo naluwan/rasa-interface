@@ -768,8 +768,9 @@ Method.common.asyncAjax = function(url,back){
 Method.common.heightLight = function(){
     if(document.querySelector(".des")){
         var des = document.querySelectorAll(".des");
+        var enName = document.querySelectorAll(".enName")
         for(var i=0;i<des.length;i++){
-            if(des[i].getAttribute("title").match("主類別")){
+            if(des[i].getAttribute("title").match("主類別") || !enName[i].getAttribute("title").match("_")){
                 des[i].parentNode.parentNode.parentNode.classList.add("highlight");
             };
         };
