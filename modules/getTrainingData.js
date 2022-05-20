@@ -95,5 +95,28 @@ module.exports = {
       })
     })
   },
+
+  getSqlTrainingData: (table, columnName, dataName) => {
+    // 用Promise控制流程
+    return new Promise(function(resolve, reject){
+      const path = require('path')
+      const fs = require('fs')
+      const request = new sql.Request(pool)
+      // 從資料庫抓取訓練檔
+      request.query(`select DATA_CONTENT as ${dataName}
+      from ${table}
+      where DATA_NAME = '${columnName}'`, (err, result) => {
+        if(err){
+          console.log(err)
+          return
+        }
+        try{
+          const fragments = JSON.parse(result.recordset[0][dataName])
+          resolve(fragments)
+        } catch(err){
+          resolve({status: 'error', message: '資料庫還未有資料'})
+        }
+      })
+    })
   }
 }
