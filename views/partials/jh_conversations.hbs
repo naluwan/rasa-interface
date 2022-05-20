@@ -1,0 +1,68 @@
+{{#if jh_conversations}}
+<!-- jh_conversations -->
+<div class="jh_conversations">
+  <h1>對話紀錄</h1>
+    {{> message}}
+    <form name="form" action="" class="searchBar" id="search">
+      <label for="senderId">對話紀錄ID：</label>
+      <select name="senderId" id="senderId" required>
+        <option value="" selected>請選擇</option>
+        {{#each conversations}}
+        {{#isnt this.SENDER_ID ''}}
+        <option value="{{this.SENDER_ID}}" {{#is this.SENDER_ID ../senderId}} selected {{/is}}>{{this.CRDATE}}：{{this.SENDER_ID}}</option>
+        {{/isnt}}
+        {{/each}}
+      </select>
+      <input type="submit" class="btn btn-info" value="查詢">
+    </form>
+  <div id="data-panel">
+    
+      {{#each events}}
+        <div class="{{this.event}}-block">
+          {{#is this.event 'user'}}
+            <span>
+              <p>{{this.timestamp}}</p>
+              <label>{{this.event}} -</label>
+              {{#contains this.text '/'}}
+                {{#unless this.parse_data.entities}}
+                  <span>{{this.text}} 意圖：{{#is this.parse_data.intent.name 'get_started'}}開始對話 ({{#forEach this.parse_data.intent_ranking}}{{#if isFirst}}{{confidence}}%{{/if}}{{/forEach}}){{else}}{{this.parse_data.intent.name}} ({{#forEach this.parse_data.intent_ranking}}{{#if isFirst}}{{confidence}}%{{/if}}{{/forEach}}){{/is}}</span>
+                {{else}}
+                  {{#forEach this.parse_data.entities}}
+                      {{#if isFirst}}
+                        <span>{{#isnt ../this.parse_data.intent.name '回覆按鈕'}}{{value}} 意圖：點擊{{value}}{{../this.parse_data.intent.name}}按鈕 ({{#forEach ../this.parse_data.intent_ranking}}{{#if isFirst}}{{confidence}}%{{/if}}{{/forEach}}){{else}}{{entity}} 點擊{{entity}}{{../this.parse_data.intent.name}} ({{#forEach ../this.parse_data.intent_ranking}}{{#if isFirst}}{{confidence}}%{{/if}}{{/forEach}}){{/isnt}}</span>
+                      {{/if}}
+                  {{/forEach}}
+                {{/unless}}
+              {{else}}
+                <span>{{this.text}} 意圖：{{this.parse_data.intent.name}} ({{#forEach this.parse_data.intent_ranking}}{{#if isFirst}}{{confidence}}%{{/if}}{{/forEach}})</span>
+              {{/contains}}
+            </span>
+          {{/is}}
+
+          {{#is this.event 'bot'}}
+            <span>
+              <p>{{this.timestamp}}</p>
+              <label>{{this.event}} -</label>
+              <span>{{this.text}}</span>
+              <br>
+              {{#if this.data.buttons}}
+                <span>
+                  按鈕：
+                    {{#each this.data.buttons}}
+                      <div>
+                        {{this.title}}
+                      </div>
+                    {{/each}}
+                </span>
+              {{/if}}
+            </span>
+          {{/is}}
+        </div>
+      {{/each}}
+      
+  </div>
+
+  <div class="footButton">
+  </div>
+</div>
+{{/if}}
