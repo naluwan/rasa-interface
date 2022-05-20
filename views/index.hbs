@@ -182,6 +182,11 @@
             <input type="button" class="btn btn-success" onclick="Method.common.page('/jh_subsidy')" value="設定">
           </div>
 
+          <div>
+            <label>對話紀錄:</label>
+            <input type="button" class="btn btn-success" onclick="Method.common.page('/jh_conversations')" value="設定">
+          </div>
+
           {{!-- <div>
             <label>通知問候:</label>
               <a href="/greet" class="btn btn-primary" role="button">設定</a>
@@ -201,6 +206,7 @@
       {{> jh_edit_des}}
       {{> jh_new_des}}
       {{> jh_new_synonym}}
+      {{> jh_conversations}}
     </span>
   </div>
   {{/if}}
