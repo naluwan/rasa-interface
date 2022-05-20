@@ -124,7 +124,7 @@ module.exports = {
           { "entity": `function`, "value": `${entity_name}`, "start": 3, "end": function_name.length + 3}
         ],
         "metadata": { "language": "zh", "canonical": true }
-        }
+      }
 
       const entity_4_text = `想問${categoryName}${function_name}的問題`
       const entity_4 = {
@@ -738,6 +738,114 @@ module.exports = {
     .then(data => {
       // 將更新後的訓練資料回寫資料庫
       request.query(`update BF_JH_TRAINING_DATA
+      set DATA_CONTENT = '${data}'
+      where DATA_NAME = 'nlu-json'`, (err, result) => {
+        if(err){
+          console.log(err)
+          return
+        }
+      })
+    })
+    .catch(err => console.log(err))
+  },
+  fsCsWriteCategory: (category_name, entity_name, request) => {
+    axios.get('http://localhost:3030/train/cs/trainingData')
+    .then(response => {
+      return response.data
+    })
+    .then(data => {
+      const nluData = data.nlu.zh.rasa_nlu_data.common_examples
+
+      const entity_1 = {
+        "text": `${category_name}`,
+        "intent": "分類加功能",
+        "entities": [
+          { "entity": `category`, "value": `${entity_name}`, "start": 0, "end": category_name.length}
+        ],
+        "metadata": { "language": "zh", "canonical": true }
+      }
+
+      const entity_2_text = `${category_name}有問題`
+      const entity_2 = {
+        "text": `${entity_2_text}`,
+        "intent": "分類加功能",
+        "entities": [
+          { "entity": `category`, "value": `${entity_name}`, "start": 0, "end": category_name.length}
+        ],
+        "metadata": { "language": "zh", "canonical": true }
+      }
+
+      const entity_3_text = `我想查${category_name}的問題`
+      const entity_3 = {
+        "text": `${entity_3_text}`,
+        "intent": "分類加功能",
+        "entities": [
+          { "entity": `category`, "value": `${entity_name}`, "start": 3, "end": category_name.length + 3}
+        ],
+        "metadata": { "language": "zh", "canonical": true }
+      }
+
+      const entity_4_text = `可以幫我找${category_name}嗎`
+      const entity_4 = {
+        "text": `${entity_4_text}`,
+        "intent": "分類加功能",
+        "entities": [
+          { "entity": `category`, "value": `${entity_name}`, "start": 5, "end": category_name.length + 5}
+        ],
+        "metadata": { "language": "zh", "canonical": true }
+      }
+
+      const repeatText = nluData.filter(item => item.text == entity_1.text)
+      if(repeatText.length){
+        console.log(`已有訓練資料： ` + JSON.stringify(repeatText[0]))
+      }else{
+        nluData.push(entity_1, entity_2, entity_3, entity_4)
+        data.nlu.zh.rasa_nlu_data.common_examples = nluData
+        try{
+          fs.writeFileSync(path.resolve(__dirname, '../public/trainData/nlu-json.json'), JSON.stringify(data.nlu.zh))
+        } catch(err){
+          console.log(err)
+        }
+      }
+      const newNluData =  yaml.load(fs.readFileSync(path.resolve(__dirname, '../public/trainData/nlu-json.json'), 'utf8'))
+      return JSON.stringify(newNluData)
+    })
+    .then(data => {
+      request.query(`update BF_CS_TRAINING_DATA
+      set DATA_CONTENT = '${data}'
+      where DATA_NAME = 'nlu-json'`, (err, result) => {
+        if(err){
+          console.log(err)
+          return
+        }
+      })
+    })
+    .catch(err => console.log(err))
+  },
+  // 棉花糖 刪除類別nlu訓練資料
+  fsCsDeleteNlu: (infoCheck, intent, request) => {
+    axios.get('http://localhost:3030/train/cs/trainingData')
+    .then(response => {
+      return response.data
+    })
+    .then(data => {
+      // 將要刪除的資料篩選出來，回傳需要保留的資料
+      data.nlu.zh.rasa_nlu_data.common_examples = data.nlu.zh.rasa_nlu_data.common_examples.filter(info => {
+        return !info.text.includes(infoCheck) || info.intent != intent
+      })
+      // 將要保留的資料寫檔
+      try{
+        fs.writeFileSync(path.resolve(__dirname, '../public/trainData/nlu-json.json'), JSON.stringify(data.nlu.zh))
+      } catch(err){
+        console.log(err)
+      }
+      // 讀取最新的訓練資料檔並回傳
+      const newNluData =  yaml.load(fs.readFileSync(path.resolve(__dirname, '../public/trainData/nlu-json.json'), 'utf8'))
+      return JSON.stringify(newNluData)
+    })
+    .then(data => {
+      // 將要刪除的資料刪除後回寫資料庫
+      request.query(`update BF_CS_TRAINING_DATA
       set DATA_CONTENT = '${data}'
       where DATA_NAME = 'nlu-json'`, (err, result) => {
         if(err){
