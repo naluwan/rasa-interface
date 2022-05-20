@@ -1,29 +1,29 @@
 {{#if jh_new_des}}
 <!-- jh_new_des -->
-<div class="jh_new_des ">
+<div class="jh_new_des">
   <h1>
     {{#is category 'cpnyinfo'}}新增公司資訊{{/is}}
     {{#is category 'position'}}新增職缺資訊{{/is}}
     {{#is category 'leave'}}新增假別資訊{{/is}}
     {{#is category 'subsidy'}}新增補助資訊{{/is}}
-    
   </h1>
+  
   <form action="" name="form" id="jh_new_des">
     {{> message}}
     <div>
       <div>
-        <label for="name">
+        <label for="cnName">
           {{#is category 'cpnyinfo'}}資訊名稱{{/is}}
           {{#is category 'position'}}職缺名稱{{/is}}
           {{#is category 'leave'}}假別名稱{{/is}}
           {{#is category 'subsidy'}}補助名稱{{/is}}
         </label>
-        <input type="text" class="form-control" name="cnName" placeholder="請輸入中文名稱" value="{{name}}" required>
+        <input type="text" class="form-control" name="cnName" id="cnName" placeholder="請輸入中文名稱" value="{{name}}" required>
       </div>
 
       <div>
         <label for="entity_name">英文名稱</label>
-        <input type="text" class="form-control" name="entity_name" placeholder="請輸入英文名稱" value="{{entity_name}}" required>
+        <input type="text" class="form-control" name="entity_name" id="entity_name" placeholder="請輸入英文名稱" value="{{entity_name}}" required>
       </div>
 
       <div>
