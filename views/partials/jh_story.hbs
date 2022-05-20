@@ -1,0 +1,34 @@
+{{#if jh_story}}
+<!-- jh_story -->
+<div class="jh_story">
+  <h1>故事流程</h1>
+    {{> message}}
+    <form name="form" action="" class="searchBar" id="search">
+      <label for="storyFilter">故事名稱：</label>
+      <select name="storyFilter" id="storyFilter" required>
+        <option value="" selected>請選擇</option>
+        {{#each stories}}
+        <option value="{{this.story}}">{{this.story}}</option>
+        {{/each}}
+      </select>
+      <input type="submit" class="btn btn-info" value="查詢">
+    </form>
+  <div id="data-panel">
+    {{#each storyData}}
+      {{#forEach this.steps}}
+        {{#if user}}
+        <div class="user-block">
+          <span id="storySpan">
+            <span >使用者 - {{user}}</span>
+            <span id="intent-span" class="nluSpan mt-10"><i class="fas fa-tag" style="font-size: 7px;"></i><span class="nluText">意圖: {{intent}}</span></span>
+          </span>
+        </div> 
+        {{/if}}
+      {{/forEach}}
+    {{/each}}
+  </div>
+  <div class="footButton">
+    <input type="button" class="btn btn-warning" onclick="Method.common.page('/jh_story/new')" value="新增故事流程">
+  </div>
+</div>
+{{/if}}
