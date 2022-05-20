@@ -187,6 +187,11 @@
             <input type="button" class="btn btn-success" onclick="Method.common.page('/jh_conversations')" value="設定">
           </div>
 
+          <div>
+            <label>故事流程:</label>
+            <input type="button" class="btn btn-success" onclick="Method.common.page('/jh_story')" value="設定">
+          </div>
+
           {{!-- <div>
             <label>通知問候:</label>
               <a href="/greet" class="btn btn-primary" role="button">設定</a>
@@ -207,6 +212,8 @@
       {{> jh_new_des}}
       {{> jh_new_synonym}}
       {{> jh_conversations}}
+      {{> jh_story}}
+      {{> jh_new_story}}
     </span>
   </div>
   {{/if}}
