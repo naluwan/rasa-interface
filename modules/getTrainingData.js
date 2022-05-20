@@ -6,7 +6,7 @@ const sql = require('mssql')
 const pool = require('../config/connectPool')
 
 module.exports = {
-  getTrainingData: (table) => {
+  getTrainingData: (table, res) => {
     // 用Promise控制流程
     return new Promise(function(resolve, reject){
       const request = new sql.Request(pool)
@@ -56,39 +56,44 @@ module.exports = {
               } catch(err){
                 console.log(err)
               }
-              
-              // 將4個訓練檔的資料讀出來並轉換成正確格式組成json發送出去
-              const nluData = yaml.load(fs.readFileSync(path.resolve(__dirname, '../public/trainData/nlu-json.json'), 'utf8'))
-              const configData = yaml.load(fs.readFileSync(path.resolve(__dirname, '../public/trainData/config.yml'), "utf8"))
-              const domainData = yaml.load(fs.readFileSync(path.resolve(__dirname, '../public/trainData/domain.yml'), 'utf8'))
-              const fragmentsData = yaml.load(fs.readFileSync(path.resolve(__dirname, '../public/trainData/fragments.yml'), 'utf8'))
 
-              // 轉換格式
-              const domainYml = yaml.dump(domainData)
-              const configYml = yaml.dump(configData)
-              const fragmentsYml = yaml.dump(fragmentsData)
-              const zh = nluData
-              let model = ''
-              // console.log(zh)
-              if(table == 'BF_JH_TRAINING_DATA'){
-                model = 'model-johnnyHire'
-              }else{
-                model = 'model-customerService'
+              try {
+                // 將4個訓練檔的資料讀出來並轉換成正確格式組成json發送出去
+                const nluData = yaml.load(fs.readFileSync(path.resolve(__dirname, '../public/trainData/nlu-json.json'), 'utf8'))
+                const configData = yaml.load(fs.readFileSync(path.resolve(__dirname, '../public/trainData/config.yml'), "utf8"))
+                const domainData = yaml.load(fs.readFileSync(path.resolve(__dirname, '../public/trainData/domain.yml'), 'utf8'))
+                const fragmentsData = yaml.load(fs.readFileSync(path.resolve(__dirname, '../public/trainData/fragments.yml'), 'utf8'))
+
+                // 轉換格式
+                const domainYml = yaml.dump(domainData)
+                const configYml = yaml.dump(configData)
+                const fragmentsYml = yaml.dump(fragmentsData)
+                const zh = nluData
+                let model = ''
+
+                if(table == 'BF_JH_TRAINING_DATA'){
+                  model = 'model-johnnyHire'
+                }else{
+                  model = 'model-customerService'
+                }
+                let data = {
+                  'config': {configYml},
+                  'nlu': {zh},
+                  'domain': domainYml,
+                  'fragments': fragmentsYml,
+                  'fixed_model_name': model,
+                  'load_model_after': true
+                }
+
+                resolve(data)
+              } catch (error) {
+                return reject({status: 'error', message: '資料格式錯誤，請重新嘗試'})
               }
-              let data = {
-                'config': {configYml},
-                'nlu': {zh},
-                'domain': domainYml,
-                'fragments': fragmentsYml,
-                'fixed_model_name': model,
-                'load_model_after': true
-              }
-              // console.log(data)
-              resolve(data)
             })
           })
         })
       })
     })
+  },
   }
 }

@@ -14,7 +14,7 @@ router.get('/cs/trainingData', (req, res) =>{
   .then(data => {
     return res.json(data)
   })
-  .catch(err => console.log(err))
+  .catch(err => res.send(err))
 })
 
 // 徵厲害 抓取jh training data
@@ -23,7 +23,7 @@ router.get('/jh/trainingData', (req, res) => {
   .then(data => {
     return res.json(data)
   })
-  .catch(err => console.log(err))
+  .catch(err => res.send(err))
 })
 
 // 訓練完成
@@ -33,7 +33,7 @@ router.get('/trainingComplete', (req, res) => {
 
 // 徵厲害 - 查看rasa核心狀況
 router.get('/jh/status', (req, res) => {
-  axios.get('http://192.168.11.109:5005/status')
+  axios.get('http://192.168.10.105:5005/status')
   .then(response => {
     return res.json(response.data.num_active_training_jobs)
   })
