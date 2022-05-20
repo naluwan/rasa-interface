@@ -816,5 +816,26 @@ module.exports = {
       })
     })
     .catch(err => console.log(err))
+  },
+
+  fsSqlUpdate: (filePath, data, table, columnName, response, request, res) => {
+    // 寫檔
+    fs.writeFileSync(path.resolve(__dirname, filePath), JSON.stringify(data) , 'utf-8', 0o666, 'as+')
+
+    // 讀檔
+    const fd = fs.openSync(path.resolve(__dirname, filePath), 'as+', 0o666)
+    const updateData = fs.readFileSync(fd, 'utf-8', 'as+')
+    fs.closeSync(fd)
+
+    // 更新資料庫
+    request.query(`update ${table}
+    set DATA_CONTENT = '${updateData}'
+    where DATA_NAME = '${columnName}'`, (err, result) => {
+      if(err){
+        console.log(err)
+        return
+      }
+      res.send(response)
+    })
   }
 }
