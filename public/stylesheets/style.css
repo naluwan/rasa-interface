@@ -335,6 +335,7 @@ header a:first-of-type{width:calc(100% - 84px)}
 .setExamInfo--intents > input{margin-top: 5px;font-size: 16px;padding: 5px;}
 .setExamInfo--intents > input:disabled:hover{font-weight: bold;cursor: pointer;}
 .setExamInfo--intents > .setExamInfo--intents_list{width: 100%;position: absolute;left: 0;top: 100%;background-color: #ccc;border: 1px solid #111;border-radius: 5px;display: inline-block;}
+.setExamInfo--intents > .setExamInfo--intents_list{display: flex;flex-direction: column;}
 .setExamInfo--intents > .list--disabled{display: none;}
 .setExamInfo--intents_item{padding: 5px;cursor: pointer;}
 .setExamInfo--intents_item:not(:last-child){border-bottom: 1px solid #111;}
