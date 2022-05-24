@@ -1585,39 +1585,51 @@ Method.button.storyButton = function(){
             fetch(`http://localhost:3030/jh_story/userStep/nlu/getIntent`)
             .then(response => response.json())
             .then(intents => {
-                for(i = 0; i < intents.length; i++){
-                    if(intents[i] == intent){
-                        intentHtml += `
-                            <div class="setExamInfo--intents_item selected">
-                                <span class="item--container">
-                                    ${intents[i]}
-                                </span>
-                            </div>
-                        `
-                    }else{
-                        intentHtml += `
-                            <div class="setExamInfo--intents_item">
-                                <span class="item--container">
-                                    ${intents[i]}
-                                </span>
-                            </div>
-                        `
-                    }
-                }
+                // 透過展開運算子複製意圖陣列
+                let intentArray = [...intents]
 
-                intentHtml += `
-                    <div class="setExamInfo--intents_item create-intent">
-                        <span class="item--container create-intent">
+                intentHtml = createIntentList(intentArray, intent)
+
+                function createIntentList(intentArray, intent){
+                    let intentHtml = ''
+
+                    // 將預設意圖移到陣列第一個位置
+                    for(i = 0; i < intentArray.length; i++){
+                        if(intentArray[i] == intent){
+                            intentArray.splice(0, 0 , intentArray[i])
+                            intentArray.splice(i + 1, 1)
+                        }
+                    }
+
+                    // 產生意圖清單
+                    for(i = 0; i < intentArray.length; i++){
+                        if(intentArray[i] == intent){
+                            intentHtml += `
+                                <span class="setExamInfo--intents_item selected">
+                                    ${intentArray[i]}
+                                </span>
+                            `
+                        }else{
+                            intentHtml += `
+                                <span class="setExamInfo--intents_item">
+                                    ${intentArray[i]}
+                                </span>
+                            `
+                        }
+                    }
+    
+                    // 產生建立新意圖及取消按鈕
+                    intentHtml += `
+                        <span class="setExamInfo--intents_item create-intent">
                             建立新意圖
                         </span>
-                    </div>
-
-                    <div class="setExamInfo--intents_item cancel">
-                        <span class="item--container cancel">
+    
+                        <span class="setExamInfo--intents_item cancel">
                             取消
                         </span>
-                    </div>
-                `
+                    `
+                    return intentHtml
+                }
 
                 fetch(`http://localhost:3030/jh_story/userStep/nlu/setEntity/getTextExam?examText=${examText}`)
                 .then(response => response.json())
