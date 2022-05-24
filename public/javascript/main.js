@@ -1670,33 +1670,6 @@ Method.button.storyButton = function(){
                             entitiesHtmlLoop = ''
                         }
                         return entitiesHtmlLoop
-                        
-                        // data.entities.map(item => {
-                        //     const keyWord = examText.slice(item.start, item.end)
-                        //     if(item.value == keyWord){
-                        //         entitiesHtml += `
-                        //             <div class="entity--container">
-                        //                 <span class="entity--text">
-                        //                     關鍵字：<span id="entity">${keyWord}</span>, 
-                        //                     代號：<span id="entity--code">${item.entity}</span>
-                        //                 </span>
-                        //                 <button type="button" class="btn-danger entity--remove_btn"><i class="fas fa-trash-alt"></i></button>
-                        //             </div>
-                        //         `
-                        //     }else{
-                        //         entitiesHtml += `
-                        //             <div class="entity--container">
-                        //                 <span class="entity--text">
-                        //                     關鍵字: <span id="entity">${keyWord}</span>, 
-                        //                     代號: <span id="entity--code">${item.entity}</span>, 
-                        //                     代表值: <span id="entity--value">${item.value}</span>
-                        //                 </span>
-                        //                 <button type="button" class="btn-danger entity--remove_btn"><i class="fas fa-trash-alt"></i></button>
-                        //             </div>
-                        //         `
-                        //     }
-                        //     return entitiesHtml
-                        // })
                     }
                     
                     let html = ``
@@ -1745,40 +1718,37 @@ Method.button.storyButton = function(){
                         document.querySelector('.setExamInfo--intents_list').addEventListener('click', e => {
                             const target = e.target
 
-                            // 意圖點擊事件(外框)
-                            if(target.matches('.setExamInfo--intents_item') && !target.matches('.create-intent') && !target.matches('.cancel')){
-                                const intentInput = document.querySelector('#intentInput')
-                                if(!target.matches('.selected')){
-                                    document.querySelector('.selected').classList.remove('selected')
-                                    target.classList.add('selected')
-                                }
-                                target.parentElement.classList.add('list--disabled')
-                                editExamInfo(target.innerText.trim(), intentInput)
-                            }
+                            // 意圖點擊事件
+                            if(target.matches('.setExamInfo--intents_item')){
+                                const intentList = target.parentElement
+                                const intentInput =  target.parentElement.previousElementSibling
+                                const selectIntent = target.innerText.trim()
+                                
+                                if(!target.matches('.create-intent') && !target.matches('.cancel')){
+                                    
+                                    intentList.classList.add('list--disabled')
+                                    
+                                    if(!target.matches('.selected')){
+                                        document.querySelector('.selected').classList.remove('selected')
+                                        target.classList.add('selected')
+                                        const newIntentListHtml = createIntentList(intentArray, selectIntent)
+                                        intentList.innerHTML = newIntentListHtml
+                                    }
 
-                            // 意圖點擊事件(文字)
-                            if(target.matches('.item--container') && !target.matches('.create-intent') && !target.matches('.cancel')){
-                                if(!target.parentElement.matches('.selected')){
-                                    document.querySelector('.selected').classList.remove('selected')
-                                    target.parentElement.classList.add('selected')
+                                    editExamInfo(selectIntent, intentInput)
                                 }
-                                target.parentElement.parentElement.classList.add('list--disabled')
-                                editExamInfo(target.innerText.trim(), intentInput)
-                            }
-
-                            // 取消按鈕點擊事件
-                            if(target.matches('.cancel')){
-                                if(target.matches('.setExamInfo--intents_item')){
-                                    target.parentElement.classList.add('list--disabled')
-                                }else{
-                                    target.parentElement.parentElement.classList.add('list--disabled')
+                                
+                                // 取消按鈕點擊事件
+                                if(target.matches('.setExamInfo--intents_item') && target.matches('.cancel')){
+                                    intentList.classList.add('list--disabled')
+                                    editExamInfo(intentInput.value, intentInput)
                                 }
-                            }
 
-                            // 意圖點擊 function
-                            function editExamInfo(intent, input){
-                                input.value = intent
-                                input.setAttribute('disabled', '')
+                                // 意圖點擊 function
+                                function editExamInfo(intent, input){
+                                    input.value = intent
+                                    input.setAttribute('disabled', '')
+                                }
                             }
                         })
 
