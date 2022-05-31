@@ -581,6 +581,8 @@ Method.button.storyButton = function(){
 
         const storySpan = document.createElement('span');
         storySpan.setAttribute('id', 'storySpan');
+        const attrSpan = document.createElement('span')
+        attrSpan.setAttribute('id', 'attrSpan')
 
         const input = document.createElement('input');
         input.setAttribute('placeholder', '使用者說....');
@@ -625,7 +627,7 @@ Method.button.storyButton = function(){
                 if(target.parentElement.parentElement.previousElementSibling.childNodes[0].id == 'userInput'){
                     if(target.parentElement.parentElement.previousElementSibling.childNodes[0].value){
                         const text = target.parentElement.parentElement.previousElementSibling.childNodes[0].value
-                        let intent = target.parentElement.parentElement.previousElementSibling.childNodes[1].childNodes[2].innerText
+                        let intent = target.parentElement.parentElement.previousElementSibling.children[1].children[0].children[1].innerText
                         intent = intent.slice(4, intent.length)
                         removeUserStep(storyName, text, intent, userStoryDiv)
                     }else{
@@ -633,7 +635,7 @@ Method.button.storyButton = function(){
                     }
                 }else{
                     const text = ''
-                    let intent = target.parentElement.parentElement.previousElementSibling.childNodes[0].childNodes[2].innerText
+                    let intent = target.parentElement.parentElement.previousElementSibling.children[0].children[0].children[1].innerText
                     intent = intent.slice(4, intent.length)
                     removeUserStep(storyName, text, intent, userStoryDiv)
                 }
@@ -644,7 +646,7 @@ Method.button.storyButton = function(){
                 if(target.parentElement.parentElement.parentElement.previousElementSibling.childNodes[0].id == 'userInput'){
                     if(target.parentElement.parentElement.parentElement.previousElementSibling.childNodes[0].value){
                         const text = target.parentElement.parentElement.parentElement.previousElementSibling.childNodes[0].value
-                        let intent = target.parentElement.parentElement.parentElement.previousElementSibling.childNodes[1].childNodes[2].innerText
+                        let intent = target.parentElement.parentElement.parentElement.previousElementSibling.children[1].children[0].children[1].innerText
                         intent = intent.slice(4, intent.length)
                         removeUserStep(storyName, text, intent, userStoryDiv)
                     }else{
@@ -652,7 +654,7 @@ Method.button.storyButton = function(){
                     }
                 }else{
                     const text = ''
-                    let intent = target.parentElement.parentElement.parentElement.previousElementSibling.childNodes[0].childNodes[2].innerText
+                    let intent = target.parentElement.parentElement.parentElement.previousElementSibling.children[0].children[0].children[1].innerText
                     intent = intent.slice(4, intent.length)
                     removeUserStep(storyName, text, intent, userStoryDiv)
                 }
@@ -663,7 +665,7 @@ Method.button.storyButton = function(){
                 if(target.parentElement.parentElement.parentElement.parentElement.previousElementSibling.childNodes[0].id == 'userInput'){
                     if(target.parentElement.parentElement.parentElement.parentElement.previousElementSibling.childNodes[0].value){
                         const text = target.parentElement.parentElement.parentElement.parentElement.previousElementSibling.childNodes[0].value
-                        let intent = target.parentElement.parentElement.parentElement.parentElement.previousElementSibling.childNodes[1].childNodes[2].innerText
+                        let intent = target.parentElement.parentElement.parentElement.parentElement.previousElementSibling.children[1].children[0].children[1].innerText
                         intent = intent.slice(4, intent.length)
                         removeUserStep(storyName, text, intent, userStoryDiv)
                     }else{
@@ -671,7 +673,7 @@ Method.button.storyButton = function(){
                     }
                 }else{
                     const text = ''
-                    let intent = target.parentElement.parentElement.parentElement.parentElement.previousElementSibling.childNodes[0].childNodes[2].innerText
+                    let intent = target.parentElement.parentElement.parentElement.parentElement.previousElementSibling.children[0].children[0].children[1].innerText
                     intent = intent.slice(4, intent.length)
                     removeUserStep(storyName, text, intent, userStoryDiv)
                 }
@@ -700,6 +702,7 @@ Method.button.storyButton = function(){
         topRightDiv.appendChild(btnSpan);
 
         storySpan.appendChild(input);
+        storySpan.appendChild(attrSpan)
         storyDiv.appendChild(storySpan);
         storyDiv.appendChild(topRightDiv);
         stories.insertBefore(storyDiv, stories.lastElementChild);
@@ -736,7 +739,7 @@ Method.button.storyButton = function(){
             if(target.matches('#userInput') && target.getAttribute('disabled') == ''){
                 
                 const userText = target.value.trim()
-                const intent = target.nextElementSibling.innerText.slice(4, target.nextElementSibling.innerText.length)
+                const intent = target.nextElementSibling.children[0].innerText.slice(4, target.nextElementSibling.innerText.length)
                 getTextExam(userText, intent)
             }
 
@@ -1516,7 +1519,13 @@ Method.button.storyButton = function(){
 
     // 建立並顯示意圖和關鍵字
     function showNluSpan(data, allStorySpan, indexNum){
-        showIntent(data.intent.name, allStorySpan, indexNum)
+        let intentName = ''
+        if(data.intent.name){
+            intentName = data.intent.name
+        }else{
+            intentName = data.intent
+        }
+        showIntent(intentName, allStorySpan, indexNum)
 
         data.entities.map(item => {
             const entitiesSpan = document.createElement('span')
@@ -1536,7 +1545,7 @@ Method.button.storyButton = function(){
             entityText.innerHTML = `關鍵字: <span id="entity">${keyWord}</span>, 代號: <span id="entity--code">${item.entity}</span>, 代表值: <span id="entity--value">${item.value}</span>`
             entitiesSpan.appendChild(entityIcon)
             entitiesSpan.appendChild(entityText)
-            allStorySpan[indexNum].appendChild(entitiesSpan)
+            allStorySpan[indexNum].children[1].appendChild(entitiesSpan)
         })
     }
 
@@ -1557,7 +1566,7 @@ Method.button.storyButton = function(){
 
         intentSpan.appendChild(intentIcon)
         intentSpan.appendChild(intentText)
-        allStorySpan[indexNum].appendChild(intentSpan)
+        allStorySpan[indexNum].children[1].appendChild(intentSpan)
 
         // 意圖點擊事件
         intentSpan.addEventListener('click', e => {
@@ -1566,23 +1575,23 @@ Method.button.storyButton = function(){
             let intent = ``
             // 抓取使用者例句及意圖
             if(target.matches('#intent-span')){
-                examText = target.previousSibling.value
+                examText = target.parentElement.previousSibling.value
                 intent = target.lastChild.innerText.slice(4, target.lastChild.innerText.length)
             }else if(target.matches('#intent-text') || target.tagName == 'svg'){
-                examText = target.parentElement.previousSibling.value
+                examText = target.parentElement.parentElement.previousSibling.value
                 intent = target.innerText.slice(4, target.innerText.length)
                 if(target.tagName == 'svg'){
                     intent = target.nextElementSibling.innerText.slice(4, target.nextElementSibling.innerText.length)
                 }
             }else{
-                examText = target.parentElement.parentElement.previousSibling.value
+                examText = target.parentElement.parentElement.parentElement.previousSibling.value
                 intent = target.parentElement.nextElementSibling.innerText.slice(4, target.parentElement.nextElementSibling.innerText.length)
             }
 
             let intentHtml = ``
             let entitiesHtml = ``
             // 串接後端API抓取所有意圖
-            fetch(`http://localhost:3030/jh_story/userStep/nlu/getIntent`)
+            fetch(`http://localhost:3030/jh_story/userStep/domain/getIntent`)
             .then(response => response.json())
             .then(intents => {
                 // 透過展開運算子複製意圖陣列
@@ -1634,8 +1643,12 @@ Method.button.storyButton = function(){
                 fetch(`http://localhost:3030/jh_story/userStep/nlu/setEntity/getTextExam?examText=${examText}`)
                 .then(response => response.json())
                 .then(targetNlu => {
-                    // targetNlu是陣列，所以需要選擇0的位置
-                    entitiesHtml = createEntitiesHtml(targetNlu[0], examText)
+                    // tempNlu深層拷貝targetNlu，更改tempNlu值不會影響原始targetNlu，所以可以當作儲存前的操作資料
+                    console.log(targetNlu)
+                    const tempNlu = JSON.parse(JSON.stringify(targetNlu[0]))
+                    localStorage.setItem('tempNlu', JSON.stringify(tempNlu))
+
+                    entitiesHtml = createEntitiesHtml(tempNlu, examText)
 
                     // 關鍵字html產生 function
                     function createEntitiesHtml(data, examText){
@@ -1688,7 +1701,7 @@ Method.button.storyButton = function(){
                                 </span>
                             </span>
                             <span class="setExamInfo--footer">
-                                <button id="save" type="button" class="btn btn-info">儲存</button>
+                                <button id="saveExamInfo" type="button" class="btn btn-info">儲存</button>
                             </span>
                         </div>
                     `
@@ -1714,6 +1727,15 @@ Method.button.storyButton = function(){
                             }
                         })
 
+                        // 意圖輸入框enter事件
+                        document.querySelector('#intentInput').addEventListener('keyup', e => {
+                            const target = e.target
+                            if(e.keyCode === 13){
+                                const intentList = target.nextElementSibling
+                                createIntent(target, intentArray, intentList)
+                            }
+                        })
+
                         // 意圖清單點擊事件
                         document.querySelector('.setExamInfo--intents_list').addEventListener('click', e => {
                             const target = e.target
@@ -1723,42 +1745,128 @@ Method.button.storyButton = function(){
                                 const intentList = target.parentElement
                                 const intentInput =  target.parentElement.previousElementSibling
                                 const selectIntent = target.innerText.trim()
-                                
+
                                 if(!target.matches('.create-intent') && !target.matches('.cancel')){
-                                    
+                                    // 隱藏意圖清單
                                     intentList.classList.add('list--disabled')
                                     
+                                    // 更新意圖清單
                                     if(!target.matches('.selected')){
-                                        document.querySelector('.selected').classList.remove('selected')
-                                        target.classList.add('selected')
                                         const newIntentListHtml = createIntentList(intentArray, selectIntent)
                                         intentList.innerHTML = newIntentListHtml
                                     }
 
+                                    // 將意圖清單的值給input並把input設為disabled
                                     editExamInfo(selectIntent, intentInput)
                                 }
                                 
                                 // 取消按鈕點擊事件
-                                if(target.matches('.setExamInfo--intents_item') && target.matches('.cancel')){
+                                if(target.matches('.cancel')){
                                     intentList.classList.add('list--disabled')
-                                    editExamInfo(intentInput.value, intentInput)
+                                    intentInput.setAttribute('disabled', '')
+                                }
+
+                                // 點選新建意圖事件
+                                if(target.matches('.create-intent')){
+                                    createIntent(intentInput, intentArray, intentList)
                                 }
 
                                 // 意圖點擊 function
                                 function editExamInfo(intent, input){
                                     input.value = intent
                                     input.setAttribute('disabled', '')
+                                    const tempNlu = JSON.parse(localStorage.getItem('tempNlu'))
+                                    tempNlu.intent = intent
+                                    localStorage.setItem('tempNlu', JSON.stringify(tempNlu))
                                 }
                             }
                         })
 
-                        // tempNlu深層拷貝targetNlu，更改tempNlu值不會影響原始targetNlu，所以可以當作儲存前的操作資料
-                        const tempNlu = JSON.parse(JSON.stringify(targetNlu[0]))
-                        entitiesRemoveBtnEvent(tempNlu)
+                        // 意圖及關鍵字儲存按鈕點擊事件
+                        document.querySelector('#saveExamInfo').addEventListener('click', e => {
+                            const target = e.target
+                            const intentInput = target.parentElement.previousElementSibling.children[1].children[0]
+                            const storyName = document.querySelector('#storyTitle').innerText
+
+                            // 沒有意圖錯誤處理
+                            if(!intentInput.value){
+                                var warningHtml = "<h2><div class='sa-icon warning'><span></span></div>意圖為必填欄位</h2>";
+                                Method.common.showBox(warningHtml, 'message', '')
+                                return
+                            }
+
+                            // 獲取更新後的nlu資料
+                            const tempNlu = localStorage.getItem('tempNlu')
+                            // 串接後端API更新rasa nlu訓練檔並更新資料庫
+                            fetch(`http://localhost:3030/jh_story/userStep/nlu/update?tempNlu=${tempNlu}`)
+                            .then(response => response.json())
+                            .then(nluStatus => {
+                                if(nluStatus.status == 'success'){
+                                    // 串接後端API更新rasa domain訓練檔並更新資料庫
+                                    fetch(`http://localhost:3030/jh_story/userStep/domain/update?tempNlu=${tempNlu}`)
+                                    .then(response => response.json())
+                                    .then(domainStatus=> {
+                                        if(domainStatus.status == 'success'){
+                                            // 串接後端API更新rasa fragments訓練檔並更新資料
+                                            fetch(`http://localhost:3030/jh_story/userStep/fragments/update?tempNlu=${tempNlu}&storyName=${storyName}&indexNum=${indexNum}`)
+                                            .then(response => response.json())
+                                            .then(data => {
+                                                if(data.status == 'success'){
+                                                    // 關閉彈跳視窗
+                                                    document.querySelector('#setExamInfo').remove()
+                                                    // 將關鍵字和意圖區清空
+                                                    allStorySpan[indexNum].children[1].innerHTML = ''
+                                                    // 更新關鍵字和意圖
+                                                    showNluSpan(JSON.parse(tempNlu), allStorySpan, indexNum)
+                                                }
+                                            })
+                                            .catch(err => console.log(err))
+                                        }
+                                    })
+                                    .catch(err => console.log(err))
+                                }
+                            })
+                            .catch(err => console.log(err))
+                        })
+                        // 建立新意圖 function
+                        function createIntent(intentInput, intentArray, intentList){
+                            // 沒填意圖
+                            if(intentInput.value == ""){
+                                var warningHtml = "<h2><div class='sa-icon warning'><span></span></div>請先填寫意圖</h2>";
+                                Method.common.showBox(warningHtml, 'message', '')
+                                return
+                            }
+
+                            // 判斷意圖是否重複
+                            for(i = 0; i < intentArray.length; i++){
+                                if(intentInput.value == intentArray[i]){
+                                    intentList.classList.add('list--disabled')
+                                    intentInput.setAttribute('disabled', '')
+                                    editExamInfo(intentArray[i], intentInput)
+                                    const newIntentListHtml = createIntentList(intentArray, intentArray[i])
+                                    intentList.innerHTML = newIntentListHtml
+                                    return
+                                }
+                            }
+
+                            // 新建意圖
+                            intentList.classList.add('list--disabled')
+                            const tempNlu = JSON.parse(localStorage.getItem('tempNlu'))
+                            tempNlu.intent = intentInput.value.trim()
+                            intentInput.setAttribute('disabled', '')
+                            intentArray.push(intentInput.value.trim())
+                            localStorage.setItem('tempNlu', JSON.stringify(tempNlu))
+                            const newIntentListHtml = createIntentList(intentArray, intentInput.value.trim())
+                            intentList.innerHTML = newIntentListHtml
+                        }
+                        
+                        entitiesRemoveBtnEvent()
 
                         // 關鍵字刪除按鈕點擊事件
-                        function entitiesRemoveBtnEvent(tempNlu){
+                        function entitiesRemoveBtnEvent(){
                             const allEntityRemoveBtns = document.querySelectorAll('.entity--remove_btn')
+                            const tempNlu = JSON.parse(localStorage.getItem('tempNlu'))
+
                             allEntityRemoveBtns.forEach(removeBtn => {
                                 removeBtn.addEventListener('click' , e => {
                                     const target = e.target
@@ -1796,18 +1904,20 @@ Method.button.storyButton = function(){
                                         })
                                         target.parentElement.parentElement.parentElement.remove()
                                     }
+
+                                    localStorage.setItem('tempNlu', JSON.stringify(tempNlu))
                                 })
                             })
                         }
 
-                        createEntity(tempNlu)
+                        createEntity()
 
                         // 使用者選取文字function
                         function createEntity(){
                             if(document.querySelector('.setExamInfo--examText')){
                                 let m_MouseDown = false
                                 const examContent = document.querySelector('.setExamInfo--content')
-                    
+
                                 // 使用者選取開始
                                 examContent.addEventListener('mousedown', e => {
                                     const target = e.target
@@ -1822,7 +1932,7 @@ Method.button.storyButton = function(){
                                     if(target.matches('.setExamInfo--examText')){
                                         m_MouseDown = false
                                         if(getText().text){
-                                            setEntityBox(tempNlu, getText().text, getText().start, getText().end)
+                                            setEntityBox(getText().text, getText().start, getText().end)
                                         }
                                     }
                                 })
@@ -1834,25 +1944,30 @@ Method.button.storyButton = function(){
                                 }
 
                                 // 設定關鍵字彈跳窗
-                                function setEntityBox(tempNlu, getText, start, end){
-                                    // 驗證關鍵字是否重複
-                                    for(i = 0; i < tempNlu.entities.length; i++){
-                                        // 抓取關鍵字
-                                        const keyWord = tempNlu.text.slice(tempNlu.entities[i].start, tempNlu.entities[i].end)
-                                        // 將關鍵字及使用者選取的字串轉成array
-                                        const keyWordArr = Array.from(keyWord)
-                                        const textArr = Array.from(getText)
-                                        // 將轉成array的字串進行比對
-                                        for(j = 0; j < keyWordArr.length; j++){
-                                            for(k = 0; k < textArr.length; k++){
-                                                if(keyWordArr[j] == textArr[k]){
-                                                    var warningHtml = "<h2><div class='sa-icon warning'><span></span></div>所選關鍵字與其他關鍵字重疊，請重新嘗試</h2>";
-                                                    Method.common.showBox(warningHtml, 'message', '')
-                                                    return
+                                function setEntityBox(getText, start, end){
+                                    const tempNlu = JSON.parse(localStorage.getItem('tempNlu'))
+
+                                    if(tempNlu.entities.length){
+                                        // 驗證關鍵字是否重複
+                                        for(i = 0; i < tempNlu.entities.length; i++){
+                                            // 抓取關鍵字
+                                            const keyWord = tempNlu.text.slice(tempNlu.entities[i].start, tempNlu.entities[i].end)
+                                            // 將關鍵字及使用者選取的字串轉成array
+                                            const keyWordArr = Array.from(keyWord)
+                                            const textArr = Array.from(getText)
+                                            // 將轉成array的字串進行比對
+                                            for(j = 0; j < keyWordArr.length; j++){
+                                                for(k = 0; k < textArr.length; k++){
+                                                    if(keyWordArr[j] == textArr[k]){
+                                                        var warningHtml = "<h2><div class='sa-icon warning'><span></span></div>所選關鍵字與其他關鍵字重疊，請重新嘗試</h2>";
+                                                        Method.common.showBox(warningHtml, 'message', '')
+                                                        return
+                                                    }
                                                 }
                                             }
                                         }
                                     }
+
                                     const html = `
                                         <h1>設定關鍵字</h1>
                                         <form action="" name="setEntity">
@@ -1898,7 +2013,6 @@ Method.button.storyButton = function(){
                                     // 送出關鍵字事件
                                     document.querySelector('#sendEntity').addEventListener('click', e => {
                                         const target = e.target
-                                        console.log(tempNlu)
                                         const entityCode = target.parentElement.parentElement.children[0].children[1].value
                                         let entityValue = target.parentElement.parentElement.children[1].children[1].value
                                         if(entityValue == '') {
@@ -1911,10 +2025,11 @@ Method.button.storyButton = function(){
                                             end
                                         }
                                         tempNlu.entities.push(newEntityInfo)
+                                        localStorage.setItem('tempNlu', JSON.stringify(tempNlu))
                                         const newEntitiesHtml = createEntitiesHtml(tempNlu, examText)
                                         document.querySelector('#setEntityBox').remove()
                                         document.querySelector('.setExamInfo--entities').innerHTML = newEntitiesHtml
-                                        entitiesRemoveBtnEvent(tempNlu)
+                                        entitiesRemoveBtnEvent()
                                     })
                                 }
                             }
