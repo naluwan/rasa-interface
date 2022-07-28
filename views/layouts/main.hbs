@@ -23,14 +23,16 @@
         let e = document.createElement("script"),
           t = document.head || document.getElementsByTagName("head")[0];
         (e.src =
-          "/javascript/index.js"),
-          // Replace 1.x.x with the hversion that you want
+          "http://cdn.jsdelivr.net/npm/rasa-webchat@1.0.1/lib/index.js"),
+          // Replace 1.x.x with the version that you want
           (e.async = !0),
           (e.onload = () => {
             window.WebChat.default(
               {
                 customData: { "language": "zh", "userId": `{{user.CPY_ID}}`},
-                socketUrl: "http://192.168.10.108:5005",
+                initPayload: "/get_started",
+                socketUrl: "http://192.168.10.105:5005",
+                // socketPath: "/socket.io/",
                 profileAvatar: "/images/jennyhire.jpg",
                 inputTextFieldHint: "請輸入內容....",
                 title: `[測試版]{{user.CPY_NAME}}小幫手`,
@@ -39,7 +41,7 @@
                 showFullScreenButton: true,
                 showCloseButton: true,
                 showMessageDate: true,
-              // embedded: true,
+                // embedded: true,
                 // add other props here
               },
               null
