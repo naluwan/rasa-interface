@@ -11,12 +11,12 @@ if(csTrainBtn){
 			csTrainBtn.setAttribute('disabled', '')
 			csTrainBtn.innerHTML = '<i class="fas fa-spinner fast-spin fa-2x"></i>'
 			
-			fetch('http://192.168.10.113:3030/train/cs/trainingData')
+			fetch('http://192.168.10.127:3030/train/cs/trainingData')
 			.then(response => {
 				return response.json()
 			})
 			.then(data => {
-				fetch('http://192.168.10.108:5005/model/train?save_to_default_model_directory=true&force_training=false',{
+				fetch('http://192.168.10.105:5005/model/train?save_to_default_model_directory=true&force_training=false',{
 					method: 'post',
 					body: JSON.stringify(data),
 					headers: {
@@ -25,7 +25,7 @@ if(csTrainBtn){
 					mode: 'no-cors',
 				})
 				.then(response => {
-					fetch('http://192.168.10.113:3030/train/trainingComplete')
+					fetch('http://loclahost:3030/train/trainingComplete')
 					.then(response => {
 						return response.json()
 					})
@@ -51,7 +51,7 @@ if(jhTrainBtn){
 		const target = e.target
 		if(target.matches('.jh-train-btn')){
 
-			fetch('http://192.168.10.113:3030/train/jh/status',{
+			fetch('http://192.168.10.127:3030/train/jh/status',{
 				mode: 'no-cors',
 			})
 			.then(response => {
@@ -66,34 +66,51 @@ if(jhTrainBtn){
 				}else{
 					jhTrainBtn.setAttribute('disabled', '')
 			
-					fetch('http://192.168.10.113:3030/train/jh/trainingData')
+					fetch('http://192.168.10.127:3030/train/jh/trainingData')
 					.then(response => {
 						return response.json()
 					})
 					.then(data => {
-						fetch('http://192.168.10.108:5005/model/train?save_to_default_model_directory=true&force_training=false',{
+						console.log(JSON.stringify(data))
+						let filename
+						fetch('http://192.168.10.105:5005/model/train?save_to_default_model_directory=true&force_training=true',{
 							method: 'post',
 							body: JSON.stringify(data),
 							headers: {
-								"content-type": "application/json",
+								'content-Type': "application/json",
 							},
-							mode: 'no-cors',
 						})
 						.then(response => {
-							fetch('http://192.168.10.113:3030/train/trainingComplete')
-							.then(response => {
-								return response.json()
+							filename = response.headers.get('filename')
+							return filename
+						})
+						.then(filename => {
+							console.log('filename:',filename)
+							const payload ={ 'model_file': `/home/bill/Work/BF34_RASA_2.8.31_spacy/models/${filename}`}
+							fetch('http://192.168.10.105:5005/model', {
+								method: 'put',
+								body: JSON.stringify(payload),
+								headers: {
+									'content-Type': "application/json",
+								},
 							})
-							.then(result => {
-								jhTrainBtn.removeAttribute('disabled')
+							.then(res => {
+								console.log(res)
+								fetch('http://192.168.10.127:3030/train/trainingComplete')
+								.then(response => {
+									return response.json()
+								})
+								.then(result => {
+									jhTrainBtn.removeAttribute('disabled')
 
-								// 訓練完成提示框
-								var html = "<h1><div class='sa-icon success'><span></span></div>訓練完成</h1>";
-								Method.common.showBox(html, 'message');
-								
+									// 訓練完成提示框
+									var html = "<h1><div class='sa-icon success'><span></span></div>訓練完成</h1>";
+									Method.common.showBox(html, 'message');
+									
 
+								})
+								.catch(err => console.log(err))	
 							})
-							.catch(err => console.log(err))
 						})
 						.catch(err => console.log(err))
 					})
