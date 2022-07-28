@@ -19,7 +19,8 @@ router.get('/cs/trainingData', (req, res) =>{
 
 // 徵厲害 抓取jh training data
 router.get('/jh/trainingData', (req, res) => {
-  getTrainingData('BF_JH_TRAINING_DATA')
+  const cpnyId = res.locals.user.CPY_ID
+  getTrainingData('BF_JH_DATA_TEST', cpnyId)
   .then(data => {
     return res.json(data)
   })
@@ -33,7 +34,7 @@ router.get('/trainingComplete', (req, res) => {
 
 // 徵厲害 - 查看rasa核心狀況
 router.get('/jh/status', (req, res) => {
-  axios.get('http://192.168.11.109:5005/status')
+  axios.get('http://192.168.10.105:5005/status')
   .then(response => {
     return res.json(response.data.num_active_training_jobs)
   })
