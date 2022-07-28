@@ -40,20 +40,264 @@ Array.prototype.equals = function (array) {
 // Hide method from for-in loops
 Object.defineProperty(Array.prototype, "equals", {enumerable: false});
 
+// 設定domain - 刪除機器人回覆action及response
+router.delete('/botStep/domain', (req, res) => {
+  const request = new sql.Request(pool)
+  const {resCode} = req.body
+  const cpnyId = res.locals.user.CPY_ID
+
+  // 使用模組從資料庫抓取domain data
+  getSqlTrainingData('BF_JH_DATA_TEST', 'domain-test', 'domain', cpnyId)
+  .then(data => {
+    // 將註冊的機器人action刪除
+    data.actions = data.actions.filter(action => action !== resCode)
+    // 刪除responses中的回覆
+    // 由於responses是物件，可以使用delete object.attribute(object[attribute])
+    // 這邊由於屬性是使用變數帶入，所以使用object[attribute]
+    delete data.responses[resCode]
+
+    const filePath = '../public/trainData/domain-test.json'
+    const response = {status: 'success', message: 'domain新增機器人回覆成功'}
+    fsSqlUpdate(filePath, data, 'BF_JH_DATA_TEST', 'domain-test', response, request, res, cpnyId)
+  })
+  .catch(err => console.log(err))
+})
+
+// 設定故事流程 - 刪除機器人步驟
+router.delete('/botStep/fragments', (req, res) => {
+  const request = new sql.Request(pool)
+  const {storyName, resCode} = req.body
+  const cpnyId = res.locals.user.CPY_ID
+
+  // 使用模組從資料庫抓取fragments data
+  getSqlTrainingData('BF_JH_DATA_TEST', 'fragments-test', 'fragments', cpnyId)
+  .then(data => {
+    // 找到特定故事並刪除故事流程的機器人回覆
+    data.stories.map(item => {
+      if(item.story === storyName){
+        item.steps.map(step => {
+          if(step.action){
+            if(step.action === resCode){
+              const index = item.steps.indexOf(step)
+              item.steps.splice(index, 1)
+            }
+          }
+        })
+      }
+    })
+
+    // 使用模組將data 寫檔並更新資料庫
+    const filePath = '../public/trainData/fragments-test.json'
+    const response = {status: 'success', message: '新增故事流程成功'}
+    fsSqlUpdate(filePath, data, 'BF_JH_DATA_TEST', 'fragments-test', response, request, res, cpnyId)
+  })
+  .catch(err => console.log(err))
+})
+
+// 設定domain - 新增機器人回覆action及response
+router.post('/botStep/domain', (req, res) => {
+  const request = new sql.Request(pool)
+  const {resCode, botReply} = req.body
+  const cpnyId = res.locals.user.CPY_ID
+
+  // 將回覆文字的換行符號(\n)改成符合rasa機器人回覆的換行符號(  \n)
+  // rasa機器人回覆需要空兩格+\n，否則對話會分開，變成兩句話
+  let botReplyText = JSON.stringify(botReply)
+  botReplyText = botReplyText.replace(/\\n/g, '  \\n')
+  botReplyText = JSON.parse(botReplyText)
+
+  // 使用模組從資料庫抓取domain data
+  getSqlTrainingData('BF_JH_DATA_TEST', 'domain-test', 'domain', cpnyId)
+  .then(data => {
+    data.actions.push(resCode)
+    data.responses = {
+      ...data.responses,
+      [resCode]: [
+        {
+        "text": botReplyText
+        }
+      ]
+    }
+    const filePath = '../public/trainData/domain-test.json'
+    const response = {status: 'success', message: 'domain新增機器人回覆成功'}
+    fsSqlUpdate(filePath, data, 'BF_JH_DATA_TEST', 'domain-test', response, request, res, cpnyId)
+  })
+  .catch(err => console.log(err))
+})
+
+// 設定故事流程 - 機器人步驟
+router.post('/botStep/fragments', (req, res) => {
+  const request = new sql.Request(pool)
+  const {storyName, indexNum, resCode} = req.body
+  const cpnyId = res.locals.user.CPY_ID
+
+  // 使用模組從資料庫抓取fragments data
+  getSqlTrainingData('BF_JH_DATA_TEST', 'fragments-test', 'fragments', cpnyId)
+  .then(data => {
+    // 新增機器人回覆
+    const newBotReply = {
+      action: resCode
+    }
+
+    // 找到特定故事並在指定位置新增機器人回覆
+    data.stories = data.stories.map(item => {
+      if(item.story === storyName){
+        if(!item.steps) item.steps = []
+        item.steps.splice(indexNum, 0, newBotReply)
+      }
+      return item
+    })
+    const filePath = '../public/trainData/fragments-test.json'
+    const response = {status: 'success', message: '新增故事流程成功'}
+    fsSqlUpdate(filePath, data, 'BF_JH_DATA_TEST', 'fragments-test', response, request, res, cpnyId)
+  })
+  .catch(err => console.log(err))
+})
+
+// 更新使用者步驟故事流程
+router.put('/userStep/fragments', (req, res) => {
+  const request = new sql.Request(pool)
+  let {tempNlu} = req.body
+  const {storyName, indexNum} = req.body
+  tempNlu = JSON.parse(tempNlu)
+  const cpnyId = res.locals.user.CPY_ID
+
+  // 使用模組從資料庫抓取fragments data
+  getSqlTrainingData('BF_JH_DATA_TEST', 'fragments-test', 'fragments', cpnyId)
+  .then(data => {
+    const newEntities = tempNlu.entities.map(item => {
+      if(item.value){
+        return {
+          [item.entity]: item.value
+        }
+      }
+    })
+
+    data.stories = data.stories.map(item => {
+      if(item.story == storyName){
+        item.steps[indexNum].intent = tempNlu.intent
+        item.steps[indexNum].entities = newEntities
+      }
+      return item
+    })
+
+    const filePath = '../public/trainData/fragments-test.json'
+    const response = {status: 'success', message: '更新故事流程成功'}
+    fsSqlUpdate(filePath, data, 'BF_JH_DATA_TEST', 'fragments-test', response, request, res, cpnyId)
+  })
+  .catch(err => console.log(err))
+})
+
+
+// 更新使用者步驟domain的意圖和關鍵字
+router.put('/userStep/domain', (req, res) => {
+  const request = new sql.Request(pool)
+  let {tempNlu} = req.body
+  const cpnyId = res.locals.user.CPY_ID
+  tempNlu = JSON.parse(tempNlu)
+
+  getSqlTrainingData('BF_JH_DATA_TEST', 'domain-test', 'domain', cpnyId)
+  .then(data => {
+    // 判斷意圖是否重複
+    const checkIntent = data.intents.filter(intent => intent == tempNlu.intent)
+
+    // 如果沒有重複就將意圖加進domain intents中
+    if(!checkIntent.length){
+      data.intents.push(tempNlu.intent)
+    }
+
+    //  篩選出新關鍵字與domain訓練檔中重複的關鍵字
+    const checkEntity = data.entities.filter(entity => {
+      for(i = 0; i < tempNlu.entities.length; i++){
+        if(tempNlu.entities[i].entity == entity){
+          return entity
+        }
+      }
+    })
+
+    // 宣告新關鍵字集合
+    let newEntities = new Set()
+
+    // 將新關鍵字加入集合中(去除重複)
+    tempNlu.entities.forEach(item => newEntities.add(item.entity))
+    
+    // 將集合轉成陣列
+    newEntities = [...newEntities]
+
+    // 使用雙迴圈，將新關鍵字和重複關鍵字比對
+    // 將重複的關鍵字從新關鍵字陣列中移除
+    // 最後剩下的就是新關鍵字
+    for(i = 0; i < checkEntity.length; i++){
+      for(j = 0; j < newEntities.length; j++){
+        if(checkEntity[i] == newEntities[j]){
+          newEntities.splice(j, 1)
+        }
+      }
+    }
+    
+    // 宣告集合
+    let checkRepeat = new Set()
+    // 將新關鍵字的值加進集合中
+    for(i = 0; i < newEntities.length; i++){
+      checkRepeat.add(newEntities[i])
+    }
+    // 將集合轉成陣列
+    checkRepeat = [...checkRepeat]
+
+    // 將新關鍵字加入domain中
+    for(i = 0; i < checkRepeat.length; i++){
+      data.entities.push(checkRepeat[i])
+    }
+
+    const filePath = '../public/trainData/domain-test.json'
+    const response = {status: 'success', message: 'domain更新成功'}
+    fsSqlUpdate(filePath, data, 'BF_JH_DATA_TEST', 'domain-test', response, request, res, cpnyId)
+  })
+  .catch(err => console.log(err))
+})
+
+// 更新使用者步驟nlu例句的意圖和關鍵字
+router.put('/userStep/nlu', (req, res) => {
+  const request = new sql.Request(pool)
+  let {tempNlu} = req.body
+  const cpnyId = res.locals.user.CPY_ID
+  tempNlu = JSON.parse(tempNlu)
+
+  getSqlTrainingData('BF_JH_DATA_TEST', 'nlu-json-test', 'nlu', cpnyId)
+  .then(data => {
+    // 先篩選出不是新增例句的例句
+    data.rasa_nlu_data.common_examples = data.rasa_nlu_data.common_examples.filter(nlu => {
+      if(nlu.text != tempNlu.text){
+        return nlu
+      }
+    })
+
+    // 將新例句新增進nlu
+    data.rasa_nlu_data.common_examples.push(tempNlu)
+
+    const filePath = '../public/trainData/nlu-json-test.json'
+    const response = {status: 'success', message: 'nlu更新成功'}
+    fsSqlUpdate(filePath, data, 'BF_JH_DATA_TEST', 'nlu-json-test', response, request, res, cpnyId)
+  })
+  .catch(err => console.log(err))
+})
+
 // 抓取所有意圖
-router.get('/userStep/nlu/getIntent', (req, res) => {
-  getSqlTrainingData('BF_JH_DATA_TEST', 'domain-test', 'domain')
+router.get('/userStep/domain/getAllIntents', (req, res) => {
+  const cpnyId = res.locals.user.CPY_ID
+  getSqlTrainingData('BF_JH_DATA_TEST', 'domain-test', 'domain', cpnyId)
   .then(data => {
     res.send(data.intents)
   })
   .catch(err => console.log(err))
 })
 
+// 抓取目標例句
 router.get('/userStep/nlu/setEntity/getTextExam', (req, res) => {
   const {examText} = req.query
-
+  const cpnyId = res.locals.user.CPY_ID
   // 使用模組從資料庫抓取nlu data
-  getSqlTrainingData('BF_JH_DATA_TEST', 'nlu-json-test', 'nlu')
+  getSqlTrainingData('BF_JH_DATA_TEST', 'nlu-json-test', 'nlu', cpnyId)
   .then(data => {
     const allNlus = data.rasa_nlu_data.common_examples
     const targetNlu = allNlus.filter(item => item.text == examText)
@@ -65,10 +309,13 @@ router.get('/userStep/nlu/setEntity/getTextExam', (req, res) => {
 // 抓取相同意圖及關鍵字的所有例句
 router.get('/userStep/nlu/getTextExams', (req, res) => {
   const {text, intent} = req.query
-
+  const cpnyId = res.locals.user.CPY_ID
+  console.log(text)
+  console.log(intent)
   // 使用模組從資料庫抓取nlu data
-  getSqlTrainingData('BF_JH_DATA_TEST', 'nlu-json-test', 'nlu')
+  getSqlTrainingData('BF_JH_DATA_TEST', 'nlu-json-test', 'nlu', cpnyId)
   .then(data => {
+
     const allNlus = data.rasa_nlu_data.common_examples
     const targetExam = allNlus.filter(item => item.text == text && item.intent == intent)
     const targetEntities = targetExam[0].entities.map(item => {
@@ -91,12 +338,12 @@ router.get('/userStep/nlu/getTextExams', (req, res) => {
 })
 
 // 刪除故事流程 - 使用者步驟
-router.get('/userStep/remove', (req, res) => {
-  const {storyName, userSays, intent} = req.query
+router.delete('/userStep/fragments', (req, res) => {
+  const {storyName, userSays, intent} = req.body
   const request = new sql.Request(pool)
-
+  const cpnyId = res.locals.user.CPY_ID
   // 使用模組從資料庫抓取fragments data
-  getSqlTrainingData('BF_JH_DATA_TEST', 'fragments-test', 'fragments')
+  getSqlTrainingData('BF_JH_DATA_TEST', 'fragments-test', 'fragments', cpnyId)
   .then(data => {
     data.stories.map(item => {
       if(!item.steps) return
@@ -119,211 +366,144 @@ router.get('/userStep/remove', (req, res) => {
     // 使用模組寫檔並更新資料庫
     const filePath = '../public/trainData/fragments-test.json'
     const response = {status: 'success', message: '刪除故事流程成功'}
-    fsSqlUpdate(filePath, data, 'BF_JH_DATA_TEST', 'fragments-test', response, request, res)
+    fsSqlUpdate(filePath, data, 'BF_JH_DATA_TEST', 'fragments-test', response, request, res, cpnyId)
+  })
+  .catch(err => console.log(err))
+})
+
+// 刪除nlu例句 - 使用者步驟(點擊刪除按鈕時)
+router.delete('/userStep/nlu/example', (req, res) => {
+  const {intent, userSays} = req.body
+  const request = new sql.Request(pool)
+  const cpnyId = res.locals.user.CPY_ID
+
+  // 使用模組從資料庫抓取 nlu data
+  getSqlTrainingData('BF_JH_DATA_TEST', 'nlu-json-test', 'nlu', cpnyId)
+  .then(data => {
+    // 篩選出意圖和例句與欲刪除例句不同的資料
+    data.rasa_nlu_data.common_examples = data.rasa_nlu_data.common_examples.filter(item => ((item.intent === intent && item.text !== userSays) || item.intent !== intent))
+
+    // 使用模組回寫訓練檔及資料庫
+    const filePath = '../public/trainData/nlu-json-test.json'
+    const response = {status: 'success', message: '刪除nlu例句成功'}
+    fsSqlUpdate(filePath, data, 'BF_JH_DATA_TEST', 'nlu-json-test', response, request, res, cpnyId)
   })
   .catch(err => console.log(err))
 })
 
 // 設定domain - 意圖和關鍵字
-router.get('/userStep/domain/insert', (req, res) => {
-  const {parse} = req.query
+router.post('/userStep/domain', (req, res) => {
+  const {userParse} = req.body
   const request = new sql.Request(pool)
-  const parseData = JSON.parse(parse)
+  const cpnyId = res.locals.user.CPY_ID
 
-  // 從資料庫抓取domain訓練檔資料
-  request.query(`select DATA_CONTENT as domain
-  from BF_JH_DATA_TEST
-  where DATA_NAME = 'domain-test'`, (err, result) => {
-    if(err){
-      console.log(err)
-      return
+  getSqlTrainingData('BF_JH_DATA_TEST', 'domain-test', 'domain', cpnyId)
+  .then(data => {
+    const newEntities = []
+    const newIntents = []
+
+    // 判斷要添加的意圖是否已經在訓練檔資料中
+    // 將不在資料庫的意圖放進newIntents陣列中
+    if(data.intents.indexOf(userParse.intent.name) == -1){
+      newIntents.push(userParse.intent.name)
     }
 
-    try{
-      // 將資料轉成json格式
-      const domainData = JSON.parse(result.recordset[0]['domain'])
-      const newEntities = []
-      const newIntents = []
-
-      // 判斷要添加的意圖是否已經在訓練檔資料中
-      // 將不在資料庫的意圖放進newIntents陣列中
-      if(domainData.intents.indexOf(parseData.intent.name) == -1){
-        newIntents.push(parseData.intent.name)
-      }
-
-      // 判斷要添加的關鍵字是否已經在訓練檔資料中
-      // 將不在資料庫的關鍵字放進newEntities陣列中
-        parseData.entities.map(item => {
-          if(domainData.entities.indexOf(item.entity) == -1){
-            newEntities.push(item.entity)
-          }
-        })
+    // 判斷要添加的關鍵字是否已經在訓練檔資料中
+    // 將不在資料庫的關鍵字放進newEntities陣列中
+    userParse.entities.map(item => {
+        if(data.entities.indexOf(item.entity) == -1){
+          newEntities.push(item.entity)
+        }
+      })
 
 
-      // 添加關鍵字
-      if(newEntities.length){
-        newEntities.map(entity => {
-          domainData.entities.push(entity)
-        })
-      }
-
-      // 添加意圖
-      if(newIntents.length){
-        newIntents.map(intent => {
-          domainData.intents.push(intent)
-        })
-      }
-
-      // 寫檔及更新資料庫訓練檔資料
-      const filePath = '../public/trainData/domain-test.json'
-      const response = {status: 'success', message: 'domain設定成功'}
-      fsSqlUpdate(filePath, domainData, 'BF_JH_DATA_TEST', 'domain-test', response, request, res)
-
-    } catch(err){
-      // domain訓練檔格式
-      const domain = {
-        actions: [],
-        entities: [],
-        forms: {},
-        intents: [],
-        responses: {},
-        session_config: {},
-        slots: {}
-      }
-
-      // 添加意圖
-      if(parseData.intent.name){
-        domain.intents.push(parseData.intent.name)
-      }
-
-      // 添加關鍵字
-      if(parseData.entities.length){
-        parseData.entities.map(item => {
-          domain.entities.push(item.entity)
-        })
-      }
-
-      // 寫檔及更新資料庫訓練檔資料
-      const filePath = '../public/trainData/domain-test.json'
-      const response = {status: 'success', message: 'domain設定成功'}
-      fsSqlUpdate(filePath, domain, 'BF_JH_DATA_TEST', 'domain-test', response, request, res)
+    // 添加關鍵字
+    if(newEntities.length){
+      newEntities.map(entity => {
+        data.entities.push(entity)
+      })
     }
+
+    // 添加意圖
+    if(newIntents.length){
+      newIntents.map(intent => {
+        data.intents.push(intent)
+      })
+    }
+
+    // 寫檔及更新資料庫訓練檔資料
+    const filePath = '../public/trainData/domain-test.json'
+    const response = {status: 'success', message: 'domain設定成功'}
+    fsSqlUpdate(filePath, data, 'BF_JH_DATA_TEST', 'domain-test', response, request, res, cpnyId)
   })
+  .catch(err => console.log(err))
 })
 
 // 設定nlu自然語言設定檔 - 使用者輸入的字句、意圖和關鍵字
-router.get('/userStep/nlu/insert', (req, res) => {
-  const {parse} = req.query
+router.post('/userStep/nlu', (req, res) => {
+  const {userParse} = req.body
   const request = new sql.Request(pool)
-  const parseData = JSON.parse(parse)
+  const cpnyId = res.locals.user.CPY_ID
 
-  // 從資料庫獲取nlu設定檔資料
-  request.query(`select DATA_CONTENT as nlu
-  from BF_JH_DATA_TEST
-  where DATA_NAME = 'nlu-json-test'`, (err, result) => {
-    if(err){
-      console.log(err)
-      return
-    }
+  // 使用模組從資料庫抓取nlu data
+  getSqlTrainingData('BF_JH_DATA_TEST', 'nlu-json-test', 'nlu', cpnyId)
+  .then(data => {
 
-    try{
-      // 如果資料庫已經有訓練檔資料
-      const nluData = JSON.parse(result.recordset[0]['nlu'])
-      const repeat = []
-
-      // 比對是否有重複的字句
-      nluData.rasa_nlu_data.common_examples.map(nlu => {
-        if(parseData.text == nlu.text && parseData.intent.name == nlu.intent){
+    // 驗證重複
+    const repeat = []
+    if(data.rasa_nlu_data.common_examples.length){
+      data.rasa_nlu_data.common_examples.map(nlu => {
+        if(userParse.text === nlu.text){
           repeat.push(nlu)
         }
       })
-    
-      if(repeat.length) return
-
-      // 新增的nlu格式
-      const newNlu = {
-        text: parseData.text,
-        intent: parseData.intent.name,
-        entities: [],
-        metadata: {
-          language: "zh"
-        }
-      }
-
-      // 如果有entities的話執行這段，entities有可能不只一個，所以使用map來操作
-      if(parseData.entities.length){
-        parseData.entities.map(item => {
-          const newEntity = {
-            entity: item.entity,
-            value: item.value,
-            start: item.start,
-            end: item.end
-          }
-          newNlu.entities.push(newEntity)
-        })
-      }
-
-      nluData.rasa_nlu_data.common_examples.push(newNlu)
-
-      // 寫檔及更新資料庫訓練檔資料
-      const filePath = '../public/trainData/nlu-json-test.json'
-      const response = {status: 'success', message: 'nlu設定成功'}
-      fsSqlUpdate(filePath, nluData, 'BF_JH_DATA_TEST', 'nlu-json-test', response, request, res)
-
-    } catch(err){
-      // 如果資料庫沒有訓練檔資料
-
-      // 新增的nlu格式
-      const newNlu = {
-        text: parseData.text,
-        intent: parseData.intent.name,
-        entities: [],
-        metadata: {
-          language: "zh"
-        }
-      }
-
-      // 如果有entities的話執行這段，entities有可能不只一個，所以使用map來操作
-      if(parseData.entities.length){
-        parseData.entities.map(item => {
-          const newEntity = {
-            entity: item.entity,
-            value: item.value,
-            start: item.start,
-            end: item.end
-          }
-          newNlu.entities.push(newEntity)
-        })
-      }
-
-      // 訓練檔格式
-      const nlu = {
-        rasa_nlu_data: {
-          common_examples: [],
-          entity_synonyms: [],
-          gazette: [],
-          regex_features: []
-        }
-      }
-
-      nlu.rasa_nlu_data.common_examples.push(newNlu)
-
-      // 寫檔及更新資料庫訓練檔資料
-      const filePath = '../public/trainData/nlu-json-test.json'
-      const response = {status: 'success', message: 'nlu設定成功'}
-      fsSqlUpdate(filePath, nlu, 'BF_JH_DATA_TEST', 'nlu-json-test', response, request, res)
     }
+
+    // 重複處理
+    if(repeat.length){
+      return res.send({status: "warning", message: "例句重複"})
+    }
+
+    // 新增的nlu格式
+    const newNlu = {
+      text: userParse.text,
+      intent: userParse.intent.name,
+      entities: []
+    }
+
+    // 如果有entities的話執行這段，entities有可能不只一個，所以使用map來操作
+    if(userParse.entities.length){
+      userParse.entities.map(item => {
+        const newEntity = {
+          entity: item.entity,
+          value: item.value,
+          start: item.start,
+          end: item.end
+        }
+        newNlu.entities.push(newEntity)
+      })
+    }
+
+    data.rasa_nlu_data.common_examples.push(newNlu)
+
+    const filePath = '../public/trainData/nlu-json-test.json'
+    const response = {status: 'success', message: 'nlu設定成功'}
+    fsSqlUpdate(filePath, data, 'BF_JH_DATA_TEST', 'nlu-json-test', response, request, res, cpnyId)
   })
+  .catch(err => console.log(err))
 })
 
 // 設定故事流程 - 使用者步驟
-router.get('/userStep/fragments/insert', (req, res) => {
-  const {parse, storyName, indexNum} = req.query
+router.post('/userStep/fragments', (req, res) => {
+  const {parse, storyName, indexNum} = req.body
   const request = new sql.Request(pool)
-  const parseData = JSON.parse(parse)
+  const cpnyId = res.locals.user.CPY_ID
+  // console.log('parse:',parse)
+  // console.log('storyName:',storyName)
+  // console.log('indexNum:',indexNum)
 
   // 使用模組從資料庫抓取fragments data
-  getSqlTrainingData('BF_JH_DATA_TEST', 'fragments-test', 'fragments')
+  getSqlTrainingData('BF_JH_DATA_TEST', 'fragments-test', 'fragments', cpnyId)
   .then(data => {
     data.stories.map(item => {
       // 找到目標故事，並將步驟放進故事中
@@ -333,33 +513,29 @@ router.get('/userStep/fragments/insert', (req, res) => {
         if(!item.steps){
           item.steps = [
             {
-              intent: parseData.intent.name,
-              user: parseData.text,
+              intent: parse.intent.name,
+              user: parse.text,
               entities: []
             }
           ]
         }else{
           const newStep = {
-            intent: parseData.intent.name,
-            user: parseData.text,
+            intent: parse.intent.name,
+            user: parse.text,
             entities: []
           }
 
-          // 判別steps裡是否有資料
-          if(!item.steps.length){
-            item.steps.push(newStep)
-          }else{
-            item.steps.splice(indexNum, 0, newStep)
-          }
+          // 在指定故事流程插入對話
+          item.steps.splice(indexNum, 0, newStep)
         } 
         // 判斷是否有entities
-        if(parseData.entities.length){
-          parseData.entities.map(entityItem => {
+        if(parse.entities.length){
+          parse.entities.map(entityItem => {
             // 宣告entity object
             // object key值要使用變數要加上中括號[] 
             const newEntity = {[entityItem.entity]: entityItem.value}
             item.steps.map(step => {
-              if(step.intent == parseData.intent.name && step.user == parseData.text){
+              if(step.intent == parse.intent.name && step.user == parse.text){
                 step.entities.push(newEntity)
               }
             })
@@ -368,35 +544,24 @@ router.get('/userStep/fragments/insert', (req, res) => {
       }
     })
 
-    // data.stories.map(item => {
-    //   console.log(item)
-    //   if(item.steps){
-    //     item.steps.map(step => {
-    //       console.log(step)
-    //       if(step.entities.length){
-    //         step.entities.map(entity => console.log(entity))
-    //       }
-    //     })
-    //   }
-    // })
-
     // 使用模組寫檔並更新資料庫
     const filePath = '../public/trainData/fragments-test.json'
     const response = {status: 'success', message: '故事流程設定成功'}
-    fsSqlUpdate(filePath, data, 'BF_JH_DATA_TEST', 'fragments-test', response, request, res)
+    fsSqlUpdate(filePath, data, 'BF_JH_DATA_TEST', 'fragments-test', response, request, res, cpnyId)
   })
   .catch(err => console.log(err))
 })
 
-// 使用者僅添加意圖
-router.get('/userStep/intent/insert', (req, res) => {
-  const {intent, storyName} = req.query
+// 設定故事流程 - 使用者步驟 - 使用者僅添加意圖
+router.post('/userStep/fragments/onlyIntent', (req, res) => {
+  const {intent, storyName, indexNum} = req.body
   const request = new sql.Request(pool)
+  const cpnyId = res.locals.user.CPY_ID
 
   if(!intent) return res.send({status: 'warning', message: '意圖不可為空白'})
 
   // 使用模組從資料庫抓取fragments data
-  getSqlTrainingData('BF_JH_DATA_TEST', 'fragments-test', 'fragments')
+  getSqlTrainingData('BF_JH_DATA_TEST', 'fragments-test', 'fragments', cpnyId)
   .then(data => {
     // 比對故事名稱並將使用者步驟放進指定故事名稱內
     data.stories.map(item => {
@@ -413,7 +578,9 @@ router.get('/userStep/intent/insert', (req, res) => {
             intent,
             entities: []
           }
-          item.steps.push(newStep)
+
+          // 在指定故事流程插入對話
+          item.steps.splice(indexNum, 0, newStep)
         }
       }
     })
@@ -421,18 +588,20 @@ router.get('/userStep/intent/insert', (req, res) => {
     // 使用模組寫檔並更新資料庫
     const filePath = '../public/trainData/fragments-test.json'
     const response = {status: 'success', message: '意圖設定成功'}
-    fsSqlUpdate(filePath, data, 'BF_JH_DATA_TEST', 'fragments-test', response, request, res)
+    fsSqlUpdate(filePath, data, 'BF_JH_DATA_TEST', 'fragments-test', response, request, res, cpnyId)
   })
   .catch(err => console.log(err))
 })
 
+
 // 修改故事流程名稱
-router.get('/storyTitle/update', (req, res) => {
-  const {originalTitle, updateTitle} = req.query
+router.put('/storyTitle', (req, res) => {
+  const {originalTitle, updateTitle} = req.body
   const request = new sql.Request(pool)
+  const cpnyId = res.locals.user.CPY_ID
 
   // 使用模組從資料庫抓取fragments data
-  getSqlTrainingData('BF_JH_DATA_TEST', 'fragments-test', 'fragments')
+  getSqlTrainingData('BF_JH_DATA_TEST', 'fragments-test', 'fragments', cpnyId)
   .then(data => {
 
     let status = true
@@ -462,7 +631,7 @@ router.get('/storyTitle/update', (req, res) => {
 
       // 使用模組寫檔並更新資料庫
       const filePath = '../public/trainData/fragments-test.json'
-      fsSqlUpdate(filePath, dataObj.data, 'BF_JH_DATA_TEST', 'fragments-test', {updateTitle}, request, res)
+      fsSqlUpdate(filePath, dataObj.data, 'BF_JH_DATA_TEST', 'fragments-test', {updateTitle}, request, res, cpnyId)
     }else{
       res.send({status: 'warning', message: '修改的名稱重複'})
     }
@@ -471,87 +640,32 @@ router.get('/storyTitle/update', (req, res) => {
 })
 
 // 設定故事流程名稱
-router.get('/storyTitle', (req, res) => {
+router.post('/storyTitle', (req, res) => {
   res.set('Access-Control-Allow-Origin', 'http://localhost:3030');
-  const {storyTitle} = req.query
+  const {storyTitle} = req.body
   const request = new sql.Request(pool)
+  const cpnyId = res.locals.user.CPY_ID
 
   if(storyTitle == '未命名故事' || !storyTitle) return res.send({status: 'warning', message: '請設定故事名稱'})
 
-  // 從資料庫抓取故事流程
-  request.query(`select DATA_CONTENT as fragments
-  from BF_JH_DATA_TEST
-  where DATA_NAME = 'fragments-test'`, (err, result) => {
-    if(err){
-      console.log(err)
-      return
+  // 使用模組從資料庫抓取fragments data
+  getSqlTrainingData('BF_JH_DATA_TEST', 'fragments-test', 'fragments', cpnyId)
+  .then(data => {
+
+    // 驗證故事名稱是否重複
+    if(data.stories.length){
+      const checkStoryTitle = data.stories.filter(item => item.story === storyTitle)
+      if(checkStoryTitle.length) return res.send({status: 'warning', message: '故事名稱重複'})
     }
-
-    try {
-      // 如果有故事流程資料的話
-      const fragments = JSON.parse(result.recordset[0]['fragments'])
-      const repeatName = []
-
-      // 驗證名稱重複
-      fragments.stories.map(item => {
-        if(item.story == storyTitle){
-          repeatName.push(item)
-        }
-      })
-
-      if(repeatName.length) return res.send({status: 'warning', message: '故事名稱重複'})
-
-      const newStory = {story: storyTitle}
-      fragments.stories.push(newStory)
-
-      // 寫入檔案
-      fs.writeFileSync(path.resolve(__dirname, '../../public/trainData/fragments-test.json'), JSON.stringify(fragments) , 'utf-8', 0o666, 'as+')
-
-      // 讀取檔案
-      const fd = fs.openSync(path.resolve(__dirname, '../../public/trainData/fragments-test.json'), 'as+', 0o666)
-      const updateFragments = fs.readFileSync(fd, 'utf-8', 'as+')
-      fs.closeSync(fd)
-
-      // 更新進資料庫
-      request.query(`update BF_JH_DATA_TEST
-      set DATA_CONTENT = '${updateFragments}'
-      where DATA_NAME = 'fragments-test'`, (err, result) => {
-        if(err){
-          console.log(err)
-          return
-        }
-        res.send({status: 'success', message: '故事名稱儲存成功'})
-      })
-    } catch (err) {
-      // 資料格式
-      const newStories = {
-        stories: [
-          {
-            story: storyTitle
-          }
-        ]
-      }
-  
-      // 將資料寫進檔案，要使用JSON.stringify()轉換格式
-      fs.writeFileSync(path.resolve(__dirname, '../../public/trainData/fragments-test.json'), JSON.stringify(newStories) , 'utf-8', 0o666, 'as+')
-  
-      // 讀取檔案
-      const fd = fs.openSync(path.resolve(__dirname, '../../public/trainData/fragments-test.json'), 'as+', 0o666)
-      const fragmentsTest = fs.readFileSync(fd, 'utf-8', 'as+')
-      fs.closeSync(fd)
-  
-      // 寫進資料庫
-      request.query(`update BF_JH_DATA_TEST
-      set DATA_CONTENT = '${fragmentsTest}'
-      where DATA_NAME = 'fragments-test'`, (err, result) => {
-        if(err){
-          console.log(err)
-          return
-        }
-        res.send({status: 'success', message: '故事名稱儲存成功'})
-      })
-    }
+    const newStory = {story: storyTitle}
+    data.stories.push(newStory)
+    
+    // 使用模組寫檔並更新資料庫
+    const filePath = '../public/trainData/fragments-test.json'
+    const response = {status: 'success', message: '意圖設定成功'}
+    fsSqlUpdate(filePath, data, 'BF_JH_DATA_TEST', 'fragments-test', response, request, res, cpnyId)
   })
+  .catch(err => console.log(err))
 })
 
 // 意圖及關鍵字判斷
@@ -576,11 +690,14 @@ router.get('/new', (req, res) => {
   res.render('index', {jh_new_story})
 })
 
+// 篩選故事流程並回傳故事
 router.get('/filter', (req, res) => {
   const {storyFilter} = req.query
   const jh_story = true
-
-  getSqlTrainingData('BF_JH_DATA_TEST', 'fragments-test', 'fragments')
+  const cpnyId = res.locals.user.CPY_ID
+  console.log(storyFilter)
+  // 使用模組從資料庫抓取fragments data
+  getSqlTrainingData('BF_JH_DATA_TEST', 'fragments-test', 'fragments', cpnyId)
   .then(data => {
     const stories = data.stories
     const storyData = stories.filter(item => item.story == storyFilter)
@@ -594,9 +711,9 @@ router.get('/filter', (req, res) => {
 // 顯示故事流程首頁
 router.get('/', (req, res) => {
   const jh_story = true
-
+  const cpnyId = res.locals.user.CPY_ID
   // 使用模組從資料庫抓取fragments data
-  getSqlTrainingData('BF_JH_DATA_TEST', 'fragments-test', 'fragments')
+  getSqlTrainingData('BF_JH_DATA_TEST', 'fragments-test', 'fragments', cpnyId)
   .then(data => {
     const stories = data.stories
     res.render('index', {stories, jh_story})
