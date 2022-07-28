@@ -6,14 +6,15 @@ const sql = require('mssql')
 const pool = require('../config/connectPool')
 
 module.exports = {
-  getTrainingData: (table, res) => {
+  getTrainingData: (table, cpnyId) => {
     // 用Promise控制流程
     return new Promise(function(resolve, reject){
       const request = new sql.Request(pool)
       // 會先從資料庫抓取4個訓練檔：config, domain, fragments(stories), nlu
       request.query(`select DATA_CONTENT as config
       from ${table}
-      where DATA_NAME = 'config'`, (err, result) => {
+      where DATA_NAME = 'config-test' and
+      CPNY_ID = '${cpnyId}'`, (err, result) => {
         if(err){
           console.log(err)
           return
@@ -22,7 +23,8 @@ module.exports = {
         
         request.query(`select DATA_CONTENT as domain
         from ${table}
-        where DATA_NAME = 'domain'` , (err, result) => {
+        where DATA_NAME = 'domain-test' and
+        CPNY_ID = '${cpnyId}'` , (err, result) => {
           if(err){
             console.log(err)
             return
@@ -31,7 +33,8 @@ module.exports = {
 
           request.query(`select DATA_CONTENT as fragments
           from ${table}
-          where DATA_NAME = 'fragments'`, (err, result) => {
+          where DATA_NAME = 'fragments-test' and
+          CPNY_ID = '${cpnyId}'`, (err, result) => {
             if(err){
               console.log(err)
               return
@@ -40,7 +43,8 @@ module.exports = {
 
             request.query(`select DATA_CONTENT as nlu
             from ${table}
-            where DATA_NAME = 'nlu-json'`, (err, result) => {
+            where DATA_NAME = 'nlu-json-test' and
+            CPNY_ID = '${cpnyId}'`, (err, result) => {
               if(err){
                 console.log(err)
                 return
@@ -68,25 +72,24 @@ module.exports = {
                 const domainYml = yaml.dump(domainData)
                 const configYml = yaml.dump(configData)
                 const fragmentsYml = yaml.dump(fragmentsData)
-                const zh = nluData
-                let model = ''
+                // const nluYml = yaml.dump(nluData)
 
+                let model = ''
                 if(table == 'BF_JH_TRAINING_DATA'){
                   model = 'model-johnnyHire'
                 }else{
                   model = 'model-customerService'
                 }
                 let data = {
-                  'config': {configYml},
-                  'nlu': {zh},
+                  'config': configYml,
+                  'nlu': {nluData},
                   'domain': domainYml,
-                  'fragments': fragmentsYml,
-                  'fixed_model_name': model,
-                  'load_model_after': true
+                  'stories': fragmentsYml,
                 }
-
+                console.log(data)
                 resolve(data)
               } catch (error) {
+                console.log(error)
                 return reject({status: 'error', message: '資料格式錯誤，請重新嘗試'})
               }
             })
@@ -96,7 +99,10 @@ module.exports = {
     })
   },
 
-  getSqlTrainingData: (table, columnName, dataName) => {
+  getSqlTrainingData: (table, columnName, dataName, cpnyId) => {
+    if(!table || !columnName || !dataName || !cpnyId ){
+      console.log('抓取資料庫模組參數不齊全')
+    }
     // 用Promise控制流程
     return new Promise(function(resolve, reject){
       const path = require('path')
@@ -105,16 +111,77 @@ module.exports = {
       // 從資料庫抓取訓練檔
       request.query(`select DATA_CONTENT as ${dataName}
       from ${table}
-      where DATA_NAME = '${columnName}'`, (err, result) => {
+      where DATA_NAME = '${columnName}' and
+      CPNY_ID = '${cpnyId}'`, (err, result) => {
         if(err){
           console.log(err)
           return
         }
         try{
-          const fragments = JSON.parse(result.recordset[0][dataName])
-          resolve(fragments)
+          const data = JSON.parse(result.recordset[0][dataName])
+          resolve(data)
         } catch(err){
-          resolve({status: 'error', message: '資料庫還未有資料'})
+          let data = {}
+          switch (dataName) {
+            case 'domain':
+              data = {
+                actions: [],
+                entities: [],
+                forms: {},
+                intents: [],
+                responses: {},
+                session_config: {
+                  session_expiration_time:60,
+                  carry_over_slots_to_new_session:true
+                },
+                slots: {}
+              }
+              request.input('cpnyId', sql.NVarChar(30), cpnyId)
+              .input('data_name', sql.NVarChar(50), 'domain-test')
+              .input('data_content', sql.NVarChar(sql.MAX), JSON.stringify(data))
+              .query(`insert into BF_JH_DATA_TEST(CPNY_ID, DATA_NAME, DATA_CONTENT)
+              values (@cpnyId, @data_name, @data_content)`, (err, result) => {
+                if(err){
+                  console.log(err)
+                  return
+                }
+              })
+              break;
+            case 'nlu':
+              data =  {
+                rasa_nlu_data: {
+                    common_examples:[]
+                }
+            }
+              request.input('cpnyId', sql.NVarChar(30), cpnyId)
+              .input('data_name', sql.NVarChar(50), 'nlu-json-test')
+              .input('data_content', sql.NVarChar(sql.MAX), JSON.stringify(data))
+              .query(`insert into BF_JH_DATA_TEST(CPNY_ID, DATA_NAME, DATA_CONTENT)
+              values (@cpnyId, @data_name, @data_content)`, (err, result) => {
+                if(err){
+                  console.log(err)
+                  return
+                }
+              })
+              break;
+            case 'fragments':
+              data = {
+                stories: []
+              }
+              request.input('cpnyId', sql.NVarChar(30), cpnyId)
+              .input('data_name', sql.NVarChar(50), 'fragments-test')
+              .input('data_content', sql.NVarChar(sql.MAX), JSON.stringify(data))
+              .query(`insert into BF_JH_DATA_TEST(CPNY_ID, DATA_NAME, DATA_CONTENT)
+              values (@cpnyId, @data_name, @data_content)`, (err, result) => {
+                if(err){
+                  console.log(err)
+                  return
+                }
+              })
+            default:
+              break;
+          }
+          resolve(data)
         }
       })
     })

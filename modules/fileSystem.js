@@ -926,7 +926,10 @@ module.exports = {
     .catch(err => console.log(err))
   },
 
-  fsSqlUpdate: (filePath, data, table, columnName, response, request, res) => {
+  fsSqlUpdate: (filePath, data, table, columnName, response, request, res, cpnyId) => {
+    if(!filePath || !data || !table || !columnName || !response || !request || !res || !cpnyId ){
+      console.log('寫檔模組參數不齊全')
+    }
     // 寫檔
     fs.writeFileSync(path.resolve(__dirname, filePath), JSON.stringify(data) , 'utf-8', 0o666, 'as+')
 
@@ -938,7 +941,8 @@ module.exports = {
     // 更新資料庫
     request.query(`update ${table}
     set DATA_CONTENT = '${updateData}'
-    where DATA_NAME = '${columnName}'`, (err, result) => {
+    where DATA_NAME = '${columnName}' and
+    CPNY_ID = '${cpnyId}'`, (err, result) => {
       if(err){
         console.log(err)
         return
