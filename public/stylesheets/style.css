@@ -2390,13 +2390,20 @@ button.close:hover:before {
 #userTextBox .content {
   height: 90vh;
 }
+
+#userTextBox .content .userBoxTitle #entity-text {
+  display: flex;
+}
+
 #userTextBox form {
   height: calc(100% - 30px);
 }
+
 #userTextBox #textExams-panel {
   height: calc(100% - 86px);
   overflow: auto;
 }
+
 #userTextBox
   #textExams-panel
   .textExams--examples
