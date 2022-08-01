@@ -929,6 +929,9 @@ header a:first-of-type {
 #intent-span {
   background-color: #f0ad4e;
 }
+#intent-span.errorIntent {
+  background-color: red;
+}
 #entities-span {
   background-color: #4bbf73;
 }
@@ -1100,7 +1103,8 @@ header a:first-of-type {
 }
 .examples-entity-box {
   width: 65vh;
-  padding: 10px;
+  padding: 20px;
+  /* padding-bottom: 10px; */
   margin-top: 5px;
   text-align: center;
   border-radius: 5px;
@@ -1131,7 +1135,18 @@ header a:first-of-type {
   padding-top: 10px;
   display: flex;
   justify-content: flex-end;
+  align-items: center;
 }
+
+.textExams--footer #errorMessageBox {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.textExams--footer #errorMessageBox .errorMessageSpan {
+  color: red;
+}
+
 .textExams--footer > button:not(:first-child) {
   margin-left: 5px;
 }
@@ -2370,4 +2385,25 @@ button.close:hover:before {
   50% {
     opacity: 1;
   }
+}
+
+#userTextBox .content {
+  height: 90vh;
+}
+#userTextBox form {
+  height: calc(100% - 30px);
+}
+#userTextBox #textExams-panel {
+  height: calc(100% - 86px);
+  overflow: auto;
+}
+#userTextBox
+  #textExams-panel
+  .textExams--examples
+  .textExams-span
+  #textExams-div
+  .examples-entity-label
+  div
+  + .examples-entity-box {
+  display: none;
 }

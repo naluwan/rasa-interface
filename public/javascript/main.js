@@ -1292,57 +1292,74 @@ Method.button.storyButton = function(){
                                     <span class="value-synonym" id="entity-value" style="color: rgb(${textColor});font-weight: bold;">≪"${entityEle.value}"≫</span>
                                     `
                                 }
+
+                                currentUserText += `
+                                        </span>
+                                    </div>
+                                `
                             }else{
                                 // 例句
-                                bkgColor = titleInfo[entityEle.entity].bkgColor
-                                textColor = titleInfo[entityEle.entity].textColor
+                                /***************** 用來判斷使用者例句 ******************/
+
+                                if(Object.keys(titleInfo).indexOf(entityEle.entity) > -1){
+                                    // 有重複關鍵字代號則使用該關鍵字的背景色及文字顏色
+                                    bkgColor = titleInfo[entityEle.entity].bkgColor
+                                    textColor = titleInfo[entityEle.entity].textColor
+                                }else{
+                                    // 沒有重複關鍵字就產生新顏色
+                                    bkgColor = randomRgba()
+                                    textColor = entityTextColor(bkgColor)
+                                    colorObj[entityEle.entity] = {bkgColor, textColor}
+                                }
+                                /***************** 用來判斷使用者例句 ******************/
+
                                 currentUserText += `
                                     <span>
                                         <div class="examples-entity-label" style="background: rgba(${bkgColor}, 0.5);">
-                                            <span class="examples-entity-box entity-info" style="display:none;">
-                                                    <span class="examples-entity-title entity-info">編輯關鍵字資訊</span>
-                                                    <div>
-                                                        <label for="entity-code-input" class="entity-info">代號</label>
-                                                        <input id="entity-code-input" type="text" class="form-control entity-info" value="${entityEle.entity}">
-                                                        <button type="button" id="entity-code-removeBtn" class="btn btn-danger entity-info"><i class="fas fa-trash-alt"></i></button>
-                                                    </div>
+                                            <div>
+                                                <span id="examples-entity-text">
+                                                    ${textTmp}
                                 `
 
-                                if(textTmp != entityEle.value){
-                                    currentUserText += `
-                                        <div>
-                                            <label for="entity-value-input" class="entity-info">代表值</label>
-                                            <input id="entity-value-input" type="text" class="form-control entity-info" value="${entityEle.value}">
-                                            <button type="button" id="entity-value-removeBtn" class="btn btn-danger entity-info"><i class="fas fa-trash-alt"></i></button>
-                                        </div>
-                                    `
-                                }else{
-                                    currentUserText += `
-                                        <div class="entity-option-btns entity-info">
-                                            <button type="button" id="entity-value-addBtn" class="btn btn-info entity-info"><i class="fas fa-plus" style="margin-right: 5px;"></i>代表值</button>
-                                        </div>
-                                    `
-                                }
-                                
-                                currentUserText += `
-                                    </span>
-                                    <div>
-                                        <span id="examples-entity-text">
-                                            ${textTmp}
-                                `
-                                
                                 if(textTmp != entityEle.value){
                                     currentUserText += `
                                     <span class="value-synonym" id="examples-entity-value" style="color: rgb(${textColor});font-weight: bold;">≪"${entityEle.value}"≫</span>
                                     `
                                 }
+
+                                currentUserText += `
+                                    </span>
+                                </div>
+                                <span class="examples-entity-box entity-info">
+                                    <span class="examples-entity-title entity-info">編輯關鍵字資訊</span>
+                                    <div>
+                                        <label for="entity-code-input" class="entity-info">代號</label>
+                                        <input id="entity-code-input" type="text" class="form-control entity-info" value="${entityEle.entity}">
+                                        <button type="button" id="entity-code-removeBtn" class="btn btn-danger entity-info"><i class="fas fa-trash-alt"></i></button>
+                                    </div>
+                                `
+
+                                if(textTmp != entityEle.value){
+                                    currentUserText += `
+                                            <div>
+                                                <label for="entity-value-input" class="entity-info">代表值</label>
+                                                <input id="entity-value-input" type="text" class="form-control entity-info" value="${entityEle.value}">
+                                                <button type="button" id="entity-value-removeBtn" class="btn btn-danger entity-info"><i class="fas fa-trash-alt"></i></button>
+                                            </div>
+                                    `
+                                }else{
+                                    currentUserText += `
+                                            <div class="entity-option-btns entity-info">
+                                                <button type="button" id="entity-value-addBtn" class="btn btn-info entity-info"><i class="fas fa-plus" style="margin-right: 5px;"></i>代表值</button>
+                                            </div>
+                                    `
+                                }
                             }
 
                             currentUserText += `
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </span>
+                                            
+                                    </div>
+                                </span>
                             `
                         })
 
