@@ -1462,7 +1462,7 @@ Method.button.storyButton = function(){
                                         userSays: data.text,
                                         intent: data.intent.name
                                     }
-                                    fetch(`http://192.168.10.127:3030/jh_story/userStep`,{
+                                    fetch(`http://192.168.10.127:3030/jh_story/userStep/fragments`,{
                                         method: 'delete',
                                         body: JSON.stringify(payload),
                                         headers: {
@@ -1576,7 +1576,7 @@ Method.button.storyButton = function(){
                                         userSays: data.text,
                                         intent: data.intent.name
                                     }
-                                    fetch(`http://192.168.10.127:3030/jh_story/userStep`,{
+                                    fetch(`http://192.168.10.127:3030/jh_story/userStep/fragments`,{
                                         method: 'delete',
                                         body: JSON.stringify(payload),
                                         headers: {
