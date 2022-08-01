@@ -879,29 +879,68 @@ Method.button.storyButton = function(){
                         userTextBox.addEventListener('click', e => {
                             const target = e.target
 
-                            // 隱藏關鍵字資訊彈跳窗
-                            const allEntityBox = document.querySelectorAll('.examples-entity-box')
-                            allEntityBox.forEach(entityBox => {
-                                if(entityBox.dataset.status == 'show' && !target.matches('.entity-info') && target.tagName != 'svg' && target.tagName != 'path'){
-                                    entityBox.setAttribute('style', 'display: none;')
-                                    entityBox.setAttribute('data-status', 'hidden')
-                                }
-                            })
-
                             // 顯示關鍵字資訊彈跳窗
                             if(target.matches('#examples-entity-text')){
-                                const entityBox = target.parentElement.previousElementSibling
-                                entityBox.setAttribute('style', 'display: inline-block;position: absolute;top: 100%;left: 0;right: auto;background-color: #ccc;z-index:9999;')
+                                /*
+                                examplesEntityLabel => 原始entityBox所在的dom元素
+                                entityBox => 要顯示的entityBox的dom元素
+                                entityBoxIndex => 要顯示的entityBox dom元素在所有entityBox dom元素的index
+                                currentEntityBox => 透過entityBoxIndex在所有entityBox dom元素中取得的正確entityBox dom元素(這一個才可以操作)
+                                closeShowBox => showBox關閉視窗後要執行的程式碼，這邊是將entityBox的data-status設回hidden，並將entityBox塞回原本的dom元素底下
+                                */
+                                const examplesEntityLabel = target.parentElement.parentElement
+                                const entityBox = target.parentElement.nextElementSibling
                                 entityBox.setAttribute('data-status', 'show')
+                                const allEntityBox = document.querySelectorAll('.examples-entity-box')
+                                let entityBoxIndex
+                                for(i = 0; i < allEntityBox.length; i++){
+                                    if(allEntityBox[i].dataset.status === 'show'){
+                                        entityBoxIndex = i
+                                    }
+                                }
+                                const currentEntityBox = allEntityBox[entityBoxIndex]
+                                
+                                Method.common.showBox('', 'entityShowBox', '',closeShowBox)
+                                document.querySelector('#entityShowBox .content').appendChild(entityBox)
+
+                                function closeShowBox(){
+                                    currentEntityBox.setAttribute('data-status', 'hidden')
+                                    examplesEntityLabel.appendChild(currentEntityBox)
+                                }
                             }
 
                             // 顯示關鍵字資訊彈跳窗
                             if(target.matches('#examples-entity-value')){
+                                const examplesEntityLabel = target.parentElement.parentElement.parentElement
                                 const entityBox = target.parentElement.parentElement.previousElementSibling
-                                entityBox.setAttribute('style', 'display: inline-block;position: absolute;top: 100%;left: 0;right: auto;background-color: #ccc;z-index:9999;')
                                 entityBox.setAttribute('data-status', 'show')
+                                const allEntityBox = document.querySelectorAll('.examples-entity-box')
+                                let entityBoxIndex
+                                for(i = 0; i < allEntityBox.length; i++){
+                                    if(allEntityBox[i].dataset.status === 'show'){
+                                        entityBoxIndex = i
+                                    }
+                                }
+                                const currentEntityBox = allEntityBox[entityBoxIndex]
+                                
+                                Method.common.showBox('', 'entityShowBox', '',closeShowBox)
+                                document.querySelector('#entityShowBox .content').appendChild(entityBox)
+
+                                function closeShowBox(){
+                                    currentEntityBox.setAttribute('data-status', 'hidden')
+                                    examplesEntityLabel.appendChild(currentEntityBox)
+                                }
                             }
+
+                            
                         })
+
+                        // const allExampleEntityTexts = document.querySelectorAll('#examples-entity-text')
+                        // allExampleEntityTexts.forEach(exampleEntityText => {
+                        //     exampleEntityText.addEventListener('click', (e) => {
+                        //         console.log(e.target)
+                        //     })
+                        // })
 
                         // 彈跳窗典範按鈕點擊事件
                         const starBtns = document.querySelectorAll('#textExams--actionBtn_starBtn')
@@ -1330,7 +1369,7 @@ Method.button.storyButton = function(){
                                 currentUserText += `
                                     </span>
                                 </div>
-                                <span class="examples-entity-box entity-info">
+                                <span class="examples-entity-box entity-info" data-status="hidden">
                                     <span class="examples-entity-title entity-info">編輯關鍵字資訊</span>
                                     <div>
                                         <label for="entity-code-input" class="entity-info">代號</label>
