@@ -764,6 +764,7 @@ Method.button.storyButton = function(){
 
         // storySpan點擊事件
         // 由於userInput變成disabled之後，點擊事件無法運作，所以將點擊事件加在storySpan上
+        // 新增例句彈跳窗
         storySpan.addEventListener('click', e => {
             const target = e.target
 
@@ -787,16 +788,16 @@ Method.button.storyButton = function(){
                     let examsTitleHtml = ''
                     data.forEach(item => {
                         if(item.text == userText && item.intent == intent){
-                            if(item.entities.length){
+                            // if(item.entities.length){
                                 examsTitleHtml = createTextHtml(item, userText)
-                            }
+                            // }
                         }
                     })
 
 
                     let html = `
                     <div class="userBoxTitle">
-                        <span class="userTextTitle">${examsTitleHtml.text}</span>
+                        <span class="userTextTitle" id="userTextTitle">${examsTitleHtml.text}</span>
                         <span id="intent-span" class="nluSpan"><i class="fas fa-tag" style="font-size: 7px;"></i><span id="intent-text" class="nluText">${intent}</span></span>
                     </div>
                     <form action="" name="userTextExam" style="width:800px;">
@@ -804,7 +805,8 @@ Method.button.storyButton = function(){
                         <div id="textExams-panel">
                     `
 
-                    html = createTextsFunc(data, html, examsTitleHtml)
+                    const filterData = data.filter(item => item.text !== userText)
+                    html = createTextsFunc(filterData, html, examsTitleHtml)
 
                     // 產生使用者例句 function
                     function createTextsFunc(data, html, examsTitleHtml){
@@ -840,6 +842,7 @@ Method.button.storyButton = function(){
                     html += `
                     </div>
                     <div class="textExams--footer">
+                        <div id="errorMessageBox"></div>
                         <button id="sendExam" type="button" class="btn btn-info">送出</button>
                     </div>
                 </form>
@@ -981,11 +984,13 @@ Method.button.storyButton = function(){
                                 // 點擊編輯按鈕function
                                 function clickEditBtn(targetElement, targetInput){
                                     let entityText = targetElement.innerText
+                                    const exampleTitle = sliceText(document.querySelector('#userTextTitle').innerText)
                                     entityText = sliceText(entityText)
                                     targetElement.setAttribute('class', 'editing')
                                     targetInput.setAttribute('class', 'editing')
                                     targetInput.value = entityText
                                     localStorage.setItem('editExamText', entityText)
+                                    localStorage.setItem('exampleTitle', exampleTitle)
 
                                     // 編輯輸入框enter事件
                                     const allEntityTextInput = document.querySelectorAll('#entityTextInput')
@@ -997,7 +1002,7 @@ Method.button.storyButton = function(){
                                                 target.previousElementSibling.setAttribute('class', 'waiting')
                                                 target.parentElement.nextElementSibling.children[0].children[0].children[0].removeAttribute('disabled')
                                                 let arrayNum
-                                                if(target.value == entityText) return
+                                                if(target.value === entityText || target.value === '') return
 
                                                 const editingExamText = localStorage.getItem('editExamText')
 
@@ -1013,18 +1018,19 @@ Method.button.storyButton = function(){
                                                     const newExamText = {
                                                         text: textParse.text,
                                                         intent: textParse.intent.name,
-                                                        entities: textParse.entities,
-                                                        metadata: {
-                                                            language: 'zh'
-                                                        }
+                                                        entities: textParse.entities
                                                     }
                                                     data.splice(arrayNum, 1, newExamText)
                                                     return data
                                                 })
                                                 .then(newData => {
+                                                    const exampleTitle = localStorage.getItem('exampleTitle')
+                                                    newData = newData.filter(item => item.text !== exampleTitle)
+
                                                     let newExamHtml = ''
                                                     newExamHtml = createTextsFunc(newData, newExamHtml, examsTitleHtml)
                                                     document.querySelector('#textExams-panel').innerHTML = newExamHtml
+                                                    checkAllExampleIntent()
                                                     eventFunc()
                                                 })
                                                 .catch(err => console.log(err))
@@ -1041,6 +1047,38 @@ Method.button.storyButton = function(){
                                             entityText = entityText.replace(entityValueText, '')
                                         }
                                         return entityText
+                                    }
+
+                                    // 檢核所有例句的意圖
+                                    // TODO:意圖還未檢查
+                                    function checkAllExampleIntent(){
+                                        const allIntent = document.querySelectorAll('.content #intent-text')
+                                        const checkError = []
+                                        Array.from(allIntent).map(item => {
+                                            if(item.innerText !== allIntent[0].innerText){
+                                                item.parentElement.classList.toggle('errorIntent')
+                                                checkError.push('例句意圖不符')
+                                            }
+                                        })
+                                        if(checkError.length){
+                                            checkError.forEach(text => createErrorMessage(text))
+                                            document.querySelector('#sendExam').setAttribute('disabled', '')
+                                        }else{
+                                            document.querySelector('#sendExam').removeAttribute('disabled')
+                                            document.querySelector('#errorMessageBox').innerHTML = ''
+                                        }
+                                    }
+
+                                    // 新增錯誤訊息
+                                    function createErrorMessage(messageText){
+                                        const errorMessageBox = document.querySelector('#errorMessageBox')
+                                        const errorMessageSpan = document.createElement('span')
+                                        errorMessageSpan.setAttribute('class', 'errorMessageSpan')
+                                        errorMessageSpan.innerText = messageText
+                                        const allErrorSpan = document.querySelectorAll('.errorMessageSpan')
+                                        if((Array.from(allErrorSpan).map(item => item.innerText).indexOf === -1) || allErrorSpan.length === 0){
+                                            errorMessageBox.appendChild(errorMessageSpan)
+                                        }
                                     }
                                 }
                             })
