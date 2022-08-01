@@ -591,6 +591,7 @@ Method.button.storyButton = function(){
         input.setAttribute('class', 'form-control story-user');
         input.setAttribute('data-event', 'blur')
         input.setAttribute('data-status', 'waiting')
+        input.setAttribute('autocomplete', 'off')
 
         const removeBtn = document.createElement('button');
         removeBtn.setAttribute('type', 'button');
@@ -801,7 +802,7 @@ Method.button.storyButton = function(){
                         <span id="intent-span" class="nluSpan"><i class="fas fa-tag" style="font-size: 7px;"></i><span id="intent-text" class="nluText">${intent}</span></span>
                     </div>
                     <form action="" name="userTextExam" style="width:800px;">
-                        <input type="text" class="form-control" name="userExamInput" id="userExamInput" placeholder="使用者說...">
+                        <input type="text" class="form-control" name="userExamInput" id="userExamInput" placeholder="使用者說..." autocomplete="off">
                         <div id="textExams-panel">
                     `
 
@@ -912,7 +913,7 @@ Method.button.storyButton = function(){
                             // 顯示關鍵字資訊彈跳窗
                             if(target.matches('#examples-entity-value')){
                                 const examplesEntityLabel = target.parentElement.parentElement.parentElement
-                                const entityBox = target.parentElement.parentElement.previousElementSibling
+                                const entityBox = target.parentElement.parentElement.nextElementSibling
                                 entityBox.setAttribute('data-status', 'show')
                                 const allEntityBox = document.querySelectorAll('.examples-entity-box')
                                 let entityBoxIndex
@@ -934,13 +935,6 @@ Method.button.storyButton = function(){
 
                             
                         })
-
-                        // const allExampleEntityTexts = document.querySelectorAll('#examples-entity-text')
-                        // allExampleEntityTexts.forEach(exampleEntityText => {
-                        //     exampleEntityText.addEventListener('click', (e) => {
-                        //         console.log(e.target)
-                        //     })
-                        // })
 
                         // 彈跳窗典範按鈕點擊事件
                         const starBtns = document.querySelectorAll('#textExams--actionBtn_starBtn')
@@ -1023,7 +1017,7 @@ Method.button.storyButton = function(){
                                 // 點擊編輯按鈕function
                                 function clickEditBtn(targetElement, targetInput){
                                     let entityText = targetElement.innerText
-                                    const exampleTitle = sliceText(document.querySelector('#userTextTitle').innerText)
+                                    const exampleTitle = sliceText(document.querySelector('#userTextTitle').innerText).trim()
                                     entityText = sliceText(entityText)
                                     targetElement.setAttribute('class', 'editing')
                                     targetInput.setAttribute('class', 'editing')
@@ -1089,7 +1083,7 @@ Method.button.storyButton = function(){
                                     }
 
                                     // 檢核所有例句的意圖
-                                    // TODO:意圖還未檢查
+                                    // TODO:關鍵字還未檢查
                                     function checkAllExampleIntent(){
                                         const allIntent = document.querySelectorAll('.content #intent-text')
                                         const checkError = []
@@ -1099,6 +1093,10 @@ Method.button.storyButton = function(){
                                                 checkError.push('例句意圖不符')
                                             }
                                         })
+                                        
+                                        const allEntityNames = document.querySelectorAll('.content #userBoxTitle .entity-name')
+                                        const EntityNameArray = Array.from(allEntityNames).map(entity => entity.innerText) 
+                                        console.log('EntityNameArray', EntityNameArray)
                                         if(checkError.length){
                                             checkError.forEach(text => createErrorMessage(text))
                                             document.querySelector('#sendExam').setAttribute('disabled', '')
@@ -1148,41 +1146,44 @@ Method.button.storyButton = function(){
                     })
 
                     // 彈跳窗例句輸入框失焦事件
-                    userExamInput.addEventListener('blur', e => {
-                        const target = e.target
-                        const examText = target.value
-                        if(target.dataset.event != 'blur' || !examText) return
-                        // 串接後端API - 將使用者輸入的字句判斷意圖及關鍵字
-                        fetch(`http://192.168.10.127:3030/jh_story/parse?userInput=${examText}`)
-                        .then(response => response.json())
-                        .then(inputParse => {
-                            // 將回傳的判斷組成新的例句object
-                            const newExam = {
-                                text: inputParse.text,
-                                intent: inputParse.intent.name,
-                                entities: inputParse.entities,
-                                metadata: {
-                                    language: 'zh'
-                                }
-                            }
-                            // 驗證是否重複
-                            const repeatExam = data.filter(item => item.text == newExam.text)
-                            if(!repeatExam.length){
-                                data.push(newExam)
-                                let newExamHtml = ''
-                                newExamHtml = createTextsFunc(data, newExamHtml, examsTitleHtml)
-                                document.querySelector('#textExams-panel').innerHTML = newExamHtml
-                                eventFunc()
-                                userExamInput.value = ''
-                            }
-                        })
-                        .catch(err => console.log(err))
-                    })
+                    // userExamInput.addEventListener('blur', e => {
+                    //     const target = e.target
+                    //     const examText = target.value
+                    //     if(target.dataset.event != 'blur' || !examText) return
+                    //     // 串接後端API - 將使用者輸入的字句判斷意圖及關鍵字
+                    //     fetch(`http://192.168.10.127:3030/jh_story/parse?userInput=${examText}`)
+                    //     .then(response => response.json())
+                    //     .then(inputParse => {
+                    //         // 將回傳的判斷組成新的例句object
+                    //         const newExam = {
+                    //             text: inputParse.text,
+                    //             intent: inputParse.intent.name,
+                    //             entities: inputParse.entities,
+                    //             metadata: {
+                    //                 language: 'zh'
+                    //             }
+                    //         }
+                    //         // 驗證是否重複
+                    //         const repeatExam = data.filter(item => item.text == newExam.text)
+                    //         if(!repeatExam.length){
+                    //             data.push(newExam)
+                    //             let newExamHtml = ''
+                    //             newExamHtml = createTextsFunc(data, newExamHtml, examsTitleHtml)
+                    //             document.querySelector('#textExams-panel').innerHTML = newExamHtml
+                    //             eventFunc()
+                    //             userExamInput.value = ''
+                    //         }
+                    //     })
+                    //     .catch(err => console.log(err))
+                    // })
 
                     // 彈跳窗例句輸入框按鍵事件
                     userExamInput.addEventListener('keydown', e => {
+                        e.preventDefault()
                         const target = e.target
+                        const exampleTitle = sliceText(document.querySelector('#userTextTitle').innerText)
                         const examText = target.value
+                        localStorage.setItem('exampleTitle', exampleTitle)
                         if(e.keyCode == 13){
                             if(!examText) return
                             target.setAttribute('data-event', 'keydown')
@@ -1194,23 +1195,72 @@ Method.button.storyButton = function(){
                                 const newExam = {
                                     text: inputParse.text,
                                     intent: inputParse.intent.name,
-                                    entities: inputParse.entities,
-                                    metadata: {
-                                        language: 'zh'
-                                    }
+                                    entities: inputParse.entities
                                 }
                                 // 驗證是否重複
                                 const repeatExam = data.filter(item => item.text == newExam.text)
                                 if(!repeatExam.length){
                                     data.push(newExam)
-                                    let newExamHtml = ''
-                                    newExamHtml = createTextsFunc(data, newExamHtml, examsTitleHtml)
-                                    document.querySelector('#textExams-panel').innerHTML = newExamHtml
-                                    eventFunc()
-                                    userExamInput.value = ''
+                                    return data
                                 }
                             })
+                            .then(newData => {
+                                const exampleTitle = localStorage.getItem('exampleTitle')
+                                console.log('新增例句exampleTitle', exampleTitle)
+                                newData = newData.filter(item => item.text !== exampleTitle)
+                                console.log('新增例句newData', newData)
+                                let newExamHtml = ''
+                                newExamHtml = createTextsFunc(newData, newExamHtml, examsTitleHtml)
+                                document.querySelector('#textExams-panel').innerHTML = newExamHtml
+                                checkAllExampleIntent()
+                                eventFunc()
+                                userExamInput.value = ''
+                            })
                             .catch(err => console.log(err))
+                        }
+
+                        // 擷取例句字串function
+                        function sliceText(entityText){
+                            entityText = entityText.replace(/\n/g, '')
+                            while(entityText.indexOf('≪') > -1){
+                                const startNum = entityText.indexOf('≪')
+                                const endNum = entityText.indexOf('≫')
+                                const entityValueText = entityText.slice(startNum, endNum + 1)
+                                entityText = entityText.replace(entityValueText, '')
+                            }
+                            return entityText.trim()
+                        }
+
+                        // 檢核所有例句的意圖
+                        // TODO:關鍵字還未檢查
+                        function checkAllExampleIntent(){
+                            const allIntent = document.querySelectorAll('.content #intent-text')
+                            const checkError = []
+                            Array.from(allIntent).map(item => {
+                                if(item.innerText !== allIntent[0].innerText){
+                                    item.parentElement.classList.toggle('errorIntent')
+                                    checkError.push('例句意圖不符')
+                                }
+                            })
+                            if(checkError.length){
+                                checkError.forEach(text => createErrorMessage(text))
+                                document.querySelector('#sendExam').setAttribute('disabled', '')
+                            }else{
+                                document.querySelector('#sendExam').removeAttribute('disabled')
+                                document.querySelector('#errorMessageBox').innerHTML = ''
+                            }
+                        }
+
+                        // 新增錯誤訊息
+                        function createErrorMessage(messageText){
+                            const errorMessageBox = document.querySelector('#errorMessageBox')
+                            const errorMessageSpan = document.createElement('span')
+                            errorMessageSpan.setAttribute('class', 'errorMessageSpan')
+                            errorMessageSpan.innerText = messageText
+                            const allErrorSpan = document.querySelectorAll('.errorMessageSpan')
+                            if((Array.from(allErrorSpan).map(item => item.innerText).indexOf === -1) || allErrorSpan.length === 0){
+                                errorMessageBox.appendChild(errorMessageSpan)
+                            }
                         }
                     })
 
@@ -1326,6 +1376,7 @@ Method.button.storyButton = function(){
                                                 <span id="entity-text">
                                                     ${textTmp}
                                 `
+
                                 if(textTmp != entityEle.value){
                                     currentUserText += `
                                     <span class="value-synonym" id="entity-value" style="color: rgb(${textColor});font-weight: bold;">≪"${entityEle.value}"≫</span>
@@ -1396,7 +1447,6 @@ Method.button.storyButton = function(){
                             }
 
                             currentUserText += `
-                                            
                                     </div>
                                 </span>
                             `
@@ -1414,7 +1464,7 @@ Method.button.storyButton = function(){
                         currentUserText += `</div>`
 
                         if(titleInfo){
-                            currentUserText += `<input class="waiting" type="text" name="entityTextInput" id="entityTextInput" style="width: 100%;">`
+                            currentUserText += `<input class="waiting" type="text" name="entityTextInput" id="entityTextInput" style="width: 100%;" autocomplete="off">`
                         }
                         
                         return {text: currentUserText, titleInfo: colorObj}
@@ -2229,7 +2279,7 @@ Method.button.storyButton = function(){
                             <span class="setExamInfo--content">
                                 <input class="setExamInfo--examText form-control" value="${examText}" readonly>
                                 <span class="setExamInfo--intents">
-                                    <input id="intentInput" name="intentInput" type="text" class="form-control" placeholder="請選擇意圖或新增意圖">
+                                    <input id="intentInput" name="intentInput" type="text" class="form-control" placeholder="請選擇意圖或新增意圖" autocomplete="off">
                                     <span class="setExamInfo--intents_list list--disabled">${intentHtml}</span>
                                 </span>
                                 <span class="setExamInfo--entities">
