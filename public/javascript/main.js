@@ -498,9 +498,11 @@ Method.button.storyButton = function(){
                 for(i = 0; i < allIntentBtn.length; i++){
                     const attrSpan = allIntentBtn[i].parentElement.parentElement.previousElementSibling.lastChild
                     const hasIntent = []
-                    if(attrSpan.children[0].id === 'intent-span'){
-                        hasIntent.push(attrSpan.children[0])
+                    if(!attrSpan.children[0]){
+                        return
                     }
+
+                    hasIntent.push(attrSpan.children[0])
                     
                     if(hasIntent.length){
                         allIntentBtn[i].style.visibility = 'hidden'
