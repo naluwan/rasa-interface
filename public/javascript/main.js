@@ -2174,6 +2174,560 @@ Method.button.storyButton = function(){
                 intent = target.parentElement.nextElementSibling.innerText.slice(4, target.parentElement.nextElementSibling.innerText.length)
             }
 
+
+    /**************************** 共用function *********************************/
+    // 擷取例句字串function
+    function sliceText(entityText){
+        entityText = entityText.replace(/\n/g, '')
+        while(entityText.indexOf('≪') > -1){
+            const startNum = entityText.indexOf('≪')
+            const endNum = entityText.indexOf('≫')
+            const entityValueText = entityText.slice(startNum, endNum + 1)
+            entityText = entityText.replace(entityValueText, '')
+        }
+        return entityText
+    }
+
+    // 檢核所有例句的意圖
+    // TODO:關鍵字還未檢查
+    function checkAllExampleIntent(){
+        const allIntent = document.querySelectorAll('.content #intent-text')
+        const checkError = []
+        Array.from(allIntent).map(item => {
+            if(item.innerText !== allIntent[0].innerText){
+                item.parentElement.classList.toggle('errorIntent')
+                checkError.push('例句意圖不符')
+            }
+        })
+        
+        const allEntityNames = document.querySelectorAll('.content #userBoxTitle .entity-name')
+        const EntityNameArray = Array.from(allEntityNames).map(entity => entity.innerText) 
+        console.log('EntityNameArray', EntityNameArray)
+        if(checkError.length){
+            checkError.forEach(text => createErrorMessage(text))
+            document.querySelector('#sendExam').setAttribute('disabled', '')
+        }else{
+            document.querySelector('#sendExam').removeAttribute('disabled')
+            document.querySelector('#errorMessageBox').innerHTML = ''
+        }
+    }
+
+    // 新增錯誤訊息
+    function createErrorMessage(messageText){
+        const errorMessageBox = document.querySelector('#errorMessageBox')
+        const errorMessageSpan = document.createElement('span')
+        errorMessageSpan.setAttribute('class', 'errorMessageSpan')
+        errorMessageSpan.innerText = messageText
+        const allErrorSpan = document.querySelectorAll('.errorMessageSpan')
+        if((Array.from(allErrorSpan).map(item => item.innerText).indexOf === -1) || allErrorSpan.length === 0){
+            errorMessageBox.appendChild(errorMessageSpan)
+        }
+    }
+
+    // 產生使用者例句 function
+    function createTextsFunc(data, html, examsTitleHtml){
+        data.forEach(item => {
+            // 產生例句html function
+            const examsTextHtml = createTextHtml(item, item.text, examsTitleHtml.titleInfo)
+            html += `
+            <div class="textExams--examples">
+                <span>
+                    <span id="intent-span" class="nluSpan">
+                        <i class="fas fa-tag" style="font-size: 7px;"></i>
+                        <span id="intent-text" class="nluText">${item.intent}</span>
+                    </span>
+                </span>
+                <span class="textExams-span">
+                    ${examsTextHtml.text}
+                </span>
+                <span>
+                    <span class="textExams--actionBtn">
+                        <span class="textExams--actionBtn_group">
+                            <button type="button" id="textExams--actionBtn_editBtn"><i class="fas fa-edit"></i></button>
+                            <button type="button" id="textExams--actionBtn_trashBtn"><i class="fas fa-trash-alt"></i></button>
+                        </span>
+                        <button type="button" id="textExams--actionBtn_starBtn"><i class="far fa-star"></i></button>
+                    </span>
+                </span>
+            </div>
+            `
+        })
+        return html
+    }
+
+    // 關鍵字背景色產生器
+    function randomRgba(){
+        let rgba = ''
+        for(i = 0; i < 3; i++){
+            if(i == 2){
+                rgba += `${Math.floor(Math.random() * 256)}`
+            }else{
+                rgba += `${Math.floor(Math.random() * 256)}, `
+            }
+        }
+        return rgba
+    }
+
+    // 關鍵字顏色產生器
+    function entityTextColor(rgba){
+        const rgbaCode = rgba.trim().split(',')
+        let textColor = ''
+        const maxNum = rgbaCode.filter(code => code >= 128)
+        if(maxNum.length){
+            for(i = 0; i < rgbaCode.length; i++){
+                if((rgbaCode[i] - 50) < 0){
+                    rgbaCode[i] = 0
+                }else{
+                    rgbaCode[i] = rgbaCode[i] - 50
+                }
+            }
+        }else{
+            for(i = 0; i < rgbaCode.length; i++){
+                if((rgbaCode[i] + 50) > 255){
+                    rgbaCode[i] = 255
+                }else{
+                    rgbaCode[i] = rgbaCode[i] + 50
+                }
+            }
+        }
+
+        for(i = 0; i < rgbaCode.length; i++){
+            if(i == (rgbaCode.length - 1)){
+                textColor += `${rgbaCode[i]}`
+            }else{
+                textColor += `${rgbaCode[i]}, `
+            }
+        }
+        
+        return textColor
+    }
+
+    // 例句文字顏色
+    // 例句title產生顏色後回傳titleInfo
+    // 例句呼叫此函數時，帶入titleInfo，這樣例句顏色就會跟title一樣
+    function createTextHtml(item, userText, titleInfo){
+        /*
+        currentUserText: 要輸出的完整html字句
+        textTmp: 要產生的文字
+        testText: 已經產生過的文字，用來比對關鍵字以外的字串
+        bkgColor: 關鍵字背景色
+        textColor: 關鍵字代表值的文字顏色
+        colorObj: 用來儲存以產生的關鍵字代號及該關鍵字代號的背景色及文字顏色
+        */ 
+        let currentUserText = '<div class="waiting" id="textExams-div">' 
+        let textTmp = '' 
+        let testText ='' 
+        let bkgColor = ''
+        let textColor = ''
+        let colorObj = {}
+        
+        // 將entities陣列依照entity.start的大小作排序
+        // 預防有人不照字句順序添加關鍵字
+        item.entities.sort((a, b) => a.start - b.start)
+
+        item.entities.forEach(entityEle => {
+            // 判斷開頭是否有關鍵字
+            if(entityEle.start > 0 && currentUserText == '<div id="textExams-div">'){
+                textTmp = userText.slice(0, entityEle.start)
+                currentUserText += `
+                    <span>${textTmp}</span>
+                `
+                testText = textTmp
+            }
+
+            // 判斷關鍵字跟關鍵字是否間隔字串
+            if((entityEle.start - testText.length) > 0){
+                textTmp = userText.slice(testText.length, entityEle.start)
+                currentUserText += `
+                    <span>${textTmp}</span>
+                `
+                testText += textTmp
+            }
+
+            textTmp = userText.slice(entityEle.start, entityEle.end)
+            testText += textTmp
+
+            // 標題
+            if(!titleInfo){
+                // 判斷是否有重複關鍵字代號
+                if(Object.keys(colorObj).indexOf(entityEle.entity) > -1){
+                    // 有重複關鍵字代號則使用該關鍵字的背景色及文字顏色
+                    bkgColor = colorObj[entityEle.entity].bkgColor
+                    textColor = colorObj[entityEle.entity].textColor
+                }else{
+                    // 沒有重複關鍵字就產生新顏色
+                    bkgColor = randomRgba()
+                    textColor = entityTextColor(bkgColor)
+                    colorObj[entityEle.entity] = {bkgColor, textColor}
+                }
+                
+                currentUserText += `
+                    <span>
+                        <div class="entity-label" style="background: rgba(${bkgColor}, 0.5);">
+                            <span class="entity-name" style="display:none;">
+                                ${entityEle.entity}
+                            </span>
+                            <div>
+                                <span id="entity-text">
+                                    ${textTmp}
+                `
+
+                if(textTmp != entityEle.value){
+                    currentUserText += `
+                    <span class="value-synonym" id="entity-value" style="color: rgb(${textColor});font-weight: bold;">≪"${entityEle.value}"≫</span>
+                    `
+                }
+
+                currentUserText += `
+                        </span>
+                    </div>
+                `
+            }else{
+                // 例句
+                /***************** 用來判斷使用者例句 ******************/
+
+                if(Object.keys(titleInfo).indexOf(entityEle.entity) > -1){
+                    // 有重複關鍵字代號則使用該關鍵字的背景色及文字顏色
+                    bkgColor = titleInfo[entityEle.entity].bkgColor
+                    textColor = titleInfo[entityEle.entity].textColor
+                }else{
+                    // 沒有重複關鍵字就產生新顏色
+                    bkgColor = randomRgba()
+                    textColor = entityTextColor(bkgColor)
+                    colorObj[entityEle.entity] = {bkgColor, textColor}
+                }
+                /***************** 用來判斷使用者例句 ******************/
+
+                currentUserText += `
+                    <span>
+                        <div class="examples-entity-label" style="background: rgba(${bkgColor}, 0.5);">
+                            <div>
+                `
+
+                if(textTmp != entityEle.value){
+                    currentUserText += `
+                    <span id="examples-entity-text">
+                        ${textTmp}
+                        <span class="value-synonym" id="examples-entity-value" style="color: rgb(${textColor});font-weight: bold;">≪"${entityEle.value}"≫</span>
+                    `
+                }else{
+                    currentUserText += `
+                    <span id="examples-entity-text" class="entity-no-value">
+                        ${textTmp}
+                    `
+                }
+
+                currentUserText += `
+                    </span>
+                </div>
+                <span class="examples-entity-box entity-info" data-status="hidden">
+                    <span class="examples-entity-title entity-info">編輯關鍵字資訊</span>
+                    <div>
+                        <label for="entity-code-input" class="entity-info">代號</label>
+                        <input id="entity-code-input" type="text" class="form-control entity-info" value="${entityEle.entity}">
+                        <button type="button" id="entity-code-removeBtn" class="btn btn-danger entity-info"><i class="fas fa-trash-alt"></i></button>
+                    </div>
+                `
+
+                if(textTmp != entityEle.value){
+                    currentUserText += `
+                            <div>
+                                <label for="entity-value-input" class="entity-info">代表值</label>
+                                <input id="entity-value-input" type="text" class="form-control entity-info" value="${entityEle.value}">
+                                <button type="button" id="entity-value-removeBtn" class="btn btn-danger entity-info"><i class="fas fa-trash-alt"></i></button>
+                            </div>
+                    `
+                }else{
+                    currentUserText += `
+                            <div class="entity-option-btns entity-info">
+                                <button type="button" id="entity-value-addBtn" class="btn btn-info entity-info"><i class="fas fa-plus" style="margin-right: 5px;"></i>代表值</button>
+                            </div>
+                    `
+                }
+            }
+
+            currentUserText += `
+                    </div>
+                </span>
+            `
+        })
+
+        // 判斷最後一個關鍵字後方是否還有字串
+        if(userText.length - testText.length > 0){
+            textTmp = userText.slice(testText.length, userText.length)
+            currentUserText += `
+                <span>${textTmp}</span>
+            `
+            testText += textTmp
+        }
+        
+        currentUserText += `</div>`
+
+        if(titleInfo){
+            currentUserText += `<input class="waiting" type="text" name="entityTextInput" id="entityTextInput" style="width: 100%;" autocomplete="off">`
+        }
+        
+        return {text: currentUserText, titleInfo: colorObj}
+    }
+
+    // 例句操作按鈕事件function
+    function eventFunc(data, examsTitleHtml){
+        // 彈跳窗例句滑鼠事件
+        const allTextExams = document.querySelectorAll('.textExams--examples')
+        allTextExams.forEach(element => {
+            // 顯示操作按鈕
+            element.addEventListener('mouseenter', e => {
+                const target = e.target
+                target.children[2].children[0].setAttribute('style', 'visibility:visible')
+            })
+
+            // 隱藏操作按鈕
+            element.addEventListener('mouseleave', e => {
+                const target = e.target
+                target.children[2].children[0].setAttribute('style', 'visibility:hidden')
+                if(target.lastElementChild.lastElementChild.lastElementChild.children[0].classList.value.includes('fa fa-star') && 
+                target.lastElementChild.lastElementChild.lastElementChild.children[0].dataset.prefix == 'fas'){
+                    target.lastElementChild.lastElementChild.lastElementChild.setAttribute('style', 'visibility:visible')
+                }
+            })
+        })
+
+        // 彈跳窗點擊事件
+        const userTextBox = document.querySelector('#userTextBox')
+        userTextBox.addEventListener('click', e => {
+            const target = e.target
+
+            // 顯示關鍵字資訊彈跳窗
+            if(target.matches('#examples-entity-text')){
+                /*
+                examplesEntityLabel => 原始entityBox所在的dom元素
+                entityBox => 要顯示的entityBox的dom元素
+                entityBoxIndex => 要顯示的entityBox dom元素在所有entityBox dom元素的index
+                currentEntityBox => 透過entityBoxIndex在所有entityBox dom元素中取得的正確entityBox dom元素(這一個才可以操作)
+                closeShowBox => showBox關閉視窗後要執行的程式碼，這邊是將entityBox的data-status設回hidden，並將entityBox塞回原本的dom元素底下
+                */
+                const examplesEntityLabel = target.parentElement.parentElement
+                const entityBox = target.parentElement.nextElementSibling
+                entityBox.setAttribute('data-status', 'show')
+                const allEntityBox = document.querySelectorAll('.examples-entity-box')
+                let entityBoxIndex
+                for(i = 0; i < allEntityBox.length; i++){
+                    if(allEntityBox[i].dataset.status === 'show'){
+                        entityBoxIndex = i
+                    }
+                }
+                const currentEntityBox = allEntityBox[entityBoxIndex]
+                
+                Method.common.showBox('', 'entityShowBox', '',closeShowBox)
+                document.querySelector('#entityShowBox .content').appendChild(entityBox)
+
+                function closeShowBox(){
+                    currentEntityBox.setAttribute('data-status', 'hidden')
+                    examplesEntityLabel.appendChild(currentEntityBox)
+                }
+            }
+
+            // 顯示關鍵字資訊彈跳窗
+            if(target.matches('#examples-entity-value')){
+                const examplesEntityLabel = target.parentElement.parentElement.parentElement
+                const entityBox = target.parentElement.parentElement.nextElementSibling
+                entityBox.setAttribute('data-status', 'show')
+                const allEntityBox = document.querySelectorAll('.examples-entity-box')
+                let entityBoxIndex
+                for(i = 0; i < allEntityBox.length; i++){
+                    if(allEntityBox[i].dataset.status === 'show'){
+                        entityBoxIndex = i
+                    }
+                }
+                const currentEntityBox = allEntityBox[entityBoxIndex]
+                
+                Method.common.showBox('', 'entityShowBox', '',closeShowBox)
+                document.querySelector('#entityShowBox .content').appendChild(entityBox)
+
+                function closeShowBox(){
+                    currentEntityBox.setAttribute('data-status', 'hidden')
+                    examplesEntityLabel.appendChild(currentEntityBox)
+                }
+            }
+
+            
+        })
+
+        // 例句意圖點擊事件
+        const textExamsExamples = document.querySelectorAll('.textExams--examples')
+        textExamsExamples.forEach(textExamsExample => {
+            textExamsExample.children[0].addEventListener('click', e => {
+                const target = e.target
+                let intent = ''
+                let examText = ''
+                if(target.matches('#intent-text')){
+                    console.log('#intent-text examText: ', target.parentElement.parentElement.nextElementSibling.children[0].innerText)
+                    intent = target.innerText
+                    examText = sliceText(target.parentElement.parentElement.nextElementSibling.children[0].innerText)
+                }
+
+                if(target.matches('#intent-span')){
+                    console.log('#intent-span examText: ', target.parentElement.nextElementSibling.children[0].innerText)
+                    intent = target.lastElementChild.innerText
+                    examText = sliceText(target.parentElement.nextElementSibling.children[0].innerText)
+                }
+
+                if(target.matches('svg')){
+                    console.log('svg examText: ', target.parentElement.parentElement.nextElementSibling.children[0].innerText)
+                    intent = target.nextElementSibling.innerText
+                    examText = sliceText(target.parentElement.parentElement.nextElementSibling.children[0].innerText)
+                }
+
+                if(target.matches('path')){
+                    console.log('path examText: ', target.parentElement.parentElement.parentElement.nextElementSibling.children[0].innerText)
+                    intent = target.parentElement.nextElementSibling.innerText
+                    examText = sliceText(target.parentElement.parentElement.parentElement.nextElementSibling.children[0].innerText)
+                }
+                console.log('intent: ', intent)
+                console.log('examText: ', examText)
+                const examTempData = data
+                setIntentShowBox(examText, intent, null, null, null, examTempData, examsTitleHtml)
+            })
+        })
+
+        // 彈跳窗典範按鈕點擊事件
+        const starBtns = document.querySelectorAll('#textExams--actionBtn_starBtn')
+        starBtns.forEach(startBtn => {
+            startBtn.addEventListener('click', e => {
+                const target = e.target
+                if(target.matches('#textExams--actionBtn_starBtn')){
+                    // 判斷是否增加典範
+                    clickStarBtn(target.children[0], target, starBtns)
+                }
+
+                if(target.tagName == 'svg'){
+                    clickStarBtn(target, target.parentElement, starBtns)
+                }
+
+                if(target.tagName == 'path'){
+                    clickStarBtn(target.parentElement, target.parentElement.parentElement, starBtns)
+                }
+
+                // 判斷是否增加典範function
+                function clickStarBtn(targetIcon, target, starBtns){
+                    if(targetIcon.classList.value.includes('fa fa-star') && targetIcon.dataset.prefix == 'far'){
+                        // 如果已經有典範的處理方式
+                        starBtns.forEach(item => {
+                            if(item.children[0].classList.value.includes('fa fa-star') && item.children[0].dataset.prefix == 'fas'){
+                                item.innerHTML = `<i class="far fa-star"></i>`
+                                item.previousElementSibling.setAttribute('style', 'display:inline-block')
+                                item.removeAttribute('style')
+                            }
+                        })
+                        target.innerHTML = `<i class="fas fa-star"></i>`
+                        target.previousElementSibling.setAttribute('style', 'display:none')
+                    }else{
+                        target.innerHTML = `<i class="far fa-star"></i>`
+                        target.previousElementSibling.setAttribute('style', 'display:inline-block')
+                        target.removeAttribute('style')
+                    }
+                }
+            })
+        })
+
+        // 彈跳窗編輯按鈕點擊事件
+        const editBtns = document.querySelectorAll('#textExams--actionBtn_editBtn')
+        editBtns.forEach(editBtn => {
+            // 編輯按鈕點擊事件
+            editBtn.addEventListener('click', e => {
+                const target = e.target
+
+                // 檢查是否有編輯狀態的輸入框
+                // 如果有在編輯狀態的輸入框，就將移除編輯狀態
+                for(i = 0; i < editBtns.length; i++){
+                    if(editBtns[i].getAttribute('disabled') === ''){
+                        editBtns[i].parentElement.parentElement.parentElement.previousElementSibling.children[1].setAttribute('class', 'waiting')
+                        editBtns[i].parentElement.parentElement.parentElement.previousElementSibling.children[0].setAttribute('class', 'waiting')
+                        editBtns[i].removeAttribute('disabled')
+                    }
+                }
+
+                if(target.matches('#textExams--actionBtn_editBtn')){
+                    const targetElement = target.parentElement.parentElement.parentElement.previousElementSibling.children[0]
+                    const targetInput = target.parentElement.parentElement.parentElement.previousElementSibling.children[1]
+                    target.setAttribute('disabled', '')
+                    clickEditBtn(targetElement, targetInput)
+                }
+
+                if(target.tagName == 'svg'){
+                    const targetElement = target.parentElement.parentElement.parentElement.parentElement.previousElementSibling.children[0]
+                    const targetInput = target.parentElement.parentElement.parentElement.parentElement.previousElementSibling.children[1]
+                    target.parentElement.setAttribute('disabled', '')
+                    clickEditBtn(targetElement, targetInput)
+                }
+
+                if(target.tagName == 'path'){
+                    const targetElement = target.parentElement.parentElement.parentElement.parentElement.parentElement.previousElementSibling.children[0]
+                    const targetInput = target.parentElement.parentElement.parentElement.parentElement.parentElement.previousElementSibling.children[1]
+                    target.parentElement.parentElement.setAttribute('disabled', '')
+                    clickEditBtn(targetElement, targetInput)
+                }
+
+                // 點擊編輯按鈕function
+                function clickEditBtn(targetElement, targetInput){
+                    let entityText = targetElement.innerText
+                    const exampleTitle = sliceText(document.querySelector('#userTextTitle').innerText)
+                    entityText = sliceText(entityText)
+                    targetElement.setAttribute('class', 'editing')
+                    targetInput.setAttribute('class', 'editing')
+                    targetInput.value = entityText
+                    localStorage.setItem('editExamText', entityText)
+                    localStorage.setItem('exampleTitle', exampleTitle)
+
+                    // 編輯輸入框enter事件
+                    const allEntityTextInput = document.querySelectorAll('#entityTextInput')
+                    allEntityTextInput.forEach(entityTextInput => {
+                        entityTextInput.addEventListener('keyup', e => {
+                            const target = e.target
+                            if(e.keyCode == 13){
+                                target.setAttribute('class', 'waiting')
+                                target.previousElementSibling.setAttribute('class', 'waiting')
+                                target.parentElement.nextElementSibling.children[0].children[0].children[0].removeAttribute('disabled')
+                                let arrayNum
+                                if(target.value === entityText || target.value === '') return
+
+                                const editingExamText = localStorage.getItem('editExamText')
+
+                                for(i = 0; i < data.length; i++){
+                                    if(data[i].text == editingExamText){
+                                        arrayNum = i
+                                    }
+                                }
+
+                                fetch(`http://192.168.10.127:3030/jh_story/parse?userInput=${target.value}`)
+                                .then(response => response.json())
+                                .then(textParse => {
+                                    const newExamText = {
+                                        text: textParse.text,
+                                        intent: textParse.intent.name,
+                                        entities: textParse.entities
+                                    }
+                                    data.splice(arrayNum, 1, newExamText)
+                                    return data
+                                })
+                                .then(newData => {
+                                    const exampleTitle = localStorage.getItem('exampleTitle')
+                                    newData = newData.filter(item => item.text !== exampleTitle)
+
+                                    let newExamHtml = ''
+                                    newExamHtml = createTextsFunc(newData, newExamHtml, examsTitleHtml)
+                                    document.querySelector('#textExams-panel').innerHTML = newExamHtml
+                                    checkAllExampleIntent()
+                                    eventFunc(data, examsTitleHtml)
+                                })
+                                .catch(err => console.log(err))
+                            }
+                        })
+                    })
+                }
+            })
+        })
+    }
             let intentHtml = ``
             let entitiesHtml = ``
             // 串接後端API抓取所有意圖
