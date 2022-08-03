@@ -496,13 +496,12 @@ Method.button.storyButton = function(){
 
                 // 動態顯示意圖按鈕
                 for(i = 0; i < allIntentBtn.length; i++){
-                    const storySpanArray = allIntentBtn[i].parentElement.parentElement.previousElementSibling.childNodes
+                    const attrSpan = allIntentBtn[i].parentElement.parentElement.previousElementSibling.lastChild
                     const hasIntent = []
-                    for(j = 0; j < storySpanArray.length; j++){
-                        if(storySpanArray[j].id == 'intent-span'){
-                            hasIntent.push(storySpanArray[j].id)
-                        }
+                    if(attrSpan.children[0].id === 'intent-span'){
+                        hasIntent.push(attrSpan.children[0])
                     }
+                    
                     if(hasIntent.length){
                         allIntentBtn[i].style.visibility = 'hidden'
                     }else{
@@ -1017,7 +1016,7 @@ Method.button.storyButton = function(){
                                 // 點擊編輯按鈕function
                                 function clickEditBtn(targetElement, targetInput){
                                     let entityText = targetElement.innerText
-                                    const exampleTitle = sliceText(document.querySelector('#userTextTitle').innerText).trim()
+                                    const exampleTitle = sliceText(document.querySelector('#userTextTitle').innerText)
                                     entityText = sliceText(entityText)
                                     targetElement.setAttribute('class', 'editing')
                                     targetInput.setAttribute('class', 'editing')
@@ -1206,9 +1205,7 @@ Method.button.storyButton = function(){
                             })
                             .then(newData => {
                                 const exampleTitle = localStorage.getItem('exampleTitle')
-                                console.log('新增例句exampleTitle', exampleTitle)
                                 newData = newData.filter(item => item.text !== exampleTitle)
-                                console.log('新增例句newData', newData)
                                 let newExamHtml = ''
                                 newExamHtml = createTextsFunc(newData, newExamHtml, examsTitleHtml)
                                 document.querySelector('#textExams-panel').innerHTML = newExamHtml
