@@ -802,7 +802,7 @@ Method.button.storyButton = function(){
                         <span class="userTextTitle" id="userTextTitle">${examsTitleHtml.text}</span>
                         <span id="intent-span" class="nluSpan"><i class="fas fa-tag" style="font-size: 7px;"></i><span id="intent-text" class="nluText">${intent}</span></span>
                     </div>
-                    <form action="" name="userTextExam" style="width:800px;">
+                    <div class="userTextExam" style="width:800px;">
                         <input type="text" class="form-control" name="userExamInput" id="userExamInput" placeholder="使用者說..." autocomplete="off">
                         <div id="textExams-panel">
                     `
@@ -816,7 +816,7 @@ Method.button.storyButton = function(){
                             <div id="errorMessageBox"></div>
                             <button id="sendExam" type="button" class="btn btn-info">送出</button>
                         </div>
-                    </form>
+                    </div>
                     `
 
                     Method.common.showBox(html,"userTextBox");
@@ -1944,66 +1944,49 @@ Method.button.storyButton = function(){
             })
         })
 
-        // 彈跳窗點擊事件
-        const userTextBox = document.querySelector('#userTextBox')
-        userTextBox.addEventListener('click', e => {
-            const target = e.target
+        if(document.querySelector('#examples-entity-text') || document.querySelector('#examples-entity-value')){
+            const exampleEntityTexts = document.querySelectorAll('#examples-entity-text')
+            exampleEntityTexts.forEach(exampleEntityText => {
+                exampleEntityText.addEventListener('click', e => {
+                    const target = e.target
 
-            // 顯示關鍵字資訊彈跳窗
-            if(target.matches('#examples-entity-text')){
-                /*
-                examplesEntityLabel => 原始entityBox所在的dom元素
-                entityBox => 要顯示的entityBox的dom元素
-                entityBoxIndex => 要顯示的entityBox dom元素在所有entityBox dom元素的index
-                currentEntityBox => 透過entityBoxIndex在所有entityBox dom元素中取得的正確entityBox dom元素(這一個才可以操作)
-                closeShowBox => showBox關閉視窗後要執行的程式碼，這邊是將entityBox的data-status設回hidden，並將entityBox塞回原本的dom元素底下
-                */
-                const examplesEntityLabel = target.parentElement.parentElement
-                const entityBox = target.parentElement.nextElementSibling
-                entityBox.setAttribute('data-status', 'show')
-                const allEntityBox = document.querySelectorAll('.examples-entity-box')
-                let entityBoxIndex
-                for(i = 0; i < allEntityBox.length; i++){
-                    if(allEntityBox[i].dataset.status === 'show'){
-                        entityBoxIndex = i
+                    /*
+                    examplesEntityLabel => 原始entityBox所在的dom元素
+                    entityBox => 要顯示的entityBox的dom元素
+                    entityBoxIndex => 要顯示的entityBox dom元素在所有entityBox dom元素的index
+                    currentEntityBox => 透過entityBoxIndex在所有entityBox dom元素中取得的正確entityBox dom元素(這一個才可以操作)
+                    closeShowBox => showBox關閉視窗後要執行的程式碼，這邊是將entityBox的data-status設回hidden，並將entityBox塞回原本的dom元素底下
+                    */
+                    let examplesEntityLabel
+                    let entityBox
+                    if(target.matches('#examples-entity-text')){
+                        examplesEntityLabel = target.parentElement.parentElement
+                        entityBox = target.parentElement.nextElementSibling
+                    }else if(target.matches('#examples-entity-value')){
+                        examplesEntityLabel = target.parentElement.parentElement.parentElement
+                        entityBox = target.parentElement.parentElement.nextElementSibling
                     }
-                }
-                const currentEntityBox = allEntityBox[entityBoxIndex]
-                
-                Method.common.showBox('', 'entityShowBox', '',closeShowBox)
-                document.querySelector('#entityShowBox .content').appendChild(entityBox)
 
-                function closeShowBox(){
-                    currentEntityBox.setAttribute('data-status', 'hidden')
-                    examplesEntityLabel.appendChild(currentEntityBox)
-                }
-            }
-
-            // 顯示關鍵字資訊彈跳窗
-            if(target.matches('#examples-entity-value')){
-                const examplesEntityLabel = target.parentElement.parentElement.parentElement
-                const entityBox = target.parentElement.parentElement.nextElementSibling
-                entityBox.setAttribute('data-status', 'show')
-                const allEntityBox = document.querySelectorAll('.examples-entity-box')
-                let entityBoxIndex
-                for(i = 0; i < allEntityBox.length; i++){
-                    if(allEntityBox[i].dataset.status === 'show'){
-                        entityBoxIndex = i
+                    entityBox.setAttribute('data-status', 'show')
+                    const allEntityBox = document.querySelectorAll('.examples-entity-box')
+                    let entityBoxIndex
+                    for(i = 0; i < allEntityBox.length; i++){
+                        if(allEntityBox[i].dataset.status === 'show'){
+                            entityBoxIndex = i
+                        }
                     }
-                }
-                const currentEntityBox = allEntityBox[entityBoxIndex]
-                
-                Method.common.showBox('', 'entityShowBox', '',closeShowBox)
-                document.querySelector('#entityShowBox .content').appendChild(entityBox)
+                    const currentEntityBox = allEntityBox[entityBoxIndex]
+                    
+                    Method.common.showBox('', 'entityShowBox', '',closeShowBox)
+                    document.querySelector('#entityShowBox .content').appendChild(entityBox)
 
-                function closeShowBox(){
-                    currentEntityBox.setAttribute('data-status', 'hidden')
-                    examplesEntityLabel.appendChild(currentEntityBox)
-                }
-            }
-
-            
-        })
+                    function closeShowBox(){
+                        currentEntityBox.setAttribute('data-status', 'hidden')
+                        examplesEntityLabel.appendChild(currentEntityBox)
+                    }
+                })
+            })
+        }
 
         // 例句意圖點擊事件
         const textExamsExamples = document.querySelectorAll('.textExams--examples')

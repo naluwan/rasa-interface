@@ -2400,7 +2400,7 @@ button.close:hover:before {
   display: flex;
 }
 
-#userTextBox form {
+#userTextBox .userTextExam {
   height: calc(100% - 30px);
 }
 
