@@ -879,7 +879,6 @@ Method.button.storyButton = function(){
 
                     // 彈跳窗例句輸入框按鍵事件
                     userExamInput.addEventListener('keydown', e => {
-                        e.preventDefault()
                         const target = e.target
                         const exampleTitle = sliceText(document.querySelector('#userTextTitle').innerText)
                         const examText = target.value
@@ -2162,6 +2161,29 @@ Method.button.storyButton = function(){
                 }
             })
         })
+
+        const removeBtns = document.querySelectorAll('#textExams--actionBtn_trashBtn')
+        removeBtns.forEach(removeBtn => {
+            removeBtn.addEventListener('click', e => {
+                const target = e.currentTarget
+                const examText = sliceText(target.parentElement.parentElement.parentElement.previousElementSibling.innerText)
+
+                const exampleTitle = sliceText(document.querySelector('#userTextBox .content .userTextTitle').innerText)
+
+                console.log(exampleTitle)
+                data = data.filter(exam => {
+                    if(exam.text !== examText && exam.text !== exampleTitle){
+                        return exam
+                    }
+                })
+
+                let newExamHtml = ''
+                newExamHtml = createTextsFunc(data, newExamHtml, examsTitleHtml)
+                document.querySelector('#textExams-panel').innerHTML = newExamHtml
+                checkAllExampleIntent()
+                eventFunc(data, examsTitleHtml)
+            })
+        })
     }
 
     // 設定意圖彈跳窗
@@ -2298,6 +2320,7 @@ Method.button.storyButton = function(){
                     // 顯示意圖選擇器
                     document.querySelector('#intentInput').addEventListener('focus', e => {
                         const target = e.target
+                        target.select()
                         target.nextElementSibling.classList.remove('list--disabled')
                     })
     
