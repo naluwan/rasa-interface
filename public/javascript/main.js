@@ -1872,11 +1872,10 @@ Method.button.storyButton = function(){
                     </span>
                 </div>
                 <span class="examples-entity-box entity-info" data-status="hidden">
-                    <span class="examples-entity-title entity-info">編輯關鍵字資訊</span>
+                    <span class="examples-entity-title entity-info">關鍵字資訊</span>
                     <div>
                         <label for="entity-code-input" class="entity-info">代號</label>
-                        <input id="entity-code-input" type="text" class="form-control entity-info" value="${entityEle.entity}">
-                        <button type="button" id="entity-code-removeBtn" class="btn btn-danger entity-info"><i class="fas fa-trash-alt"></i></button>
+                        <p id="entity-code-input" class="form-control entity-info">${entityEle.entity}</p>
                     </div>
                 `
 
@@ -1884,17 +1883,39 @@ Method.button.storyButton = function(){
                     currentUserText += `
                             <div>
                                 <label for="entity-value-input" class="entity-info">代表值</label>
-                                <input id="entity-value-input" type="text" class="form-control entity-info" value="${entityEle.value}">
-                                <button type="button" id="entity-value-removeBtn" class="btn btn-danger entity-info"><i class="fas fa-trash-alt"></i></button>
-                            </div>
-                    `
-                }else{
-                    currentUserText += `
-                            <div class="entity-option-btns entity-info">
-                                <button type="button" id="entity-value-addBtn" class="btn btn-info entity-info"><i class="fas fa-plus" style="margin-right: 5px;"></i>代表值</button>
+                                <p id="entity-code-input" class="form-control entity-info">${entityEle.value}</p>
                             </div>
                     `
                 }
+
+                /*************************** 以下唯有增刪功能的html(增、刪功能未實作) ***************************/  
+                // currentUserText += `
+                //     </span>
+                // </div>
+                // <span class="examples-entity-box entity-info" data-status="hidden">
+                //     <span class="examples-entity-title entity-info">編輯關鍵字資訊</span>
+                //     <div>
+                //         <label for="entity-code-input" class="entity-info">代號</label>
+                //         <input id="entity-code-input" type="text" class="form-control entity-info" value="${entityEle.entity}">
+                //         <button type="button" id="entity-code-removeBtn" class="btn btn-danger entity-info"><i class="fas fa-trash-alt"></i></button>
+                //     </div>
+                // `
+
+                // if(textTmp != entityEle.value){
+                //     currentUserText += `
+                //             <div>
+                //                 <label for="entity-value-input" class="entity-info">代表值</label>
+                //                 <input id="entity-value-input" type="text" class="form-control entity-info" value="${entityEle.value}">
+                //                 <button type="button" id="entity-value-removeBtn" class="btn btn-danger entity-info"><i class="fas fa-trash-alt"></i></button>
+                //             </div>
+                //     `
+                // }else{
+                //     currentUserText += `
+                //             <div class="entity-option-btns entity-info">
+                //                 <button type="button" id="entity-value-addBtn" class="btn btn-info entity-info"><i class="fas fa-plus" style="margin-right: 5px;"></i>代表值</button>
+                //             </div>
+                //     `
+                // }
             }
 
             currentUserText += `
