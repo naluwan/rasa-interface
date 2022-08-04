@@ -1148,7 +1148,11 @@ header a:first-of-type {
 }
 
 .textExams--footer #errorMessageBox .errorMessageSpan {
-  color: red;
+  border-radius: 10px;
+  color: #fff;
+  margin: 5px;
+  padding: 5px;
+  background-color: red;
 }
 
 .textExams--footer > button:not(:first-child) {

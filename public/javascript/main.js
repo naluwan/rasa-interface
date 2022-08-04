@@ -1640,10 +1640,14 @@ Method.button.storyButton = function(){
     }
 
     // 檢核所有例句的意圖
-    // TODO:關鍵字還未檢查
     function checkAllExampleIntent(){
-        const allIntent = document.querySelectorAll('.content #intent-text')
+        document.querySelector('#errorMessageBox').innerHTML = ''
+        // 獲取所有意圖的Dom
+        const allIntent = document.querySelectorAll('#userTextBox .content #intent-text')
         const checkError = []
+
+        // 檢查意圖
+        // allIntent[0]為例句彈跳窗的標題，意圖以它為例句，因為它不會更改
         Array.from(allIntent).map(item => {
             if(item.innerText !== allIntent[0].innerText){
                 item.parentElement.classList.toggle('errorIntent')
@@ -1651,15 +1655,45 @@ Method.button.storyButton = function(){
             }
         })
         
-        const allEntityNames = document.querySelectorAll('.content #userBoxTitle .entity-name')
-        const EntityNameArray = Array.from(allEntityNames).map(entity => entity.innerText) 
-        console.log('EntityNameArray', EntityNameArray)
+        // 獲取例句彈跳窗標題的關鍵字
+        const titleEntityNames = document.querySelectorAll('#userTextBox .content .userBoxTitle .entity-name')
+        const titleEntityNamesArray = Array.from(titleEntityNames).map(entity => entity.innerText.trim()) 
+        console.log('titleEntityNamesArray', titleEntityNamesArray.sort())
+        
+        // 獲取所有的例句
+        const textExamples = document.querySelectorAll('.textExams--examples')
+        // 掃描例句的dom元素
+        Array.from(textExamples).map(textExample => {
+            const examEntityArray = []
+            const exampleChilds = textExample.children
+            // 找到有關鍵字的dom元素
+            Array.from(exampleChilds).map(exampleChild => {
+                if(exampleChild.classList.contains('textExams-span')){
+                    const textExamDivsChilds = exampleChild.firstElementChild.children
+                    // 找到特定關鍵字dom元素，將dataset.entityname塞入examEntityArray陣列中
+                    Array.from(textExamDivsChilds).map(textExamDivsChild => {
+                        if(textExamDivsChild.children.length){
+                            examEntityArray.push(textExamDivsChild.firstElementChild.firstElementChild.firstElementChild.dataset.entityname)
+                        }
+                    })
+                }
+            })
+
+            // 陣列比對，將陣列內的東西用array.sort()排序好，使用JSON.stringify()將陣列轉為字串再比對
+            if(JSON.stringify(titleEntityNamesArray.sort()) !== JSON.stringify(examEntityArray.sort())){
+                console.log('例句關鍵字不符')
+                checkError.push('例句關鍵字不符')
+                if(!textExample.firstElementChild.firstElementChild.classList.contains('errorIntent')){
+                    textExample.firstElementChild.firstElementChild.classList.toggle('errorIntent')
+                }
+            }
+        })
+
         if(checkError.length){
             checkError.forEach(text => createErrorMessage(text))
             document.querySelector('#sendExam').setAttribute('disabled', '')
         }else{
             document.querySelector('#sendExam').removeAttribute('disabled')
-            document.querySelector('#errorMessageBox').innerHTML = ''
         }
     }
 
@@ -1670,7 +1704,7 @@ Method.button.storyButton = function(){
         errorMessageSpan.setAttribute('class', 'errorMessageSpan')
         errorMessageSpan.innerText = messageText
         const allErrorSpan = document.querySelectorAll('.errorMessageSpan')
-        if((Array.from(allErrorSpan).map(item => item.innerText).indexOf === -1) || allErrorSpan.length === 0){
+        if((Array.from(allErrorSpan).map(item => item.innerText).indexOf(messageText) === -1) || allErrorSpan.length === 0){
             errorMessageBox.appendChild(errorMessageSpan)
         }
     }
@@ -1857,13 +1891,13 @@ Method.button.storyButton = function(){
 
                 if(textTmp != entityEle.value){
                     currentUserText += `
-                    <span id="examples-entity-text">
+                    <span id="examples-entity-text" data-entityname="${entityEle.entity}">
                         ${textTmp}
                         <span class="value-synonym" id="examples-entity-value" style="color: rgb(${textColor});font-weight: bold;">≪"${entityEle.value}"≫</span>
                     `
                 }else{
                     currentUserText += `
-                    <span id="examples-entity-text" class="entity-no-value">
+                    <span id="examples-entity-text" class="entity-no-value"  data-entityname="${entityEle.entity}">
                         ${textTmp}
                     `
                 }
