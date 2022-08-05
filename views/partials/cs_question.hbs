@@ -1,0 +1,64 @@
+{{#if cs_question}}
+<!--cs_question-->
+<div class="cs_question">
+  <h1>問答資訊</h1>
+  <form name="form" action="" class="searchBar">
+    <label>類別：</label>
+    <select name="categorySelect" id="categorySelect" required>
+      <option value="" selected>請選擇</option>
+      {{#each categoryInfo}}
+      <option value="{{this.CATEGORY_ID}}" {{#is this.CATEGORY_ID ../categorySelect}} selected {{/is}}>{{this.CATEGORY_NAME}}</option>
+      {{/each}}
+    </select>
+
+    <label>功能：</label>
+    <select name="functionSelect" id="functionSelect" required>
+      <option value="" selected>暫無資料</option>
+      {{#each functionInfo}}
+      <option value="{{this.FUNCTION_ID}}" {{#is this.FUNCTION_ID ../functionSelect}} selected {{/is}}>{{this.FUNCTION_NAME}}</option>
+      {{/each}}
+    </select>
+
+    <label for="search">搜尋：</label>
+    <input type="text" name="search" id="search" value="{{search}}" placeholder="請輸入關鍵字">
+
+    <input type="submit" class="btn btn-info" value="查詢">
+  </form> 
+
+    {{> message}}
+    <div id="data-panel">
+      {{#each questionInfo}}
+      <div>
+        <span>
+          <div>
+            {{this.DESCRIPTION}}
+          </div>
+          <h2>{{ this.ANSWER }}</h2>
+        </span>
+        <span>
+          <!--
+          <a 
+          {{#if ../categorySelect}}
+          href="/bf_cs/{{../categorySelect}}/{{this.FUNCTION_ID}}/{{ this.QUESTION_ID}}/edit" 
+          {{else}}
+          href="/bf_cs/{{this.FUNCTION_ID}}/{{ this.QUESTION_ID}}/edit"
+          {{/if}}
+          class="btn btn-primary">
+              編輯
+          </a>
+          -->
+
+          <input type="button" id="edit" class="btn btn-primary" onclick="Method.common.page('/cs_question/{{ this.CPY_ID }}/edit')" value="編輯">
+          <input type="button" id="del" class="btn btn-danger" data-title="{{this.FUNCTION_NAME}}" data-infoId="{{this.FUNCTION_ID}}" data-category="{{this.CATEGORY_ID}}" value="刪除">
+        </span>
+      </div>
+      {{/each}}
+    </div>
+</div>
+
+<div class="footButton">
+  <input type="button" class="btn btn-warning" onclick="Method.common.page('/cs_question/new')" value="新增功能">
+</div>
+
+
+{{/if}}

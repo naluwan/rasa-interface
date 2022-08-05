@@ -3,6 +3,8 @@ const router = express.Router()
 const passport = require('passport')
 const bcrypt = require('bcryptjs')
 const {isAdmin} = require('../../middleware/auth')
+const trainingDataList = require('../../models/trainingDataSeeds.json')
+const yaml = require('js-yaml')
 
 const sql = require('mssql')
 const pool = require('../../config/connectPool')
@@ -109,7 +111,7 @@ router.get('/register/insert', (req, res) => {
         if(user.EMAIL == email) return res.send({status: 'warning', message: '此「Email」已經註冊過'})
       })
     }else{
-      return bcrypt
+      bcrypt
       .genSalt(10)
       .then(salt => bcrypt.hash(password, salt))
       .then(hash => {
@@ -119,13 +121,30 @@ router.get('/register/insert', (req, res) => {
         .input('password', sql.NVarChar(100), hash)
         .query(`insert into BOTFRONT_USERS_INFO (CPY_ID, CPY_NAME, EMAIL, PASSWORD)
         values (@cpy_no, @cpy_name, @email, @password)`, (err, result) => {
-        if(err){
-          console.log(err)
-          return
-        }
-        
+          if(err){
+            console.log(err)
+            return
+          }
         })
-      }).then(() => {
+        return cpy_no
+      })
+      .then(cpnyNo => {
+        trainingDataList.map(data => {
+          if(data.name === 'config-test'){
+            request.input('cpny_no', sql.NVarChar(30), cpnyNo)
+            .input('dataName', sql.NVarChar(50), data.name)
+            .input('dataContent', sql.NVarChar(sql.MAX), yaml.dump(data.content))
+            .query(`insert into BF_JH_DATA_TEST(CPNY_ID, DATA_NAME, DATA_CONTENT)
+            values (@cpny_no, @dataName, @dataContent)`, (err, result) => {
+              if(err){
+                console.log(err)
+                return
+              }
+            })
+          }
+        })
+      })
+      .then(() => {
         return res.send({status: 'success', message: '帳號註冊成功'})
       })
       .catch(err => console.log(err))

@@ -28,15 +28,14 @@ pool.connect((err) => {
     return;
   }
   console.log("sql connected!");
-  const request = new sql.Request(pool);
-
   // 檢查資料表是否存在
+  const request = new sql.Request(pool);
   request.query(`select * from ${process.env.DB_TABLE}`, (err, result) => {
     if (err) {
       // 不存在則建立資料表
       request.query(`create table ${process.env.DB_TABLE}(
-        CPNY_ID varchar(30),
-        DATA_NAME nvarchar(50),
+        CPNY_ID varchar(30) not null,
+        DATA_NAME nvarchar(50) not null,
         DATA_CONTENT nvarchar(max),
         primary key(CPNY_ID, DATA_NAME)
         )`, (err, result) => {
@@ -45,10 +44,12 @@ pool.connect((err) => {
           return
         }
         console.log('data_table created!')
+        
       })
+    }else{
+      console.log("data_base correct!");
     }
-    console.log("data_base correct!");
-  });
+  }); 
 });
 
 module.exports = pool;
