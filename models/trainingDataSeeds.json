@@ -1,0 +1,90 @@
+[
+  {
+    "name": "domain-test",
+    "content": {
+      "actions": [],
+      "entities": [],
+      "forms": {},
+      "intents": [],
+      "responses": {},
+      "session_config": {
+        "session_expiration_time": 60,
+        "carry_over_slots_to_new_session": true
+      },
+      "slots": {}
+    }
+  },
+  {
+    "name": "config-test",
+    "content": {
+      "language": "zh",
+      "pipeline": [
+        {
+          "name": "SpacyNLP",
+          "model": "zh_core_web_lg"
+        },
+        {
+          "name": "JiebaTokenizer",
+          "dictionary_path": "/home/bill/Work/dict",
+          "intent_tokenization_flag": false,
+          "intent_split_symbol": "_",
+          "token_pattern": "None"
+        },
+        {
+          "name": "CountVectorsFeaturizer"
+        },
+        {
+          "name": "CountVectorsFeaturizer",
+          "analyzer": "char_wb",
+          "min_ngram": 1,
+          "max_ngram": 4
+        },
+        {
+          "name": "DIETClassifier",
+          "epochs": 200,
+          "constrain_similarities": true
+        },
+        {
+          "name": "EntitySynonymMapper"
+        },
+        {
+          "name": "ResponseSelector",
+          "epochs": 100,
+          "constrain_similarities": true
+        },
+        {
+          "name": "FallbackClassifier",
+          "threshold": 0.4,
+          "ambiguity_threshold": 0.1
+        }
+      ],
+      "policies": [
+        {
+          "name": "MemoizationPolicy"
+        },
+        {
+          "name": "TEDPolicy",
+          "max_history": 5,
+          "epochs": 100
+        },
+        {
+          "name": "RulePolicy"
+        }
+      ]
+    }
+  },
+  {
+    "name": "nlu-json-test",
+    "content": {
+      "rasa_nlu_data": {
+        "common_examples": []
+      }
+    }
+  },
+  {
+    "name": "fragments-test",
+    "content": {
+      "stories": []
+    }
+  }
+]
