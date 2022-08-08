@@ -306,12 +306,11 @@ router.get('/userStep/nlu/setEntity/getTextExam', (req, res) => {
   .catch(err => console.log(err))
 })
 
-// 抓取相同意圖及關鍵字的所有例句
+// 例句彈跳窗 - 抓取相同意圖及關鍵字的所有例句
 router.get('/userStep/nlu/getTextExams', (req, res) => {
   const {text, intent} = req.query
   const cpnyId = res.locals.user.CPY_ID
-  console.log(text)
-  console.log(intent)
+
   // 使用模組從資料庫抓取nlu data
   getSqlTrainingData('BF_JH_DATA_TEST', 'nlu-json-test', 'nlu', cpnyId)
   .then(data => {
@@ -333,6 +332,44 @@ router.get('/userStep/nlu/getTextExams', (req, res) => {
     })
 
     res.send(currentExams)
+  })
+  .catch(err => console.log(err))
+})
+
+// 例句彈跳窗- 使用者添加例句
+router.post('/userStep/nlu/addExamples', (req, res) => {
+  const {textExamData} = req.body
+  const request = new sql.Request(pool)
+  const cpnyId = res.locals.user.CPY_ID
+  const textExamDataParse = JSON.parse(textExamData)
+
+  getSqlTrainingData('BF_JH_DATA_TEST', 'nlu-json-test', 'nlu', cpnyId)
+  .then(data => {
+    textExamDataParse.map(exam => {
+      const newNlu = {
+        text: exam.text,
+        intent: exam.intent,
+        entities: []
+      }
+
+      if(exam.entities.length){
+        exam.entities.map(item => {
+          const newEntity = {
+            entity: item.entity,
+            value: item.value,
+            start: item.start,
+            end: item.end
+          }
+          newNlu.entities.push(newEntity)
+        })
+      }
+
+      data.rasa_nlu_data.common_examples.push(newNlu)
+    })
+
+    const filePath = '../public/trainData/nlu-json-test.json'
+    const response = {status: 'success', message: 'nlu例句新增成功'}
+    fsSqlUpdate(filePath, data, 'BF_JH_DATA_TEST', 'nlu-json-test', response, request, res, cpnyId)
   })
   .catch(err => console.log(err))
 })
@@ -435,6 +472,34 @@ router.post('/userStep/domain', (req, res) => {
     const filePath = '../public/trainData/domain-test.json'
     const response = {status: 'success', message: 'domain設定成功'}
     fsSqlUpdate(filePath, data, 'BF_JH_DATA_TEST', 'domain-test', response, request, res, cpnyId)
+  })
+  .catch(err => console.log(err))
+})
+
+router.get('/userStep/nlu/checkRepeat', (req, res) => {
+  const {userInput} = req.query
+  const request = new sql.Request(pool)
+  const cpnyId = res.locals.user.CPY_ID
+
+  // 使用模組從資料庫抓取nlu data
+  getSqlTrainingData('BF_JH_DATA_TEST', 'nlu-json-test', 'nlu', cpnyId)
+  .then(data => {
+    // 驗證重複
+    const repeat = []
+    if(data.rasa_nlu_data.common_examples.length){
+      data.rasa_nlu_data.common_examples.map(nlu => {
+        if(userInput === nlu.text){
+          repeat.push(nlu)
+        }
+      })
+    }
+
+    // 重複處理
+    if(repeat.length){
+      return res.send({status: "warning", message: "例句重複"})
+    }
+
+    res.send({status: 'success', message: '無重複例句'})
   })
   .catch(err => console.log(err))
 })
