@@ -785,7 +785,7 @@ Method.button.storyButton = function(){
                 .then(response => response.json())
                 .then(data => {
                     console.log(data)
-
+                    localStorage.setItem('textExamData', JSON.stringify(data))
                     // 彈跳窗標題產生關鍵字
                     let examsTitleHtml = ''
                     data.forEach(item => {
@@ -820,22 +820,6 @@ Method.button.storyButton = function(){
                     `
 
                     Method.common.showBox(html,"userTextBox");
-
-                    eventFunc(data, examsTitleHtml)
-                    
-                    // 彈跳窗title滑鼠事件 - 顯示關鍵字代號
-                    const allEntityLabels = document.querySelectorAll('.entity-label')
-                    allEntityLabels.forEach(entityLabel => {
-                        entityLabel.addEventListener('mouseenter', e => {
-                            const target = e.target
-                            target.children[0].setAttribute('style', 'position: absolute;bottom: -90%; left:0;background-color: #fff;')
-                        })
-
-                        entityLabel.addEventListener('mouseleave', e => {
-                            const target = e.target
-                            target.children[0].setAttribute('style', 'display: none;')
-                        })
-                    })
 
                     // 彈跳窗使用者添加例句功能
                     const userExamInput = document.querySelector('#userExamInput')
@@ -886,36 +870,79 @@ Method.button.storyButton = function(){
                         if(e.keyCode == 13){
                             if(!examText) return
                             target.setAttribute('data-event', 'keydown')
-                            // 串接後端API - 將使用者輸入的字句判斷意圖及關鍵字
-                            fetch(`http://192.168.10.127:3030/jh_story/parse?userInput=${examText}`)
-                            .then(response => response.json())
-                            .then(inputParse => {
-                                // 將回傳的判斷組成新的例句object
-                                const newExam = {
-                                    text: inputParse.text,
-                                    intent: inputParse.intent.name,
-                                    entities: inputParse.entities
+                            fetch(`http://192.168.10.127:3030/jh_story/userStep/nlu/checkRepeat?userInput=${examText}`)
+                            .then(res => res.json())
+                            .then(info => {
+                                if(info.status !== 'success'){
+                                    target.value = ''
+                                    var html = `<h2><div class='sa-icon warning'><span></span></div>${info.message}</h2>`;
+                                    Method.common.showBox(html, 'message', '')
+                                    return
                                 }
-                                // 驗證是否重複
-                                const repeatExam = data.filter(item => item.text == newExam.text)
-                                if(!repeatExam.length){
-                                    data.push(newExam)
-                                    return data
-                                }
-                            })
-                            .then(newData => {
-                                const exampleTitle = localStorage.getItem('exampleTitle')
-                                newData = newData.filter(item => item.text !== exampleTitle)
-                                let newExamHtml = ''
-                                newExamHtml = createTextsFunc(newData, newExamHtml, examsTitleHtml)
-                                document.querySelector('#textExams-panel').innerHTML = newExamHtml
-                                checkAllExampleIntent()
-                                eventFunc(data, examsTitleHtml)
-                                userExamInput.value = ''
+                                // 串接後端API - 將使用者輸入的字句判斷意圖及關鍵字
+                                fetch(`http://192.168.10.127:3030/jh_story/parse?userInput=${examText}`)
+                                .then(response => response.json())
+                                .then(inputParse => {
+                                    // 將回傳的判斷組成新的例句object
+                                    const newExam = {
+                                        text: inputParse.text,
+                                        intent: inputParse.intent.name,
+                                        entities: inputParse.entities
+                                    }
+                                    // 驗證是否重複
+                                    const textExamData = JSON.parse(localStorage.getItem('textExamData'))
+                                    const repeatExam = textExamData.filter(item => item.text == newExam.text)
+                                    if(repeatExam.length){
+                                        target.value = ''
+                                        var html = `<h2><div class='sa-icon warning'><span></span></div>例句重複</h2>`;
+                                        Method.common.showBox(html, 'message', '')
+                                        return
+                                    }
+                                    textExamData.push(newExam)
+                                    const exampleTitle = localStorage.getItem('exampleTitle')
+                                    const newData = textExamData.filter(item => item.text !== exampleTitle)
+                                    localStorage.setItem('textExamData', JSON.stringify(newData))
+                                    return newData
+                                })
+                                .then(newData => {
+                                    let newExamHtml = ''
+                                    newExamHtml = createTextsFunc(newData, newExamHtml, examsTitleHtml)
+                                    document.querySelector('#textExams-panel').innerHTML = newExamHtml
+                                    checkAllExampleIntent(newData)
+                                    eventFunc(newData, examsTitleHtml)
+                                    userExamInput.value = ''
+                                })
+                                .catch(err => console.log(err))
                             })
                             .catch(err => console.log(err))
                         }
                     })
+
+                    // 例句彈跳窗 送出按鈕事件
+                    const sendExamBtn = document.querySelector('#sendExam')
+                    sendExamBtn.addEventListener('click', e => {
+                        const target = e.target
+                        const textExamData = localStorage.getItem('textExamData')
+                        const payload = {
+                            textExamData
+                        }
+                        fetch('http://192.168.10.127:3030/jh_story/userStep/nlu/addExamples', {
+                            method: 'post',
+                            body: JSON.stringify(payload),
+                            headers: {
+                                'Content-Type': "application/json",
+                            }
+                        })
+                        .then(res => res.json())
+                        .then(info => {
+                            if(info.status === 'success'){
+                                document.querySelector('#userTextBox').remove()
+                            }
+                        })
+                        .catch(err => console.log(err))
+                    })
+
+                    eventFunc(data, examsTitleHtml)
                 })
                 .catch(err => console.log(err))
             }
@@ -1392,7 +1419,6 @@ Method.button.storyButton = function(){
         // })
 
         // 機器人回覆輸入框失焦 事件
-        
         textArea.addEventListener('blur', e => {
             const target = e.target;
 
@@ -1469,6 +1495,8 @@ Method.button.storyButton = function(){
             console.log(resNameInput.value)
         }
     }
+
+    /**************************** 共用function *********************************/
 
     // 點擊意圖按鈕
     function clickIntentBtn(storyContainer, targetInput, allStorySpan, indexNum){
@@ -1626,7 +1654,6 @@ Method.button.storyButton = function(){
         })
     }
 
-    /**************************** 共用function *********************************/
     // 擷取例句字串function
     function sliceText(entityText){
         entityText = entityText.replace(/\n/g, '')
@@ -1640,51 +1667,35 @@ Method.button.storyButton = function(){
     }
 
     // 檢核所有例句的意圖
-    function checkAllExampleIntent(){
+    function checkAllExampleIntent(data){
+        console.log(data)
+        // 重置錯誤訊息
         document.querySelector('#errorMessageBox').innerHTML = ''
-        // 獲取所有意圖的Dom
-        const allIntent = document.querySelectorAll('#userTextBox .content #intent-text')
-        const checkError = []
 
-        // 檢查意圖
-        // allIntent[0]為例句彈跳窗的標題，意圖以它為例句，因為它不會更改
-        Array.from(allIntent).map(item => {
-            if(item.innerText !== allIntent[0].innerText){
-                item.parentElement.classList.toggle('errorIntent')
-                checkError.push('例句意圖不符')
-            }
-        })
-        
+        // 獲取例句彈跳窗標題的意圖
+        const currentIntent = document.querySelector('#userTextBox .userBoxTitle #intent-text').innerText
+
         // 獲取例句彈跳窗標題的關鍵字
         const titleEntityNames = document.querySelectorAll('#userTextBox .content .userBoxTitle .entity-name')
         const titleEntityNamesArray = Array.from(titleEntityNames).map(entity => entity.innerText.trim()) 
-        console.log('titleEntityNamesArray', titleEntityNamesArray.sort())
+
+        // 錯誤訊息
+        const checkError = []
         
         // 獲取所有的例句
         const textExamples = document.querySelectorAll('.textExams--examples')
-        // 掃描例句的dom元素
-        Array.from(textExamples).map(textExample => {
-            const examEntityArray = []
-            const exampleChilds = textExample.children
-            // 找到有關鍵字的dom元素
-            Array.from(exampleChilds).map(exampleChild => {
-                if(exampleChild.classList.contains('textExams-span')){
-                    const textExamDivsChilds = exampleChild.firstElementChild.children
-                    // 找到特定關鍵字dom元素，將dataset.entityname塞入examEntityArray陣列中
-                    Array.from(textExamDivsChilds).map(textExamDivsChild => {
-                        if(textExamDivsChild.children.length){
-                            examEntityArray.push(textExamDivsChild.firstElementChild.firstElementChild.firstElementChild.dataset.entityname)
-                        }
-                    })
-                }
-            })
 
-            // 陣列比對，將陣列內的東西用array.sort()排序好，使用JSON.stringify()將陣列轉為字串再比對
-            if(JSON.stringify(titleEntityNamesArray.sort()) !== JSON.stringify(examEntityArray.sort())){
-                console.log('例句關鍵字不符')
+        data.map((example, index) => {
+            if(example.intent !== currentIntent){
+                checkError.push('例句意圖不符')
+                textExamples[index].firstElementChild.firstElementChild.classList.toggle('errorIntent')
+            }
+            
+            const exampleEntityArray = example.entities.map(item => item.entity.trim())
+            if((exampleEntityArray.length !== titleEntityNamesArray.length) || (JSON.stringify(exampleEntityArray.sort()) !== JSON.stringify(titleEntityNamesArray.sort()))){
                 checkError.push('例句關鍵字不符')
-                if(!textExample.firstElementChild.firstElementChild.classList.contains('errorIntent')){
-                    textExample.firstElementChild.firstElementChild.classList.toggle('errorIntent')
+                if(!textExamples[index].firstElementChild.firstElementChild.classList.contains('errorIntent')){
+                    textExamples[index].firstElementChild.firstElementChild.classList.toggle('errorIntent')
                 }
             }
         })
@@ -1978,6 +1989,20 @@ Method.button.storyButton = function(){
 
     // 例句操作按鈕事件function
     function eventFunc(data, examsTitleHtml){
+        // 彈跳窗title滑鼠事件 - 顯示關鍵字代號
+        const allEntityLabels = document.querySelectorAll('.entity-label')
+        allEntityLabels.forEach(entityLabel => {
+            entityLabel.addEventListener('mouseenter', e => {
+                const target = e.target
+                target.children[0].setAttribute('style', 'position: absolute;bottom: -90%; left:0;background-color: #fff;')
+            })
+
+            entityLabel.addEventListener('mouseleave', e => {
+                const target = e.target
+                target.children[0].setAttribute('style', 'display: none;')
+            })
+        })
+        
         // 彈跳窗例句滑鼠事件
         const allTextExams = document.querySelectorAll('.textExams--examples')
         allTextExams.forEach(element => {
@@ -2165,6 +2190,7 @@ Method.button.storyButton = function(){
                     targetElement.setAttribute('class', 'editing')
                     targetInput.setAttribute('class', 'editing')
                     targetInput.value = entityText
+                    targetInput.select()
                     localStorage.setItem('editExamText', entityText)
                     localStorage.setItem('exampleTitle', exampleTitle)
 
@@ -2178,38 +2204,59 @@ Method.button.storyButton = function(){
                                 target.previousElementSibling.setAttribute('class', 'waiting')
                                 target.parentElement.nextElementSibling.children[0].children[0].children[0].removeAttribute('disabled')
                                 let arrayNum
+                                // 檢查輸入框的值是否為空或與編輯前相同
                                 if(target.value === entityText || target.value === '') return
+
+                                const textExamData = JSON.parse(localStorage.getItem('textExamData'))
+
+                                // 檢查輸入框的值是否與其他例句相同
+                                for(let i = 0; i < textExamData.length; i++){
+                                    if(textExamData[i].text === target.value){
+                                        var html = "<h2><div class='sa-icon warning'><span></span></div>例句重複</h2>";
+                                        Method.common.showBox(html, 'message', '')
+                                        return
+                                    }
+                                }
 
                                 const editingExamText = localStorage.getItem('editExamText')
 
                                 for(i = 0; i < data.length; i++){
-                                    if(data[i].text == editingExamText){
+                                    if(textExamData[i].text == editingExamText){
                                         arrayNum = i
                                     }
                                 }
 
-                                fetch(`http://192.168.10.127:3030/jh_story/parse?userInput=${target.value}`)
-                                .then(response => response.json())
-                                .then(textParse => {
-                                    const newExamText = {
-                                        text: textParse.text,
-                                        intent: textParse.intent.name,
-                                        entities: textParse.entities
+                                fetch(`http://192.168.10.127:3030/jh_story/userStep/nlu/checkRepeat?userInput=${target.value}`)
+                                .then(res => res.json())
+                                .then(info => {
+                                    if(info.status !== 'success'){
+                                        var html = `<h2><div class='sa-icon warning'><span></span></div>${info.message}</h2>`;
+                                        Method.common.showBox(html, 'message', '')
+                                        return
                                     }
-                                    data.splice(arrayNum, 1, newExamText)
-                                    return data
+                                    fetch(`http://192.168.10.127:3030/jh_story/parse?userInput=${target.value}`)
+                                    .then(response => response.json())
+                                    .then(textParse => {
+                                        const newExamText = {
+                                            text: textParse.text,
+                                            intent: textParse.intent.name,
+                                            entities: textParse.entities
+                                        }
+                                        textExamData.splice(arrayNum, 1, newExamText)
+                                        const exampleTitle = localStorage.getItem('exampleTitle')
+                                        const newData = textExamData.filter(item => item.text !== exampleTitle)
+                                        localStorage.setItem('textExamData', JSON.stringify(newData))
+                                        return newData
+                                    })
+                                    .then(newData => {
+                                        let newExamHtml = ''
+                                        newExamHtml = createTextsFunc(newData, newExamHtml, examsTitleHtml)
+                                        document.querySelector('#textExams-panel').innerHTML = newExamHtml
+                                        checkAllExampleIntent(newData)
+                                        eventFunc(newData, examsTitleHtml)
+                                    })
+                                    .catch(err => console.log(err))
                                 })
-                                .then(newData => {
-                                    const exampleTitle = localStorage.getItem('exampleTitle')
-                                    newData = newData.filter(item => item.text !== exampleTitle)
-
-                                    let newExamHtml = ''
-                                    newExamHtml = createTextsFunc(newData, newExamHtml, examsTitleHtml)
-                                    document.querySelector('#textExams-panel').innerHTML = newExamHtml
-                                    checkAllExampleIntent()
-                                    eventFunc(data, examsTitleHtml)
-                                })
-                                .catch(err => console.log(err))
                             }
                         })
                     })
@@ -2217,6 +2264,7 @@ Method.button.storyButton = function(){
             })
         })
 
+        // 例句彈跳窗 移除按鈕點擊事件
         const removeBtns = document.querySelectorAll('#textExams--actionBtn_trashBtn')
         removeBtns.forEach(removeBtn => {
             removeBtn.addEventListener('click', e => {
@@ -2226,17 +2274,19 @@ Method.button.storyButton = function(){
                 const exampleTitle = sliceText(document.querySelector('#userTextBox .content .userTextTitle').innerText)
 
                 console.log(exampleTitle)
-                data = data.filter(exam => {
+                const textExamData = JSON.parse(localStorage.getItem('textExamData'))
+                const newData = textExamData.filter(exam => {
                     if(exam.text !== examText && exam.text !== exampleTitle){
                         return exam
                     }
                 })
+                localStorage.setItem('textExamData', JSON.stringify(newData))
 
                 let newExamHtml = ''
-                newExamHtml = createTextsFunc(data, newExamHtml, examsTitleHtml)
+                newExamHtml = createTextsFunc(newData, newExamHtml, examsTitleHtml)
                 document.querySelector('#textExams-panel').innerHTML = newExamHtml
-                checkAllExampleIntent()
-                eventFunc(data, examsTitleHtml)
+                checkAllExampleIntent(newData)
+                eventFunc(newData, examsTitleHtml)
             })
         })
     }
@@ -2528,10 +2578,12 @@ Method.button.storyButton = function(){
                             })
                             document.querySelector('#setExamInfo').remove()
                             examTempData = examTempData.filter(exam => exam.text !== examTextTitle)
+                            localStorage.setItem('textExamData', JSON.stringify(examTempData))
                             let newExamHtml = ''
+                            console.log('final examTempData:', examTempData)
                             newExamHtml = createTextsFunc(examTempData, newExamHtml, examsTitleHtml)
                             textExamPanel.innerHTML = newExamHtml
-                            checkAllExampleIntent()
+                            checkAllExampleIntent(examTempData)
                             eventFunc(examTempData, examsTitleHtml) 
                         }
                         
