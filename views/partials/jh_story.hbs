@@ -2,30 +2,100 @@
 <!-- jh_story -->
 <div class="jh_story">
   <h1>故事流程</h1>
-    {{> message}}
-    <form name="form" action="" class="searchBar" id="search">
-      <label for="storyFilter">故事名稱：</label>
-      <select name="storyFilter" id="storyFilter" required>
-        <option value="" selected>請選擇</option>
-        {{#each stories}}
-        <option value="{{this.story}}">{{this.story}}</option>
-        {{/each}}
-      </select>
-      <input type="submit" class="btn btn-info" value="查詢">
-    </form>
-  <div id="data-panel">
-    {{#each storyData}}
-      {{#forEach this.steps}}
-        {{#if user}}
-        <div class="user-block">
+  {{> message}}
+  <form name="form" action="" class="searchBar" id="search">
+    <label for="storyFilter">故事名稱：</label>
+    <select name="storyFilter" id="storyFilter" required>
+      <option value="" selected>請選擇</option>
+      {{#each stories}}
+      <option value="{{this.story}}">{{this.story}}</option>
+      {{/each}}
+    </select>
+    <input type="submit" class="btn btn-info" id="filterBtn" value="查詢">
+  </form>
+
+  <div>
+    <div id="data-panel">
+      <div id="stories" style="{{#unless storyData.length}}visibility: hidden;{{else}}visibility: visible;{{/unless}}">
+        {{#each storyData}}
+        <div id="title-container">
+          <div id="storyTitle" class="form-control" data-event="blur" contenteditable="false">{{this.story}}</div>
+          <div id="tittleBtn" style="margin-top: 10px;opacity: 0;transition: opacity .1s ease-in-out;">
+            <button id="storyTitleEdit" class="btn btn-success" type="button" disabled>編輯故事名稱</button>
+          </div>
+        </div>
+        {{#forEach this.steps}}
+        {{#if intent}}
+        <div id="storyDiv" class="userStep" style="border: 1px solid transparent; border-radius: 5px;">
           <span id="storySpan">
-            <span >使用者 - {{user}}</span>
-            <span id="intent-span" class="nluSpan mt-10"><i class="fas fa-tag" style="font-size: 7px;"></i><span class="nluText">意圖: {{intent}}</span></span>
+            {{#if user}}
+            <input placeholder="使用者說...." name="userInput" id="userInput" class="form-control story-user"
+              data-event="keydown" data-status="waiting" autocomplete="off" disabled style="cursor: pointer;"
+              value="{{user}}">
+            {{/if}}
+            <span id="attrSpan">
+              <span id="intent-span" class="nluSpan {{#if user}}mt-10{{/if}}">
+                <i class="fas fa-tag" style="font-size: 7px;"></i>
+                <span id="intent-text" class="nluText">意圖: {{intent}}</span>
+              </span>
+
+              {{#if entities.length}}
+              {{#forEach entities}}
+              <span id="entities-span" class="nluSpan mt-10">
+                <i class="fas fa-key" style="font-size: 9px;"></i>
+                <span id="entity-text" class="nluText">
+                  關鍵字: <span id="entity">{{text}}</span>,
+                  代號: <span id="entity--code">{{entity}}</span>,
+                  代表值: <span id="entity--value">{{value}}</span>
+                </span>
+              </span>
+              {{/forEach}}
+              {{/if}}
+            </span>
           </span>
-        </div> 
+          <div class="top-right"
+            style="max-width: 100px; position: absolute; top: 9px; right: 9px; visibility: hidden;">
+            <span>
+              <button type="button" id="intentBtn" class="btn btn-warning" style="visibility: hidden;">
+                <i class="fas fa-tag" style="font-size: 7px;"></i>
+              </button>
+
+              <button type="button" id="removeBtn" class="btn btn-danger" style="margin-left: 5px;">
+                <i class="fas fa-trash-alt" style="font-size: 7px;"></i>
+              </button>
+            </span>
+          </div>
+        </div>
+        {{else}}
+
+        <div id="storyDiv" class="botRes" style="margin-left: 20%; border: 1px solid transparent; border-radius: 5px;">
+          <span id="storySpan">
+            <textarea placeholder="機器人回覆...." name="botInput" id="botInput" class="form-control story-bot"
+              data-status="waiting" data-event="blur" style="height: 98px;" disabled="">{{response}}</textarea>
+          </span>
+          <div class="top-right"
+            style="max-width: 100px; position: absolute; top: 9px; right: 9px; visibility: hidden;">
+            <span>
+              <button type="button" id="removeBtn" class="btn btn-danger">
+                <i class="fas fa-trash-alt" style="font-size: 7px;"></i>
+              </button>
+            </span>
+          </div>
+          <div class="bottom-right" data-isfocus="false"
+            style="position: absolute; right: 9px; bottom: 9px; visibility: hidden;" data-ismouseleave="true">
+            <div class="res-name" style="display: flex;">
+              <div class="res-name-input-div">
+                <input id="res-name-input" value="{{action}}">
+              </div>
+            </div>
+          </div>
+        </div>
+
         {{/if}}
-      {{/forEach}}
-    {{/each}}
+        {{/forEach}}
+        {{/each}}
+      </div>
+    </div>
   </div>
   <div class="footButton">
     <input type="button" class="btn btn-warning" onclick="Method.common.page('/jh_story/new')" value="新增故事流程">
