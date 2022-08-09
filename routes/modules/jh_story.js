@@ -346,25 +346,29 @@ router.post('/userStep/nlu/addExamples', (req, res) => {
   getSqlTrainingData('BF_JH_DATA_TEST', 'nlu-json-test', 'nlu', cpnyId)
   .then(data => {
     textExamDataParse.map(exam => {
-      const newNlu = {
-        text: exam.text,
-        intent: exam.intent,
-        entities: []
-      }
-
-      if(exam.entities.length){
-        exam.entities.map(item => {
-          const newEntity = {
-            entity: item.entity,
-            value: item.value,
-            start: item.start,
-            end: item.end
-          }
-          newNlu.entities.push(newEntity)
-        })
-      }
-
-      data.rasa_nlu_data.common_examples.push(newNlu)
+      // 將暫存例句陣列中已經添加過的例句篩選掉
+      const checkText = data.rasa_nlu_data.common_examples.some(example => exam.text === example.text)
+      const checkIntent = data.rasa_nlu_data.common_examples.some(example => exam.intent === example.intent)
+      if( checkText && checkIntent) return
+        const newNlu = {
+          text: exam.text,
+          intent: exam.intent,
+          entities: []
+        }
+  
+        if(exam.entities.length){
+          exam.entities.map(item => {
+            const newEntity = {
+              entity: item.entity,
+              value: item.value,
+              start: item.start,
+              end: item.end
+            }
+            newNlu.entities.push(newEntity)
+          })
+        }
+  
+        data.rasa_nlu_data.common_examples.push(newNlu)
     })
 
     const filePath = '../public/trainData/nlu-json-test.json'
