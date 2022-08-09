@@ -937,11 +937,11 @@ header a:first-of-type {
 }
 
 /*jh_new_story*/
-.jh_new_story #title-container {
+#title-container {
   display: flex;
   align-items: center;
 }
-.jh_new_story #storyTitle {
+#storyTitle {
   width: fit-content;
   max-width: 80%;
   font-size: 2em;
@@ -954,16 +954,16 @@ header a:first-of-type {
   white-space: nowrap;
   overflow: hidden;
 }
-.jh_new_story #tittleBtn {
+#tittleBtn {
   padding-left: 10px;
 }
-.jh_new_story #data-panel > div {
+#data-panel > #stories {
   display: block;
   width: 100%;
   height: auto;
   min-height: 150px;
 }
-.jh_new_story #data-panel #storyDiv {
+#data-panel #storyDiv {
   width: max-content;
   max-width: 90%;
   min-width: 35rem;
@@ -971,10 +971,10 @@ header a:first-of-type {
   display: inline-block;
   padding: 9px;
 }
-.jh_new_story #data-panel #storyDiv:not(:first-child) {
+#data-panel #storyDiv:not(:first-child) {
   margin-top: 10px;
 }
-.jh_new_story #data-panel #storyDiv .story-user {
+#data-panel #storyDiv .story-user {
   display: inline-block;
   width: 70%;
   background: #f9f9f9;
@@ -982,7 +982,7 @@ header a:first-of-type {
   overflow: hidden;
   overflow-wrap: break-word;
 }
-.jh_new_story #data-panel #storyDiv .story-bot {
+#data-panel #storyDiv .story-bot {
   display: inline-block;
   width: 70%;
   background: #d9ffff;
@@ -990,16 +990,16 @@ header a:first-of-type {
   overflow: hidden;
   overflow-wrap: break-word;
 }
-.jh_new_story #data-panel #storyDiv .top-right .btn {
+#data-panel #storyDiv .top-right .btn {
   line-height: 0;
   font-size: 1px;
 }
-.jh_new_story #data-panel #storyDiv .res-name-input-div {
+#data-panel #storyDiv .res-name-input-div {
   font-weight: 400;
   font-style: normal;
   color: #ccc;
 }
-.jh_new_story #data-panel #storyDiv .res-name-input-div > input {
+#data-panel #storyDiv .res-name-input-div > input {
   background-color: transparent;
   color: #cdcdcd;
   white-space: nowrap;
@@ -1017,13 +1017,13 @@ header a:first-of-type {
 }
 
 /* jh_story */
-.jh_story #data-panel .user-block {
+/* .jh_story #data-panel .user-block {
   display: flex;
   flex-direction: column;
 }
 .jh_story #data-panel .user-block .nluSpan {
   width: max-content;
-}
+} */
 
 /* userTextBox */
 #userTextBox .nluSpan {
