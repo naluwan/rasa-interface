@@ -475,54 +475,39 @@ Method.button.addStoryButton = function(){
     }
 }
 
-    // 點擊機器人按鈕
-    function clickBotBtn(){
-        const stories = document.querySelector('#stories');
-        const storyDiv = document.createElement('div');
-        storyDiv.setAttribute('id', 'storyDiv');
-        storyDiv.setAttribute('class', 'botRes');
-        storyDiv.setAttribute('style', 'margin-left: 20%;border: 1px solid transparent;border-radius: 5px')
+// jh_story 互動按鈕
+Method.button.storyButton = function(){
+    if(document.querySelector('.jh_story')){
+        const storyFilter = document.querySelector('#storyFilter')
+        const filterBtn = document.querySelector('#filterBtn')
+        const btnDiv = document.querySelector('#btnDiv')
+        const userBtn = document.querySelector('#userBtn')
+        const botBtn = document.querySelector('#botBtn')
+        if(storyFilter.value){
+            // 因為畫面render會有一些延遲，所已設定0.5秒後才添加事件
+            setTimeout(() => {
+                Method.button.editStoryTitle()
+                Method.common.getStoryTitle()
+                Method.story.showBorder(stories, btnDiv, userBtn, botBtn)
+                Method.story.stepControlBtn(userBtn, botBtn)
+                const userStepRemoveBtns = document.querySelectorAll('.userStep #removeBtn')
+                const userStepIntentBtns = document.querySelectorAll('.userStep #intentBtn')
+                const userStepStorySpans = document.querySelectorAll('.userStep #storySpan')
+                const userStepInputs = document.querySelectorAll('.userStep #userInput')
+                
+                Array.from(userStepRemoveBtns).map(userStepRemoveBtn => Method.story.stepRemoveBtn(userStepRemoveBtn))
 
-        const storySpan = document.createElement('span');
-        storySpan.setAttribute('id', 'storySpan');
+                Array.from(userStepIntentBtns).map(userStepIntentBtn => Method.story.stepIntentBtn(userStepIntentBtn))
 
-        const textArea = document.createElement('textArea');
-        textArea.setAttribute('placeholder', '機器人回覆....');
-        textArea.setAttribute('name', 'botInput');
-        textArea.setAttribute('id', 'botInput');
-        textArea.setAttribute('class', 'form-control story-bot');
-        textArea.setAttribute('data-status', 'waiting')
+                Array.from(userStepStorySpans).map(userStepStorySpan => Method.story.clickUserInputEvent(userStepStorySpan))
 
-        const removeBtn = document.createElement('button');
-        removeBtn.setAttribute('type', 'button');
-        removeBtn.setAttribute('id', 'removeBtn');
-        removeBtn.setAttribute('class', 'btn btn-danger');
+                Array.from(userStepInputs).map(userStepInput => Method.story.userInputEvent(userStepInput))
 
-        const removeIcon = document.createElement('i');
-        removeIcon.setAttribute('class', 'fas fa-trash-alt');
-        removeIcon.setAttribute('style', 'font-size: 7px;')
-        removeBtn.appendChild(removeIcon);
-
-        removeBtn.onclick = function(e){
-            const target = e.target;
-            const storyName = document.querySelector('#storyTitle').innerText
-            let resCode
-            let botStoryDiv
-
-            if(target.matches('#removeBtn')){
-                botStoryDiv =target.parentElement.parentElement.parentElement
-                resCode = target.parentElement.parentElement.nextElementSibling.children[0].children[0].children[0].value
-            }
-
-            if(target.tagName == 'svg'){
-                botStoryDiv = target.parentElement.parentElement.parentElement.parentElement
-                resCode = target.parentElement.parentElement.parentElement.nextElementSibling.children[0].children[0].children[0].value
-            }
-
-            if(target.tagName == 'path'){
-                botStoryDiv = target.parentElement.parentElement.parentElement.parentElement.parentElement
-                resCode = target.parentElement.parentElement.parentElement.parentElement.nextElementSibling.children[0].children[0].children[0].value
-            }
+            }, 500)
+            
+        }
+    }
+}
 
 Method.story = {}
 
@@ -3398,7 +3383,6 @@ Method.common.getStoryTitle = function(){
                 if(info.status != 'success'){
                     target.setAttribute('contenteditable', 'true')
                     target.innerText = '未命名故事'
-                    console.log('執行')
                     var html = "<h2><div class='sa-icon " + info.status + "'><span></span></div>" + info.message + "</h2>";
                     Method.common.showBox(html, 'message', '')
                 }
