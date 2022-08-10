@@ -591,381 +591,29 @@ Method.button.addStoryButton = function(){
                 resCode = target.parentElement.parentElement.parentElement.parentElement.nextElementSibling.children[0].children[0].children[0].value
             }
 
-            const payload = {
-                storyName,
-                resCode
-            }
-            // 串接後端API 刪除故事流程中的機器人回覆步驟
-            fetch('http://192.168.10.127:3030/jh_story/botStep/fragments', {
-                method: 'delete',
-                body: JSON.stringify(payload),
-                headers: {
-                    'Content-Type': "application/json",
-                }
-            })
-            .then(res => res.json())
-            .then(info => {
-                if(info.status === 'success'){
-                    const payload = {
-                        resCode
-                    }
-                    // 串接後端API 刪除在domain中註冊的機器人回覆
-                    fetch('http://192.168.10.127:3030/jh_story/botStep/domain', {
-                        method: 'delete',
-                        body: JSON.stringify(payload),
-                        headers: {
-                            'Content-Type': "application/json",
-                        }
-                    })
-                    .then(res => res.json())
-                    .then(info => {
-                        if(info.status === 'success'){
-                            botStoryDiv.remove()
-                        }
-                    })
-                    .catch(err => console.log(err))
-                }
-            })
-            .catch(err => console.log(err))
-        }
-
-        const btnSpan = document.createElement('span');
-        btnSpan.appendChild(removeBtn);
-
-        const topRightDiv = document.createElement('div');
-        topRightDiv.setAttribute('class', 'top-right');
-        topRightDiv.setAttribute('style', 'max-width: 100px;position: absolute;top: 9px;right: 9px;visibility: hidden;');
-        topRightDiv.appendChild(btnSpan);
-
-        const resName = document.createElement('div');
-        resName.setAttribute('class', 'res-name');
-        resName.setAttribute('style', 'display: flex;');
-
-        const resNameInputDiv = document.createElement('div');
-        resNameInputDiv.setAttribute('class', 'res-name-input-div');
-        
-        const resNameInput = document.createElement('input');
-        resNameInput.setAttribute('id', 'res-name-input');
-        resNameInputDiv.appendChild(resNameInput);
-        resName.appendChild(resNameInputDiv);
-
-        const bottomRightDiv = document.createElement('div');
-        bottomRightDiv.setAttribute('class', 'bottom-right');
-        bottomRightDiv.setAttribute('data-isFocus', 'false');
-        bottomRightDiv.setAttribute('style', 'position: absolute;right: 9px;bottom: 9px;visibility: hidden;');
-        bottomRightDiv.appendChild(resName);
-
-        storySpan.appendChild(textArea);
-        storyDiv.appendChild(storySpan);
-        storyDiv.appendChild(topRightDiv);
-        storyDiv.appendChild(bottomRightDiv);
-        stories.insertBefore(storyDiv, stories.lastElementChild);
-
-        bottomRightDiv.addEventListener('mousemove', e => {
-            const target = e.target;
-            if(target.matches('#res-name-input')){
-                target.style.border = '1px solid #ccc';
-            }
-        })
-
-        bottomRightDiv.addEventListener('mouseleave', e => {
-            const target = e.target;
-            if(target.dataset.isfocus == 'false'){
-                target.children[0].children[0].children[0].style.border = 'none';
-            }
-        })
-
-        resNameInput.addEventListener('focus', e => {
-            const target = e.target;
-            target.parentElement.parentElement.parentElement.dataset.isfocus = 'true';
-        })
-
-        resNameInput.addEventListener('blur', e => {
-            const target = e.target;
-            target.parentElement.parentElement.parentElement.dataset.isfocus = 'false';
-            if(bottomRightDiv.dataset.ismouseleave == 'true'){
-                target.parentElement.parentElement.parentElement.style.visibility = 'hidden';
-            }else{
-                target.style.border = 'none';
-            }
-            
-        })
-
-        // 機器人回覆輸入框焦點事件
-        textArea.addEventListener('focus', e => {
-            const target = e.target
-            target.setAttribute('data-event', 'blur')
-            target.setAttribute('data-status', 'typing')
-        })
-
-        // 機器人回覆輸入框輸入事件 - 自適應調整高度
-        textArea.addEventListener('input', e => {
-            textArea.style.height = '100px';
-            textArea.style.height = e.target.scrollHeight + 'px';
-        })
-
-        // 機器人回覆輸入框enter 事件
-        // textArea.addEventListener('keyup', e => {
-        //     const target = e.target
-        //     if(e.keyCode === 13){
-
-        //         if(!target.value) return
-
-        //         // 獲取陣列位置
-        //         let indexNum = 0
-        //         const allStorySpan = document.querySelectorAll('#storySpan')
-        //         for(i = 0; i < allStorySpan.length; i++){
-        //             if(allStorySpan[i].childNodes[0].dataset.status == 'typing'){
-        //                 indexNum = i
-        //             }
-        //         }
-
-        //         // 沒有設定故事名稱就返回
-        //         target.setAttribute('data-event', 'keydown')
-        //         if(document.querySelector('#storyTitle').innerText == '未命名故事'){
-        //             target.setAttribute('data-status', 'waiting')
-        //             target.value = ''
-        //             var html = "<h2><div class='sa-icon warning'><span></span></div>請先設定故事名稱</h2>";
-        //             Method.common.showBox(html, 'message', '')
-        //             return
-        //         }
-
-        //         // 抓取故事名稱和回覆代號
-        //         const storyName = document.querySelector('#storyTitle').innerText
-        //         const resCode = target.parentElement.parentElement.lastChild.children[0].children[0].children[0].value
-
-        //         // 串接API 新增故事流程 fragments
-        //         const payload = {
-        //             storyName,
-        //             resCode,
-        //             indexNum
-        //         }
-        //         fetch(`http://192.168.10.127:3030/jh_story/botStep/fragments`,{
-        //             method: 'post',
-        //             body: JSON.stringify(payload),
-        //             headers: {
-        //                 'Content-Type': "application/json",
-        //             },
-        //         })
-        //         .then(response => response.json())
-        //         .then(info => {
-        //             if(info.status === 'success'){
-        //                 // 串接API 註冊機器人回覆 domain
-        //                 const payload = {
-        //                     resCode,
-        //                     botReply: target.value
-        //                 }
-        //                 fetch(`http://192.168.10.127:3030/jh_story/botStep/domain`, {
-        //                     method: 'post',
-        //                     body: JSON.stringify(payload),
-        //                     headers: {
-        //                         'Content-Type': "application/json",
-        //                     },
-        //                 })
-        //                 .then(res => res.json())
-        //                 .then(info => {
-        //                     if(info.status === 'success'){
-        //                         target.setAttribute('data-status', 'waiting')
-        //                         target.setAttribute('disabled', '')
-        //                     }
-        //                 })
-        //                 .catch(err => console.log(err))
-        //             }
-        //         })
-        //         .catch(err => console.log(err))
-        //     }
-        // })
-
-        // 機器人回覆輸入框失焦 事件
-        textArea.addEventListener('blur', e => {
-            const target = e.target;
-
-            // 獲取輸入框在陣列中的位置
-            let indexNum = 0
-            const allStorySpan = document.querySelectorAll('#storySpan')
-            for(i = 0; i < allStorySpan.length; i++){
-                if(allStorySpan[i].childNodes[0].dataset.status == 'typing'){
-                    indexNum = i
-                }
-            }
-
-            if(target.dataset.event != 'blur') return
-            if(target.value == ''){
-                target.setAttribute('data-status', 'waiting')
-                target.parentElement.parentElement.remove();
-            }else{
-                if(document.querySelector('#storyTitle').innerText == '未命名故事'){
-                    target.setAttribute('data-status', 'waiting')
-                    target.value = ''
-                    var html = "<h2><div class='sa-icon warning'><span></span></div>請先設定故事名稱</h2>";
-                    Method.common.showBox(html, 'message', '')
-                    return
-                }
-                // 抓取故事名稱和回覆代號
-                const storyName = document.querySelector('#storyTitle').innerText
-                const resCode = target.parentElement.parentElement.lastChild.children[0].children[0].children[0].value
-
-                // 串接API 新增故事流程 fragments
-                const payload = {
-                    storyName,
-                    resCode,
-                    indexNum
-                }
-                fetch(`http://192.168.10.127:3030/jh_story/botStep/fragments`,{
-                    method: 'post',
-                    body: JSON.stringify(payload),
-                    headers: {
-                        'Content-Type': "application/json",
-                    },
-                })
-                .then(response => response.json())
-                .then(info => {
-                    if(info.status === 'success'){
-                        // 串接API 註冊機器人回覆 domain
-                        const payload = {
-                            resCode,
-                            botReply: target.value
-                        }
-                        fetch(`http://192.168.10.127:3030/jh_story/botStep/domain`, {
-                            method: 'post',
-                            body: JSON.stringify(payload),
-                            headers: {
-                                'Content-Type': "application/json",
-                            },
-                        })
-                        .then(res => res.json())
-                        .then(info => {
-                            if(info.status === 'success'){
-                                target.setAttribute('data-status', 'waiting')
-                                target.setAttribute('disabled', '')
-                            }
-                        })
-                        .catch(err => console.log(err))
-                    }
-                })
-                .catch(err => console.log(err))
-            }
-        })
-
-        resNameInput.value = randomBotResName()
-
-        resNameInput.onchange = function(){
-            console.log(resNameInput.value)
-        }
-    }
-
-    function jhStoryEvent(){
-        if(document.querySelector('.jh_story')){
-            const allUserStepRemoveBtns = document.querySelectorAll('.userStep #removeBtn')
-            allUserStepRemoveBtns.forEach(userStepRemoveBtn => {
-                userStepRemoveBtn.addEventListener('click', e => {
-                    // storyName - 該頁面故事流程名稱
-                    const target = e.target;
-                    const storyName = document.querySelector('#storyTitle').innerText
-
-                    // userStoryDiv - 該點擊目標的故事流程步驟外框，用來刪除故事流程步驟用
-                    // text - 該點擊目標故事流程步驟，使用者輸入的文字
-                    // intent - 該點擊目標故事流程步驟，使用者的意圖，使用slice()是因為顯示文字時，在前方加上「意圖: 」，所以取意圖需要去除前4個字
-                    if(target.matches('#removeBtn')){
-                        const userStoryDiv = target.parentElement.parentElement.parentElement
-                        if(target.parentElement.parentElement.previousElementSibling.children[0].id == 'userInput'){
-                            if(target.parentElement.parentElement.previousElementSibling.children[0].value){
-                                const text = target.parentElement.parentElement.previousElementSibling.children[0].value
-                                let intent = target.parentElement.parentElement.previousElementSibling.children[1].children[0].children[1].innerText
-                                intent = intent.slice(4, intent.length)
-                                removeUserStep(storyName, text, intent, userStoryDiv)
-                            }else{
-                                userStoryDiv.remove()
-                            }
-                        }else{
-                            const text = ''
-                            let intent = target.parentElement.parentElement.previousElementSibling.children[0].children[0].children[1].innerText
-                            intent = intent.slice(4, intent.length)
-                            removeUserStep(storyName, text, intent, userStoryDiv)
-                        }
-                    }
-
-                    if(target.tagName == 'svg'){
-                        const userStoryDiv = target.parentElement.parentElement.parentElement.parentElement
-                        if(target.parentElement.parentElement.parentElement.previousElementSibling.children[0].id == 'userInput'){
-                            if(target.parentElement.parentElement.parentElement.previousElementSibling.children[0].value){
-                                const text = target.parentElement.parentElement.parentElement.previousElementSibling.children[0].value
-                                let intent = target.parentElement.parentElement.parentElement.previousElementSibling.children[1].children[0].children[1].innerText
-                                intent = intent.slice(4, intent.length)
-                                removeUserStep(storyName, text, intent, userStoryDiv)
-                            }else{
-                                userStoryDiv.remove()
-                            }
-                        }else{
-                            const text = ''
-                            let intent = target.parentElement.parentElement.parentElement.previousElementSibling.children[0].children[0].children[1].innerText
-                            intent = intent.slice(4, intent.length)
-                            removeUserStep(storyName, text, intent, userStoryDiv)
-                        }
-                    }
-
-                    if(target.tagName == 'path'){
-                        const userStoryDiv = target.parentElement.parentElement.parentElement.parentElement.parentElement
-                        if(target.parentElement.parentElement.parentElement.parentElement.previousElementSibling.children[0].id == 'userInput'){
-                            if(target.parentElement.parentElement.parentElement.parentElement.previousElementSibling.children[0].value){
-                                const text = target.parentElement.parentElement.parentElement.parentElement.previousElementSibling.children[0].value
-                                let intent = target.parentElement.parentElement.parentElement.parentElement.previousElementSibling.children[1].children[0].children[1].innerText
-                                intent = intent.slice(4, intent.length)
-                                removeUserStep(storyName, text, intent, userStoryDiv)
-                            }else{
-                                userStoryDiv.remove()
-                            }
-                        }else{
-                            const text = ''
-                            let intent = target.parentElement.parentElement.parentElement.parentElement.previousElementSibling.children[0].children[0].children[1].innerText
-                            intent = intent.slice(4, intent.length)
-                            removeUserStep(storyName, text, intent, userStoryDiv)
-                        }
-                    }
-
-                    // 移除故事流程function
-                    function removeUserStep(storyName, userSays, intent, userStoryDiv){
-                        const payload = {
-                            storyName,
-                            userSays,
-                            intent
-                        }
-                        fetch(`http://192.168.10.127:3030/jh_story/userStep/fragments`,{
-                            method: 'delete',
-                            body: JSON.stringify(payload),
-                            headers: {
-                                'Content-Type': "application/json",
-                            },
-                        })
-                        .then(response => response.json())
-                        .then(info => {
-                            if(info.status == 'success'){
-                                userStoryDiv.remove()
-                            }
-                        })
-                        .catch(err => console.log(err))
-
-                        fetch(`http://192.168.10.127:3030/jh_story/userStep/nlu/example`,{
-                            method: 'delete',
-                            body: JSON.stringify(payload),
-                            headers: {
-                                'Content-Type': "application/json",
-                            },
-                        })
-                        .catch(err => console.log(err))
-                    }
-                })
-            })
-        }
-    }
-
-    
-}
-
 Method.story = {}
+
+// 使用者及機器人步驟按鈕事件
+Method.story.stepControlBtn = function(userBtn, botBtn){
+    userBtn.addEventListener('click', e => {
+        clickUserBtn(stories);
+    })
+
+    botBtn.addEventListener('click', e => {
+        clickBotBtn(stories);
+    })
+}
 
 // 使用者步驟按鈕事件
 Method.story.userStepEvent = function(removeBtn, intentBtn, storySpan, input){
+    Method.story.stepRemoveBtn(removeBtn)
+    Method.story.stepIntentBtn(intentBtn)
+    Method.story.clickUserInputEvent(storySpan)
+    Method.story.userInputEvent(input)
+}
+
+// 使用者步驟刪除按鈕事件
+Method.story.stepRemoveBtn = function(removeBtn){
     // 移除按鈕加上點擊事件
     removeBtn.addEventListener('click', e => {
         // storyName - 該頁面故事流程名稱
@@ -977,9 +625,9 @@ Method.story.userStepEvent = function(removeBtn, intentBtn, storySpan, input){
         // intent - 該點擊目標故事流程步驟，使用者的意圖，使用slice()是因為顯示文字時，在前方加上「意圖: 」，所以取意圖需要去除前4個字
         if(target.matches('#removeBtn')){
             const userStoryDiv = target.parentElement.parentElement.parentElement
-            if(target.parentElement.parentElement.previousElementSibling.childNodes[0].id == 'userInput'){
-                if(target.parentElement.parentElement.previousElementSibling.childNodes[0].value){
-                    const text = target.parentElement.parentElement.previousElementSibling.childNodes[0].value
+            if(target.parentElement.parentElement.previousElementSibling.children[0].id == 'userInput'){
+                if(target.parentElement.parentElement.previousElementSibling.children[0].value){
+                    const text = target.parentElement.parentElement.previousElementSibling.children[0].value
                     let intent = target.parentElement.parentElement.previousElementSibling.children[1].children[0].children[1].innerText
                     intent = intent.slice(4, intent.length)
                     removeUserStep(storyName, text, intent, userStoryDiv)
@@ -996,9 +644,9 @@ Method.story.userStepEvent = function(removeBtn, intentBtn, storySpan, input){
 
         if(target.tagName == 'svg'){
             const userStoryDiv = target.parentElement.parentElement.parentElement.parentElement
-            if(target.parentElement.parentElement.parentElement.previousElementSibling.childNodes[0].id == 'userInput'){
-                if(target.parentElement.parentElement.parentElement.previousElementSibling.childNodes[0].value){
-                    const text = target.parentElement.parentElement.parentElement.previousElementSibling.childNodes[0].value
+            if(target.parentElement.parentElement.parentElement.previousElementSibling.children[0].id == 'userInput'){
+                if(target.parentElement.parentElement.parentElement.previousElementSibling.children[0].value){
+                    const text = target.parentElement.parentElement.parentElement.previousElementSibling.children[0].value
                     let intent = target.parentElement.parentElement.parentElement.previousElementSibling.children[1].children[0].children[1].innerText
                     intent = intent.slice(4, intent.length)
                     removeUserStep(storyName, text, intent, userStoryDiv)
@@ -1015,9 +663,9 @@ Method.story.userStepEvent = function(removeBtn, intentBtn, storySpan, input){
 
         if(target.tagName == 'path'){
             const userStoryDiv = target.parentElement.parentElement.parentElement.parentElement.parentElement
-            if(target.parentElement.parentElement.parentElement.parentElement.previousElementSibling.childNodes[0].id == 'userInput'){
-                if(target.parentElement.parentElement.parentElement.parentElement.previousElementSibling.childNodes[0].value){
-                    const text = target.parentElement.parentElement.parentElement.parentElement.previousElementSibling.childNodes[0].value
+            if(target.parentElement.parentElement.parentElement.parentElement.previousElementSibling.children[0].id == 'userInput'){
+                if(target.parentElement.parentElement.parentElement.parentElement.previousElementSibling.children[0].value){
+                    const text = target.parentElement.parentElement.parentElement.parentElement.previousElementSibling.children[0].value
                     let intent = target.parentElement.parentElement.parentElement.parentElement.previousElementSibling.children[1].children[0].children[1].innerText
                     intent = intent.slice(4, intent.length)
                     removeUserStep(storyName, text, intent, userStoryDiv)
@@ -1064,7 +712,10 @@ Method.story.userStepEvent = function(removeBtn, intentBtn, storySpan, input){
             .catch(err => console.log(err))
         }
     })
+}
 
+// 使用者步驟意圖按鈕事件
+Method.story.stepIntentBtn = function(intentBtn){
     // 點擊意圖按鈕事件
     intentBtn.addEventListener('click', e => {
         const target = e.target;
@@ -1099,7 +750,10 @@ Method.story.userStepEvent = function(removeBtn, intentBtn, storySpan, input){
         
         clickIntentBtn(storyContainer, targetInput, allStorySpan, indexNum);
     })
+}
 
+// 使用者步驟點擊輸入框事件
+Method.story.clickUserInputEvent = function(storySpan){
     // storySpan點擊事件
     // 由於userInput變成disabled之後，點擊事件無法運作，所以將點擊事件加在storySpan上
     // 新增例句彈跳窗
@@ -1283,6 +937,7 @@ Method.story.userStepEvent = function(removeBtn, intentBtn, storySpan, input){
             .catch(err => console.log(err))
         }
     })
+}
 
 // 使用者步驟輸入框事件
 Method.story.userInputEvent = function(input){
