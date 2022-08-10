@@ -1284,6 +1284,8 @@ Method.story.userStepEvent = function(removeBtn, intentBtn, storySpan, input){
         }
     })
 
+// 使用者步驟輸入框事件
+Method.story.userInputEvent = function(input){
     // userInput焦點事件
     input.addEventListener('focus', e => {
         const target = e.target
@@ -1302,7 +1304,7 @@ Method.story.userStepEvent = function(removeBtn, intentBtn, storySpan, input){
             let indexNum = 0
             const allStorySpan = document.querySelectorAll('#storySpan')
             for(i = 0; i < allStorySpan.length; i++){
-                if(allStorySpan[i].childNodes[0].dataset.status == 'typing'){
+                if(allStorySpan[i].children[0].dataset.status == 'typing'){
                     indexNum = i
                 }
             }
@@ -1413,7 +1415,7 @@ Method.story.userStepEvent = function(removeBtn, intentBtn, storySpan, input){
         let indexNum = 0
         const allStorySpan = document.querySelectorAll('#storySpan')
         for(i = 0; i < allStorySpan.length; i++){
-            if(allStorySpan[i].childNodes[0].dataset.status == 'typing'){
+            if(allStorySpan[i].children[0].dataset.status == 'typing'){
                 indexNum = i
             }
         }
@@ -1520,142 +1522,486 @@ Method.story.userStepEvent = function(removeBtn, intentBtn, storySpan, input){
     })
 }
 
-Method.story.showBorder = function(stories, btnDiv){
+// 動態顯示故事流程事件
+Method.story.showBorder = function(stories, btnDiv, userBtn, botBtn){
     // 新增故事流程區塊滑鼠移動事件
     stories.addEventListener('mousemove', e => {
-        if(document.querySelector('.jh_new_story')){
-            btnDiv.style.opacity = '1';
-            btnDiv.style.transition = 'opacity .1s ease-in-out';
-        }
-        if(document.querySelectorAll('#storyDiv')){
+        btnDiv.style.opacity = '1';
+        btnDiv.style.transition = 'opacity .1s ease-in-out';
+
+        if(document.querySelectorAll('#storyDiv').length){
             const allStoryDiv = document.querySelectorAll('#storyDiv');
             const allTopRightDiv = document.querySelectorAll('.top-right');
             const allBottomRightDiv = document.querySelectorAll('.bottom-right');
             const allResNameInput = document.querySelectorAll('#res-name-input');
-            const allIntentBtn = document.querySelectorAll('#intentBtn')
+            const allIntentBtn = document.querySelectorAll('#intentBtn');
 
-            // 顯示刪除按鈕和故事流程外框
-            // 每一個storyDiv都會有一個topRightDiv
-            // 但不是每一個storyDiv都會有bottomRightDiv，所以要分開寫
-            for(i = 0; i < allStoryDiv.length; i++){
-                allTopRightDiv[i].style.visibility = 'visible';
-                allStoryDiv[i].style.border = '1px solid #ccc';
-            }
+            // 動態顯示故事流程步驟外框
+            Array.from(allStoryDiv).map(storyDiv => storyDiv.style.border = '1px solid #ccc');
 
-            // 動態顯示意圖按鈕
-            for(i = 0; i < allIntentBtn.length; i++){
-                const attrSpan = allIntentBtn[i].parentElement.parentElement.previousElementSibling.lastElementChild
-                const hasIntent = []
-                if(!attrSpan.children[0]){
-                    return
-                }
-
-                hasIntent.push(attrSpan.children[0])
-                
-                if(hasIntent.length){
-                    allIntentBtn[i].style.visibility = 'hidden'
-                }else{
-                    allIntentBtn[i].style.visibility = 'visible'
-                }
-            }
+            // 動態顯示故事流程步驟操作按鈕框(添加意圖、刪除按鈕)
+            Array.from(allTopRightDiv).map(topRightDiv => topRightDiv.style.visibility = 'visible');
 
             // 動態顯示機器人對話名稱
-            if(allBottomRightDiv.length){
-                for(i = 0; i < allBottomRightDiv.length; i++){
-                    allBottomRightDiv[i].style.visibility = 'visible';
-                    allBottomRightDiv[i].setAttribute('data-ismouseleave', 'false');
+            Array.from(allBottomRightDiv).map(bottomRightDiv => {
+                bottomRightDiv.style.visibility = 'visible';
+                bottomRightDiv.setAttribute('data-ismouseleave', 'false');
+            })
+
+            // 動態顯示意圖按鈕
+            Array.from(allIntentBtn).map(intentBtn => {
+                const attrSpan = intentBtn.parentElement.parentElement.previousElementSibling.lastElementChild
+                const hasIntent = []
+
+                // 如果使用者有輸入文字，就一定會有意圖
+                // 將意圖加入判斷陣列中
+                if(attrSpan.children.length){
+                    hasIntent.push(attrSpan.children[0])
                 }
-            }
+
+                if(hasIntent.length){
+                    intentBtn.style.visibility = 'hidden'
+                }else{
+                    intentBtn.style.visibility = 'visible'
+                }
+            })
         }
 
-        
         // 動態顯示使用者按鈕
-        if(document.querySelector('.jh_new_story')){
-            if(stories.lastElementChild.previousSibling.className == 'userStep'){
-                if(document.querySelector('#userBtn')){
-                    userBtn.style.display = 'none';
-                    botBtn.style.marginLeft = '0';
-                }
-            }else{
-                    userBtn.style.display = 'inline-block';
-                    botBtn.style.marginLeft = '12px';
+        if(stories.lastElementChild.previousSibling.className == 'userStep'){
+            if(document.querySelector('#userBtn')){
+                userBtn.style.display = 'none';
+                botBtn.style.marginLeft = '0';
             }
+        }else{
+            userBtn.style.display = 'inline-block';
+            botBtn.style.marginLeft = '12px';
         }
     })
 
 
     // 動態隱藏
     stories.addEventListener('mouseleave', e => {
-        if(document.querySelector('.jh_new_story')){
-            btnDiv.style.opacity = '0';
-            btnDiv.style.transition = 'opacity .1s ease-in-out';
-        }
+        btnDiv.style.opacity = '0';
+        btnDiv.style.transition = 'opacity .1s ease-in-out';
 
-        if(document.querySelectorAll('#storyDiv')){
+        if(document.querySelectorAll('#storyDiv').length){
             const allStoryDiv = document.querySelectorAll('#storyDiv');
             const allTopRightDiv = document.querySelectorAll('.top-right');
             const allBottomRightDiv = document.querySelectorAll('.bottom-right');
             const allResNameInput = document.querySelectorAll('#res-name-input');
             const allIntentBtn = document.querySelectorAll('#intentBtn')
 
-            // 隱藏刪除按鈕和故事流程外框
-            for(i = 0; i < allStoryDiv.length; i++){
-                allTopRightDiv[i].style.visibility = 'hidden';
-                allStoryDiv[i].style.border = '1px solid transparent';
-            }
+            // 動態隱藏故事流程外框
+            Array.from(allStoryDiv).map(storyDiv => storyDiv.style.border = '1px solid transparent')
 
-            // 隱藏意圖按鈕
-            for(i = 0; i < allIntentBtn.length; i++){
-                allIntentBtn[i].style.visibility = 'hidden'
-            }
+            // 動態隱藏故事流程步驟操作按鈕框(添加意圖、刪除按鈕)
+            Array.from(allTopRightDiv).map(topRightDiv => topRightDiv.style.visibility = 'hidden')
 
-
-            // 隱藏機器人對話名稱
+            // 動態隱藏意圖按鈕
+            Array.from(allIntentBtn).map(intentBtn => intentBtn.style.visibility = 'hidden')
+            
+            // 動態隱藏機器人對話名稱
             if(allBottomRightDiv.length){
-                for(i = 0; i < allBottomRightDiv.length; i++){
-                    allBottomRightDiv[i].setAttribute('data-ismouseleave', 'true');
-                    if(allBottomRightDiv[i].dataset.isfocus == 'false'){
-                        allBottomRightDiv[i].style.visibility = 'hidden';
+                Array.from(allBottomRightDiv).map(bottomRightDiv => {
+                    bottomRightDiv.setAttribute('data-ismouseleave', 'true');
+                    if(bottomRightDiv.dataset.isfocus == 'false'){
+                        bottomRightDiv.style.visibility = 'hidden';
                     }
-                }
+                })
             }
         }
     })
 }
 
-// jh_story 互動按鈕
-Method.button.storyButton = function(){
-    if(document.querySelector('.jh_story')){
-        const storyFilter = document.querySelector('#storyFilter')
-        const filterBtn = document.querySelector('#filterBtn')
 
-        if(storyFilter.value){
-            setTimeout(() => {
-                Method.button.editStoryTitle()
-                Method.common.getStoryTitle()
-                Method.story.showBorder(stories)
-                const userStepRemoveBtns = document.querySelectorAll('.userStep #removeBtn')
-                const userStepIntentBtns = document.querySelectorAll('.userStep #intentBtn')
-                const userStepStorySpans = document.querySelectorAll('.userStep #storySpan')
-                const userStepInputs = document.querySelectorAll('.userStep #userInput')
-                
-                Array.from(userStepRemoveBtns).map(userStepRemoveBtn => {
-                    Array.from(userStepIntentBtns).map(userStepIntentBtn => {
-                        Array.from(userStepStorySpans).map(userStepStorySpan => {
-                            Array.from(userStepInputs).map(userStepInput => {
-                                Method.story.userStepEvent(userStepRemoveBtn, userStepIntentBtn, userStepStorySpan, userStepInput)
-                            })
-                        })
-                    })
-                })
-
-            }, 500)
-            
-        }
-    }
-}
 
 /**************************** ↓↓↓↓↓↓↓↓↓↓ story 共用function ↓↓↓↓↓↓↓↓↓↓ *********************************/
+
+    // 點擊使用者按鈕
+function clickUserBtn(){
+    const stories = document.querySelector('#stories');
+    const storyDiv = document.createElement('div');
+    storyDiv.setAttribute('id', 'storyDiv');
+    storyDiv.setAttribute('class', 'userStep');
+    storyDiv.setAttribute('style', 'border: 1px solid transparent;border-radius: 5px')
+
+    const storySpan = document.createElement('span');
+    storySpan.setAttribute('id', 'storySpan');
+    const attrSpan = document.createElement('span')
+    attrSpan.setAttribute('id', 'attrSpan')
+
+    const input = document.createElement('input');
+    input.setAttribute('placeholder', '使用者說....');
+    input.setAttribute('name', 'userInput');
+    input.setAttribute('id', 'userInput');
+    input.setAttribute('class', 'form-control story-user');
+    input.setAttribute('data-event', 'blur')
+    input.setAttribute('data-status', 'waiting')
+    input.setAttribute('autocomplete', 'off')
+
+    const removeBtn = document.createElement('button');
+    removeBtn.setAttribute('type', 'button');
+    removeBtn.setAttribute('id', 'removeBtn');
+    removeBtn.setAttribute('class', 'btn btn-danger');
+    removeBtn.setAttribute('style', 'margin-left: 5px;');
+
+    const removeIcon = document.createElement('i');
+    removeIcon.setAttribute('class', 'fas fa-trash-alt');
+    removeIcon.setAttribute('style', 'font-size: 7px;');
+    removeBtn.appendChild(removeIcon);
+
+    const intentBtn = document.createElement('button');
+    intentBtn.setAttribute('type', 'button');
+    intentBtn.setAttribute('id', 'intentBtn');
+    intentBtn.setAttribute('class', 'btn btn-warning');
+
+    const intentIcon = document.createElement('i');
+    intentIcon.setAttribute('class', 'fas fa-tag');
+    intentIcon.setAttribute('style', 'font-size: 7px;');
+    intentBtn.appendChild(intentIcon);
+
+    const btnSpan = document.createElement('span');
+    btnSpan.appendChild(intentBtn);
+    btnSpan.appendChild(removeBtn);
+
+    const topRightDiv = document.createElement('div');
+    topRightDiv.setAttribute('class', 'top-right');
+    topRightDiv.setAttribute('style', 'max-width: 100px;position: absolute;top: 9px;right: 9px;visibility: hidden;');
+    topRightDiv.appendChild(btnSpan);
+
+    storySpan.appendChild(input);
+    storySpan.appendChild(attrSpan)
+    storyDiv.appendChild(storySpan);
+    storyDiv.appendChild(topRightDiv);
+    stories.insertBefore(storyDiv, stories.lastElementChild);
+
+    // if(document.querySelector('.jh_story')) return
+    Method.story.userStepEvent(removeBtn, intentBtn, storySpan, input)
+}
+
+// 點擊機器人按鈕
+function clickBotBtn(){
+    const stories = document.querySelector('#stories');
+    const storyDiv = document.createElement('div');
+    storyDiv.setAttribute('id', 'storyDiv');
+    storyDiv.setAttribute('class', 'botRes');
+    storyDiv.setAttribute('style', 'margin-left: 20%;border: 1px solid transparent;border-radius: 5px')
+
+    const storySpan = document.createElement('span');
+    storySpan.setAttribute('id', 'storySpan');
+
+    const textArea = document.createElement('textArea');
+    textArea.setAttribute('placeholder', '機器人回覆....');
+    textArea.setAttribute('name', 'botInput');
+    textArea.setAttribute('id', 'botInput');
+    textArea.setAttribute('class', 'form-control story-bot');
+    textArea.setAttribute('data-status', 'waiting')
+
+    const removeBtn = document.createElement('button');
+    removeBtn.setAttribute('type', 'button');
+    removeBtn.setAttribute('id', 'removeBtn');
+    removeBtn.setAttribute('class', 'btn btn-danger');
+
+    const removeIcon = document.createElement('i');
+    removeIcon.setAttribute('class', 'fas fa-trash-alt');
+    removeIcon.setAttribute('style', 'font-size: 7px;')
+    removeBtn.appendChild(removeIcon);
+
+    const btnSpan = document.createElement('span');
+    btnSpan.appendChild(removeBtn);
+
+    const topRightDiv = document.createElement('div');
+    topRightDiv.setAttribute('class', 'top-right');
+    topRightDiv.setAttribute('style', 'max-width: 100px;position: absolute;top: 9px;right: 9px;visibility: hidden;');
+    topRightDiv.appendChild(btnSpan);
+
+    const resName = document.createElement('div');
+    resName.setAttribute('class', 'res-name');
+    resName.setAttribute('style', 'display: flex;');
+
+    const resNameInputDiv = document.createElement('div');
+    resNameInputDiv.setAttribute('class', 'res-name-input-div');
+    
+    const resNameInput = document.createElement('input');
+    resNameInput.setAttribute('id', 'res-name-input');
+    resNameInputDiv.appendChild(resNameInput);
+    resName.appendChild(resNameInputDiv);
+
+    const bottomRightDiv = document.createElement('div');
+    bottomRightDiv.setAttribute('class', 'bottom-right');
+    bottomRightDiv.setAttribute('data-isFocus', 'false');
+    bottomRightDiv.setAttribute('style', 'position: absolute;right: 9px;bottom: 9px;visibility: hidden;');
+    bottomRightDiv.appendChild(resName);
+
+    storySpan.appendChild(textArea);
+    storyDiv.appendChild(storySpan);
+    storyDiv.appendChild(topRightDiv);
+    storyDiv.appendChild(bottomRightDiv);
+    stories.insertBefore(storyDiv, stories.lastElementChild);
+
+    bottomRightDiv.addEventListener('mousemove', e => {
+        const target = e.target;
+        if(target.matches('#res-name-input')){
+            target.style.border = '1px solid #ccc';
+        }
+    })
+
+    bottomRightDiv.addEventListener('mouseleave', e => {
+        const target = e.target;
+        if(target.dataset.isfocus == 'false'){
+            target.children[0].children[0].children[0].style.border = 'none';
+        }
+    })
+
+    resNameInput.addEventListener('focus', e => {
+        const target = e.target;
+        target.parentElement.parentElement.parentElement.dataset.isfocus = 'true';
+    })
+
+    resNameInput.addEventListener('blur', e => {
+        const target = e.target;
+        target.parentElement.parentElement.parentElement.dataset.isfocus = 'false';
+        if(bottomRightDiv.dataset.ismouseleave == 'true'){
+            target.parentElement.parentElement.parentElement.style.visibility = 'hidden';
+        }else{
+            target.style.border = 'none';
+        }
+        
+    })
+
+    removeBtn.onclick = function(e){
+        const target = e.target;
+        const storyName = document.querySelector('#storyTitle').innerText
+        let resCode
+        let botStoryDiv
+        let response
+
+
+        if(target.matches('#removeBtn')){
+            botStoryDiv =target.parentElement.parentElement.parentElement
+            resCode = target.parentElement.parentElement.nextElementSibling.children[0].children[0].children[0].value
+            response = target.parentElement.parentElement.previousElementSibling.firstElementChild.value
+        }
+
+        if(target.tagName == 'svg'){
+            botStoryDiv = target.parentElement.parentElement.parentElement.parentElement
+            resCode = target.parentElement.parentElement.parentElement.nextElementSibling.children[0].children[0].children[0].value
+            response = target.parentElement.parentElement.parentElement.previousElementSibling.firstElementChild.value
+        }
+
+        if(target.tagName == 'path'){
+            botStoryDiv = target.parentElement.parentElement.parentElement.parentElement.parentElement
+            resCode = target.parentElement.parentElement.parentElement.parentElement.nextElementSibling.children[0].children[0].children[0].value
+            response = target.parentElement.parentElement.parentElement.parentElement.previousElementSibling.firstElementChild.value
+        }
+
+        if(!response){
+            botStoryDiv.remove()
+            return
+        }
+
+        const payload = {
+            storyName,
+            resCode
+        }
+        // 串接後端API 刪除故事流程中的機器人回覆步驟
+        fetch('http://192.168.10.127:3030/jh_story/botStep/fragments', {
+            method: 'delete',
+            body: JSON.stringify(payload),
+            headers: {
+                'Content-Type': "application/json",
+            }
+        })
+        .then(res => res.json())
+        .then(info => {
+            if(info.status === 'success'){
+                const payload = {
+                    resCode
+                }
+                // 串接後端API 刪除在domain中註冊的機器人回覆
+                fetch('http://192.168.10.127:3030/jh_story/botStep/domain', {
+                    method: 'delete',
+                    body: JSON.stringify(payload),
+                    headers: {
+                        'Content-Type': "application/json",
+                    }
+                })
+                .then(res => res.json())
+                .then(info => {
+                    if(info.status === 'success'){
+                        botStoryDiv.remove()
+                    }
+                })
+                .catch(err => console.log(err))
+            }
+        })
+        .catch(err => console.log(err))
+    }
+
+    // 機器人回覆輸入框焦點事件
+    textArea.addEventListener('focus', e => {
+        const target = e.target
+        target.setAttribute('data-event', 'blur')
+        target.setAttribute('data-status', 'typing')
+    })
+
+    // 機器人回覆輸入框輸入事件 - 自適應調整高度
+    textArea.addEventListener('input', e => {
+        textArea.style.height = '100px';
+        textArea.style.height = e.target.scrollHeight + 'px';
+    })
+
+    /* 機器人回覆輸入框enter 事件
+    // textArea.addEventListener('keyup', e => {
+    //     const target = e.target
+    //     if(e.keyCode === 13){
+
+    //         if(!target.value) return
+
+    //         // 獲取陣列位置
+    //         let indexNum = 0
+    //         const allStorySpan = document.querySelectorAll('#storySpan')
+    //         for(i = 0; i < allStorySpan.length; i++){
+    //             if(allStorySpan[i].childNodes[0].dataset.status == 'typing'){
+    //                 indexNum = i
+    //             }
+    //         }
+
+    //         // 沒有設定故事名稱就返回
+    //         target.setAttribute('data-event', 'keydown')
+    //         if(document.querySelector('#storyTitle').innerText == '未命名故事'){
+    //             target.setAttribute('data-status', 'waiting')
+    //             target.value = ''
+    //             var html = "<h2><div class='sa-icon warning'><span></span></div>請先設定故事名稱</h2>";
+    //             Method.common.showBox(html, 'message', '')
+    //             return
+    //         }
+
+    //         // 抓取故事名稱和回覆代號
+    //         const storyName = document.querySelector('#storyTitle').innerText
+    //         const resCode = target.parentElement.parentElement.lastChild.children[0].children[0].children[0].value
+
+    //         // 串接API 新增故事流程 fragments
+    //         const payload = {
+    //             storyName,
+    //             resCode,
+    //             indexNum
+    //         }
+    //         fetch(`http://192.168.10.127:3030/jh_story/botStep/fragments`,{
+    //             method: 'post',
+    //             body: JSON.stringify(payload),
+    //             headers: {
+    //                 'Content-Type': "application/json",
+    //             },
+    //         })
+    //         .then(response => response.json())
+    //         .then(info => {
+    //             if(info.status === 'success'){
+    //                 // 串接API 註冊機器人回覆 domain
+    //                 const payload = {
+    //                     resCode,
+    //                     botReply: target.value
+    //                 }
+    //                 fetch(`http://192.168.10.127:3030/jh_story/botStep/domain`, {
+    //                     method: 'post',
+    //                     body: JSON.stringify(payload),
+    //                     headers: {
+    //                         'Content-Type': "application/json",
+    //                     },
+    //                 })
+    //                 .then(res => res.json())
+    //                 .then(info => {
+    //                     if(info.status === 'success'){
+    //                         target.setAttribute('data-status', 'waiting')
+    //                         target.setAttribute('disabled', '')
+    //                     }
+    //                 })
+    //                 .catch(err => console.log(err))
+    //             }
+    //         })
+    //         .catch(err => console.log(err))
+    //     }
+    // })
+*/
+
+    // 機器人回覆輸入框失焦 事件
+    textArea.addEventListener('blur', e => {
+        const target = e.target;
+
+        // 獲取輸入框在陣列中的位置
+        let indexNum = 0
+        const allStorySpan = document.querySelectorAll('#storySpan')
+        for(i = 0; i < allStorySpan.length; i++){
+            if(allStorySpan[i].children[0].dataset.status == 'typing'){
+                indexNum = i
+            }
+        }
+
+        if(target.dataset.event != 'blur') return
+        if(target.value == ''){
+            target.setAttribute('data-status', 'waiting')
+            target.parentElement.parentElement.remove();
+        }else{
+            if(document.querySelector('#storyTitle').innerText == '未命名故事'){
+                target.setAttribute('data-status', 'waiting')
+                target.value = ''
+                var html = "<h2><div class='sa-icon warning'><span></span></div>請先設定故事名稱</h2>";
+                Method.common.showBox(html, 'message', '')
+                return
+            }
+            // 抓取故事名稱和回覆代號
+            const storyName = document.querySelector('#storyTitle').innerText
+            const resCode = target.parentElement.parentElement.lastChild.children[0].children[0].children[0].value
+
+            // 串接API 新增故事流程 fragments
+            const payload = {
+                storyName,
+                resCode,
+                indexNum
+            }
+            fetch(`http://192.168.10.127:3030/jh_story/botStep/fragments`,{
+                method: 'post',
+                body: JSON.stringify(payload),
+                headers: {
+                    'Content-Type': "application/json",
+                },
+            })
+            .then(response => response.json())
+            .then(info => {
+                if(info.status === 'success'){
+                    // 串接API 註冊機器人回覆 domain
+                    const payload = {
+                        resCode,
+                        botReply: target.value
+                    }
+                    fetch(`http://192.168.10.127:3030/jh_story/botStep/domain`, {
+                        method: 'post',
+                        body: JSON.stringify(payload),
+                        headers: {
+                            'Content-Type': "application/json",
+                        },
+                    })
+                    .then(res => res.json())
+                    .then(info => {
+                        if(info.status === 'success'){
+                            target.setAttribute('data-status', 'waiting')
+                            target.setAttribute('disabled', '')
+                        }
+                    })
+                    .catch(err => console.log(err))
+                }
+            })
+            .catch(err => console.log(err))
+        }
+    })
+
+    resNameInput.value = randomBotResName()
+
+    resNameInput.onchange = function(){
+        console.log(resNameInput.value)
+    }
+}
 
 // 點擊意圖按鈕
 function clickIntentBtn(storyContainer, targetInput, allStorySpan, indexNum){

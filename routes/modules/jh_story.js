@@ -317,6 +317,7 @@ router.get('/userStep/nlu/getTextExams', (req, res) => {
 
     const allNlus = data.rasa_nlu_data.common_examples
     const targetExam = allNlus.filter(item => item.text == text && item.intent == intent)
+    console.log(targetExam)
     const targetEntities = targetExam[0].entities.map(item => {
       return item.entity
     })
