@@ -492,7 +492,8 @@ Method.button.storyButton = function(){
                 const userStepIntentBtns = document.querySelectorAll('.userStep #intentBtn')
                 const userStepStorySpans = document.querySelectorAll('.userStep #storySpan')
                 const userStepInputs = document.querySelectorAll('.userStep #userInput')
-                
+                const userStepIntentSpans = document.querySelectorAll('.userStep #intent-span')
+
                 Array.from(userStepRemoveBtns).map(userStepRemoveBtn => Method.story.stepRemoveBtn(userStepRemoveBtn))
 
                 Array.from(userStepIntentBtns).map(userStepIntentBtn => Method.story.stepIntentBtn(userStepIntentBtn))
@@ -500,6 +501,8 @@ Method.button.storyButton = function(){
                 Array.from(userStepStorySpans).map(userStepStorySpan => Method.story.clickUserInputEvent(userStepStorySpan))
 
                 Array.from(userStepInputs).map(userStepInput => Method.story.userInputEvent(userStepInput))
+
+                Array.from(userStepIntentSpans).map(userStepIntentSpan => Method.story.clickIntentSpanEvent(userStepIntentSpan))
 
             }, 500)
             
@@ -963,6 +966,8 @@ Method.story = {
                                     target.setAttribute('disabled', '');
                                     target.setAttribute('style', 'cursor: pointer;')
                                     Method.story.showNluSpan(data, allStorySpan, indexNum)
+                                    // 將stepIndex放進intentSpan屬性中，讓查詢故事流程時，可以使用intentSpan點擊事件
+                                    allStorySpan[indexNum].children[1].firstElementChild.dataset.stepindex = indexNum
                                 })
                                 .catch(err => console.log(err))
                             }
@@ -1077,6 +1082,8 @@ Method.story = {
                                     target.setAttribute('disabled', '');
                                     target.setAttribute('style', 'cursor: pointer;')
                                     Method.story.showNluSpan(data, allStorySpan, indexNum)
+                                    // 將stepIndex放進intentSpan屬性中，讓查詢故事流程時，可以使用intentSpan點擊事件
+                                    allStorySpan[indexNum].children[1].firstElementChild.dataset.stepindex = indexNum
                                 })
                                 .catch(err => console.log(err))
                             }
@@ -1689,28 +1696,43 @@ Method.story = {
         intentSpan.appendChild(intentIcon)
         intentSpan.appendChild(intentText)
         allStorySpan[indexNum].children[1].appendChild(intentSpan)
-
+        // 意圖點擊事件
+        Method.story.clickIntentSpanEvent(intentSpan, indexNum)
+    },
+    // 意圖點擊事件
+    clickIntentSpanEvent: (intentSpan, indexNum) => {
         // 意圖點擊事件
         intentSpan.addEventListener('click', e => {
             const target = e.target
             let examText = ``
             let intent = ``
+            let stepIndex = indexNum
+
             // 抓取使用者例句及意圖
             if(target.matches('#intent-span')){
-                examText = target.parentElement.previousSibling.value
-                intent = target.lastChild.innerText.slice(4, target.lastChild.innerText.length)
+                examText = target.parentElement.previousElementSibling.value
+                intent = target.lastElementChild.innerText.slice(4, target.lastElementChild.innerText.length)
+                if(!stepIndex && stepIndex !== 0){
+                    stepIndex = target.dataset.stepindex
+                }
             }else if(target.matches('#intent-text') || target.tagName == 'svg'){
-                examText = target.parentElement.parentElement.previousSibling.value
+                examText = target.parentElement.parentElement.previousElementSibling.value
                 intent = target.innerText.slice(4, target.innerText.length)
+                if(!stepIndex && stepIndex !== 0){
+                    stepIndex = target.parentElement.dataset.stepindex
+                }
                 if(target.tagName == 'svg'){
                     intent = target.nextElementSibling.innerText.slice(4, target.nextElementSibling.innerText.length)
                 }
             }else{
-                examText = target.parentElement.parentElement.parentElement.previousSibling.value
+                examText = target.parentElement.parentElement.parentElement.previousElementSibling.value
                 intent = target.parentElement.nextElementSibling.innerText.slice(4, target.parentElement.nextElementSibling.innerText.length)
+                if(!stepIndex && stepIndex !== 0){
+                    stepIndex = target.parentElement.parentElement.dataset.stepindex
+                }
             }
 
-            Method.story.setIntentShowBox(examText, intent, indexNum, allStorySpan, Method.story.showNluSpan)
+            Method.story.setIntentShowBox(examText, intent, stepIndex, Method.story.showNluSpan)
         })
     },
     // 擷取例句字串function
@@ -2152,7 +2174,7 @@ Method.story = {
                 console.log('intent: ', intent)
                 console.log('examText: ', examText)
                 const examTempData = data
-                Method.story.setIntentShowBox(examText, intent, null, null, null, examTempData, examsTitleHtml)
+                Method.story.setIntentShowBox(examText, intent, null, null, examTempData, examsTitleHtml)
             })
         })
 
@@ -2343,7 +2365,7 @@ Method.story = {
         })
     },
     // 設定意圖彈跳窗
-    setIntentShowBox: (examText, intent, indexNum, allStorySpan, showNluSpan, examTempData, examsTitleHtml) => {
+    setIntentShowBox: (examText, intent, indexNum, showNluSpan, examTempData, examsTitleHtml) => {
         let intentHtml = ``
         let entitiesHtml = ``
         // 串接後端API抓取所有意圖
@@ -2606,6 +2628,7 @@ Method.story = {
                                                     // 關閉彈跳視窗
                                                     document.querySelector('#setExamInfo').remove()
                                                     // 將關鍵字和意圖區清空
+                                                    const allStorySpan = document.querySelectorAll('#storySpan')
                                                     allStorySpan[indexNum].children[1].innerHTML = ''
                                                     // 更新關鍵字和意圖
                                                     showNluSpan(JSON.parse(tempNlu), allStorySpan, indexNum)
