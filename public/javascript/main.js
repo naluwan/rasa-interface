@@ -461,86 +461,19 @@ Method.button.backToTopBtn = function(){
 Method.button.addStoryButton = function(){
     if(document.querySelector('.jh_new_story')){
         const stories = document.querySelector('#stories');
+        const btnDiv = document.querySelector('#btnDiv')
+        const userBtn = document.querySelector('#userBtn')
+        const botBtn = document.querySelector('#botBtn')
+
         Method.button.editStoryTitle()
         Method.common.getStoryTitle()
-        // 使用者按鈕事件
-        if(document.querySelector('#userBtn')){
-            userBtn.onclick = function(){
-                clickUserBtn();
-            }
-        }
         
-        // 機器人按鈕事件
-        if(document.querySelector('#botBtn')){
-            botBtn.onclick = function(){
-                clickBotBtn();
-            }
-        }
+        Method.story.stepControlBtn(userBtn, botBtn)
 
-        Method.story.showBorder(stories, btnDiv)
+        Method.story.showBorder(stories, btnDiv, userBtn, botBtn)
         
     }
-
-    // 點擊使用者按鈕
-    function clickUserBtn(){
-        const stories = document.querySelector('#stories');
-        const storyDiv = document.createElement('div');
-        storyDiv.setAttribute('id', 'storyDiv');
-        storyDiv.setAttribute('class', 'userStep');
-        storyDiv.setAttribute('style', 'border: 1px solid transparent;border-radius: 5px')
-
-        const storySpan = document.createElement('span');
-        storySpan.setAttribute('id', 'storySpan');
-        const attrSpan = document.createElement('span')
-        attrSpan.setAttribute('id', 'attrSpan')
-
-        const input = document.createElement('input');
-        input.setAttribute('placeholder', '使用者說....');
-        input.setAttribute('name', 'userInput');
-        input.setAttribute('id', 'userInput');
-        input.setAttribute('class', 'form-control story-user');
-        input.setAttribute('data-event', 'blur')
-        input.setAttribute('data-status', 'waiting')
-        input.setAttribute('autocomplete', 'off')
-
-        const removeBtn = document.createElement('button');
-        removeBtn.setAttribute('type', 'button');
-        removeBtn.setAttribute('id', 'removeBtn');
-        removeBtn.setAttribute('class', 'btn btn-danger');
-        removeBtn.setAttribute('style', 'margin-left: 5px;');
-
-        const removeIcon = document.createElement('i');
-        removeIcon.setAttribute('class', 'fas fa-trash-alt');
-        removeIcon.setAttribute('style', 'font-size: 7px;');
-        removeBtn.appendChild(removeIcon);
-
-        const intentBtn = document.createElement('button');
-        intentBtn.setAttribute('type', 'button');
-        intentBtn.setAttribute('id', 'intentBtn');
-        intentBtn.setAttribute('class', 'btn btn-warning');
-
-        const intentIcon = document.createElement('i');
-        intentIcon.setAttribute('class', 'fas fa-tag');
-        intentIcon.setAttribute('style', 'font-size: 7px;');
-        intentBtn.appendChild(intentIcon);
-
-        const btnSpan = document.createElement('span');
-        btnSpan.appendChild(intentBtn);
-        btnSpan.appendChild(removeBtn);
-
-        const topRightDiv = document.createElement('div');
-        topRightDiv.setAttribute('class', 'top-right');
-        topRightDiv.setAttribute('style', 'max-width: 100px;position: absolute;top: 9px;right: 9px;visibility: hidden;');
-        topRightDiv.appendChild(btnSpan);
-
-        storySpan.appendChild(input);
-        storySpan.appendChild(attrSpan)
-        storyDiv.appendChild(storySpan);
-        storyDiv.appendChild(topRightDiv);
-        stories.insertBefore(storyDiv, stories.lastElementChild);
-
-        Method.story.userStepEvent(removeBtn, intentBtn, storySpan, input)
-    }
+}
 
     // 點擊機器人按鈕
     function clickBotBtn(){
