@@ -34,7 +34,7 @@
               value="{{user}}">
             {{/if}}
             <span id="attrSpan">
-              <span id="intent-span" class="nluSpan {{#if user}}mt-10{{/if}}">
+              <span id="intent-span" class="nluSpan {{#if user}}mt-10{{/if}}" data-stepindex="{{@index}}">
                 <i class="fas fa-tag" style="font-size: 7px;"></i>
                 <span id="intent-text" class="nluText">意圖: {{intent}}</span>
               </span>

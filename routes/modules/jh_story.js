@@ -568,9 +568,6 @@ router.post('/userStep/fragments', (req, res) => {
   const {parse, storyName, indexNum} = req.body
   const request = new sql.Request(pool)
   const cpnyId = res.locals.user.CPY_ID
-  // console.log('parse:',parse)
-  // console.log('storyName:',storyName)
-  // console.log('indexNum:',indexNum)
 
   // 使用模組從資料庫抓取fragments data
   getSqlTrainingData('BF_JH_DATA_TEST', 'fragments-test', 'fragments', cpnyId)
@@ -585,14 +582,14 @@ router.post('/userStep/fragments', (req, res) => {
             {
               intent: parse.intent.name,
               user: parse.text,
-              entities: []
+              entities: [],
             }
           ]
         }else{
           const newStep = {
             intent: parse.intent.name,
             user: parse.text,
-            entities: []
+            entities: [],
           }
 
           // 在指定故事流程插入對話
@@ -765,7 +762,7 @@ router.get('/filter', (req, res) => {
   const {storyFilter} = req.query
   const jh_story = true
   const cpnyId = res.locals.user.CPY_ID
-  console.log(storyFilter)
+
   // 使用模組從資料庫抓取fragments data
   // 獲取正確故事
   getSqlTrainingData('BF_JH_DATA_TEST', 'fragments-test', 'fragments', cpnyId)
@@ -773,7 +770,6 @@ router.get('/filter', (req, res) => {
     const stories = data.stories
     const storyData = stories.filter(item => item.story == storyFilter)
     return {storyData, stories}
-    
   })
   .then(dataObj => {
     // 使用模組從資料庫抓取nlu訓練資料
@@ -807,9 +803,7 @@ router.get('/filter', (req, res) => {
           item.steps.map(step => {
             if(!step.action) return step
             step.response = data.responses[step.action].map(res => res.text)[0].trim()
-            console.log('first:',JSON.stringify(step.response))
             step.response = JSON.parse(JSON.stringify(step.response).replace(/  \\n/g, '\\r'))
-            console.log('final:',JSON.stringify(step.response))
           })
           return item
         })
