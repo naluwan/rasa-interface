@@ -40,6 +40,48 @@ Array.prototype.equals = function (array) {
 // Hide method from for-in loops
 Object.defineProperty(Array.prototype, "equals", {enumerable: false});
 
+// 抓取所有的response
+router.get('/domain/getResponses', (req, res) => {
+  const request = new sql.Request(pool)
+  const cpnyId = res.locals.user.CPY_ID
+
+  // 使用模組從資料庫抓取domain data
+  getSqlTrainingData('BF_JH_DATA_TEST', 'domain-test', 'domain', cpnyId)
+  .then(data => {
+    res.send(data.responses)
+  })
+  .catch(err => console.log(err))
+})
+
+// 設定domain - 更新domain機器人回覆
+router.put('/botStep/domain', (req, res) => {
+  const request = new sql.Request(pool)
+  const {resCode, botReply} = req.body
+  const cpnyId = res.locals.user.CPY_ID
+
+  // 將回覆文字的換行符號(\n)改成符合rasa機器人回覆的換行符號(  \n)
+  // rasa機器人回覆需要空兩格+\n，否則對話會分開，變成兩句話
+  const botReplyText = JSON.parse(JSON.stringify(botReply).replace(/\\n/g, '  \\n'))
+
+  // 使用模組從資料庫抓取domain data
+  getSqlTrainingData('BF_JH_DATA_TEST', 'domain-test', 'domain', cpnyId)
+  .then(data => {
+      data.responses = {
+        ...data.responses,
+        [resCode]:[
+          {
+            text: botReplyText
+          }
+        ]
+      }
+
+    const filePath = '../public/trainData/domain-test.json'
+    const response = {status: 'success', message: '更新domain機器人回覆成功'}
+    fsSqlUpdate(filePath, data, 'BF_JH_DATA_TEST', 'domain-test', response, request, res, cpnyId)
+  })
+  .catch(err => console.log(err))
+})
+
 // 設定domain - 刪除機器人回覆action及response
 router.delete('/botStep/domain', (req, res) => {
   const request = new sql.Request(pool)
@@ -102,9 +144,7 @@ router.post('/botStep/domain', (req, res) => {
 
   // 將回覆文字的換行符號(\n)改成符合rasa機器人回覆的換行符號(  \n)
   // rasa機器人回覆需要空兩格+\n，否則對話會分開，變成兩句話
-  let botReplyText = JSON.stringify(botReply)
-  botReplyText = botReplyText.replace(/\\n/g, '  \\n')
-  botReplyText = JSON.parse(botReplyText)
+  const botReplyText = JSON.parse(JSON.stringify(botReply).replace(/\\n/g, '  \\n'))
 
   // 使用模組從資料庫抓取domain data
   getSqlTrainingData('BF_JH_DATA_TEST', 'domain-test', 'domain', cpnyId)
@@ -582,14 +622,14 @@ router.post('/userStep/fragments', (req, res) => {
             {
               intent: parse.intent.name,
               user: parse.text,
-              entities: [],
+              entities: []
             }
           ]
         }else{
           const newStep = {
             intent: parse.intent.name,
             user: parse.text,
-            entities: [],
+            entities: []
           }
 
           // 在指定故事流程插入對話
@@ -724,7 +764,7 @@ router.post('/storyTitle', (req, res) => {
       const checkStoryTitle = data.stories.filter(item => item.story === storyTitle)
       if(checkStoryTitle.length) return res.send({status: 'warning', message: '故事名稱重複'})
     }
-    const newStory = {story: storyTitle}
+    const newStory = {story: storyTitle, steps:[]}
     data.stories.push(newStory)
     
     // 使用模組寫檔並更新資料庫
