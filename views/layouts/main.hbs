@@ -1,22 +1,78 @@
-<!DOCTYPE html>
 <html>
+
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
     <title>chat bot</title>
-    <link rel="shortcut icon" href="/images/icon.png" sizes="any">
+    <link rel="shortcut icon" href="/images/icon.png" sizes="any" />
     <!-- Font Awesome icons (free version) -->
-    <script src="https://use.fontawesome.com/releases/v5.15.3/js/all.js" crossorigin="anonymous"></script>
+    <script
+      src="https://use.fontawesome.com/releases/v5.15.3/js/all.js"
+      crossorigin="anonymous"
+    ></script>
 
     <!-- Core theme CSS (includes Bootstrap)
     <link rel="stylesheet" href="https://bootswatch.com/4/lux/bootstrap.min.css">
     -->
-
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx"
+      crossorigin="anonymous"
+    />
     <link href="/stylesheets/style.css" rel="stylesheet" />
+
     <script src="/javascript/main.js"></script>
   </head>
 
   <body>
+    <!-- Navigation-->
+    <header>
+      <nav>
+        <a href="javascript:;" onclick="Method.common.page('/')">
+          {{#if isAuthenticated}}
+            {{user.CPY_NAME}}
+          {{/if}}
+        </a>
+        {{! <h1 style="color: #fff;">ChatBot設定</h1> }}
+        {{#if isAuthenticated}}
+          <bottom
+            onclick="Method.common.page('/users/logout')"
+            class="btn btn-outline-light"
+          >登出</bottom>
+        {{/if}}
+      </nav>
+    </header>
+
+    <div class="container">
+      {{{body}}}
+    </div>
+    <!-- Footer-->
+    <footer>
+      Internet Information Co., Ltd All Rights Reserve
+    </footer>
+
+    <!-- 導入webchat最新版本 -->
+    <!-- <script src="https://storage.googleapis.com/mrbot-cdn/webchat-latest.js"></script> -->
+    <!-- Bootstrap core JS-->
+    <script
+      src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"
+    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="/javascript/front-script.js"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.5/dist/umd/popper.min.js"
+      integrity="sha384-Xe+8cL9oJa6tN/veChSP7q+mnSPaj5Bcu9mPX5F5xIGE0DVittaqT5lorf0EI7Vk"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.min.js"
+      integrity="sha384-ODmDIVzN+pFdexxHEHFBQH3/9/vQ9uori45z4JjnFsRydbmQbmL5t1tQ0culUzyK"
+      crossorigin="anonymous"
+    ></script>
     {{#if isAuthenticated}}
     <!-- 導入webchat視窗 -->
     <script>!(function () {
@@ -53,35 +109,6 @@
       })();
     </script>
     {{/if}}
-    <!-- Navigation-->
-    <header>
-      <nav>
-        <a href="javascript:;" onclick="Method.common.page('/')">
-          {{#if isAuthenticated}}
-          {{user.CPY_NAME}}
-          {{/if}}
-        </a>
-        {{!-- <h1 style="color: #fff;">ChatBot設定</h1> --}}
-        {{#if isAuthenticated}}
-        <bottom onclick="Method.common.page('/users/logout')" class="btn btn-outline-light">登出</bottom>
-        {{/if}}
-      </nav>
-    </header>
-
-    <div class="container">
-      {{{body}}}
-    </div>
-    <!-- Footer-->
-    <footer>
-      Internet Information Co., Ltd All Rights Reserve
-    </footer>
-
-    <!-- 導入webchat最新版本 -->
-    <!-- <script src="https://storage.googleapis.com/mrbot-cdn/webchat-latest.js"></script> -->
-    <!-- Bootstrap core JS-->
-    <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script src="/javascript/front-script.js"></script>
     <!--
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
@@ -90,8 +117,11 @@
     <script src="/javascript/jquery-handlebars-1.1.4.min.js"></script>
     -->
 
-    {{!-- <script data-main="front-script" src="javascript/require.js"></script> --}}
+    {{!
+  <script data-main="front-script" src="javascript/require.js"></script> }}
     <!-- Core theme JS-->
-    {{!-- <script src="js/scripts.js"></script> --}}
+    {{!
+  <script src="js/scripts.js"></script> }}
   </body>
+
 </html>
