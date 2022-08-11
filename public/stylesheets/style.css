@@ -940,7 +940,9 @@ header a:first-of-type {
 #title-container {
   display: flex;
   align-items: center;
+  justify-content: space-between;
 }
+
 #storyTitle {
   width: fit-content;
   max-width: 80%;
@@ -954,9 +956,15 @@ header a:first-of-type {
   white-space: nowrap;
   overflow: hidden;
 }
+
 #tittleBtn {
   padding-left: 10px;
 }
+
+.titleDiv {
+  display: flex;
+}
+
 #data-panel > #stories {
   display: block;
   width: 100%;
@@ -1280,10 +1288,10 @@ header a:first-of-type {
 #storyDiv > #storySpan > #botInput {
   font-size: 20px;
 }
-#storyDiv > #storySpan > #botInput:disabled {
+#storyDiv > #storySpan > #botInput:read-only {
   cursor: pointer;
 }
-#storyDiv > #storySpan > #botInput:disabled:hover {
+#storyDiv > #storySpan > #botInput:read-only:hover {
   font-weight: bold;
 }
 

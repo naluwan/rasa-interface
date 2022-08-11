@@ -19,9 +19,14 @@
       <div id="stories" style="{{#unless storyData.length}}visibility: hidden;{{else}}visibility: visible;{{/unless}}">
         {{#each storyData}}
         <div id="title-container">
-          <div id="storyTitle" class="form-control" data-event="blur" contenteditable="false">{{this.story}}</div>
-          <div id="tittleBtn" style="margin-top: 10px;opacity: 0;transition: opacity .1s ease-in-out;">
-            <button id="storyTitleEdit" class="btn btn-success" type="button" disabled>編輯故事名稱</button>
+          <div class="titleDiv">
+            <div id="storyTitle" class="form-control" data-event="blur" contenteditable="false">{{this.story}}</div>
+            <div id="tittleBtn" style="opacity: 0;transition: opacity .1s ease-in-out;">
+              <button id="storyTitleEdit" class="btn btn-success" type="button" disabled>編輯故事名稱</button>
+            </div>
+          </div>
+          <div>
+            <button id="storyRemoveBtn" class="btn btn-danger" type="button">刪除故事</button>
           </div>
         </div>
         {{#forEach this.steps}}
@@ -71,7 +76,7 @@
         <div id="storyDiv" class="botRes" style="margin-left: 20%; border: 1px solid transparent; border-radius: 5px;">
           <span id="storySpan">
             <textarea placeholder="機器人回覆...." name="botInput" id="botInput" class="form-control story-bot"
-              data-status="waiting" data-event="blur" style="height: 98px;" disabled="">{{response}}</textarea>
+              data-status="waiting" data-event="blur" style="height: 98px;" readonly>{{response}}</textarea>
           </span>
           <div class="top-right"
             style="max-width: 100px; position: absolute; top: 9px; right: 9px; visibility: hidden;">
