@@ -482,6 +482,7 @@ Method.button.storyButton = function(){
         const userBtn = document.querySelector('#userBtn')
         const botBtn = document.querySelector('#botBtn')
         const stories = document.querySelector('#stories')
+        const storyRemoveBtn = document.querySelector('#storyRemoveBtn')
         if(storyFilter.value){
             // 因為畫面render會有一些延遲，所已設定0.5秒後才添加事件
             setTimeout(() => {
@@ -489,6 +490,7 @@ Method.button.storyButton = function(){
                 Method.story.getStoryTitle()
                 Method.story.showBorder(stories, btnDiv, userBtn, botBtn)
                 Method.story.stepControlBtn(userBtn, botBtn)
+                Method.story.clickStoryRemoveBtnEvent(storyRemoveBtn)
                 // 使用者步驟的element
                 const userStepRemoveBtns = document.querySelectorAll('.userStep #removeBtn')
                 const userStepIntentBtns = document.querySelectorAll('.userStep #intentBtn')
@@ -1528,14 +1530,16 @@ Method.story = {
             }
 
             // 動態顯示使用者按鈕
-            if(stories.lastElementChild.previousSibling.className == 'userStep'){
-                if(document.querySelector('#userBtn')){
-                    userBtn.style.display = 'none';
-                    botBtn.style.marginLeft = '0';
+            if(stories.children.length){
+                if(stories.lastElementChild.previousElementSibling.className == 'userStep'){
+                    if(document.querySelector('#userBtn')){
+                        userBtn.style.display = 'none';
+                        botBtn.style.marginLeft = '0';
+                    }
+                }else{
+                    userBtn.style.display = 'inline-block';
+                    botBtn.style.marginLeft = '12px';
                 }
-            }else{
-                userBtn.style.display = 'inline-block';
-                botBtn.style.marginLeft = '12px';
             }
         })
 
@@ -1572,8 +1576,49 @@ Method.story = {
             }
         })
     },
+    // 查詢故事流程的刪除故事按鈕事件
+    clickStoryRemoveBtnEvent: (storyRemoveBtn) => {
+        storyRemoveBtn.addEventListener('click', e => {
+            const target = e.target
+            const storyName = target.dataset.storyname
+            const payload = {
+                storyName
+            }
+            fetch(`http://192.168.10.127:3030/jh_story/fragments`,{
+                method: 'delete',
+                body: JSON.stringify(payload),
+                headers: {
+                    'Content-Type': "application/json",
+                },
+            })
+            .then(res => res.json())
+            .then(info => {
+                if(info.status === 'success'){
+                    // 將故事流程畫面清空
+                    document.querySelector('#stories').innerHTML = ``
 
+                    // 將stories的故事名稱拿出
+                    const storyArr = []
+                    info.data.stories.map(item => storyArr.push(item.story))
 
+                    // 將故事名稱做成選項
+                    let html = `
+                        <option value="" selected>請選擇</option>
+                    `
+
+                    storyArr.map(story => {
+                        html += `
+                            <option value="${story}" selected>${story}</option>
+                        `
+                    })
+
+                    // 更新select的選項
+                    document.querySelector('#storyFilter').innerHTML = html
+                }
+            })
+            .catch(err => console.log(err))
+        })
+    },
     // 點擊使用者按鈕
     clickUserBtn: () => {
         const stories = document.querySelector('#stories');
@@ -3002,7 +3047,6 @@ Method.story = {
         })
         .catch(err => console.log(err))
     },
-
     // 修改故事名稱按鈕
     editStoryTitle: () => {
         const storyTitleEdit = document.querySelector('#storyTitleEdit')
@@ -3036,6 +3080,17 @@ Method.story = {
                     return
                 }
                 storyTitle.innerText = data.updateTitle
+                if(document.querySelector('#removeStoryName')){
+                    document.querySelector('#removeStoryName').innerText = data.updateTitle
+                }
+                if(document.querySelector('#storyFilter')){
+                    Array.from(document.querySelector('#storyFilter').children).map(item => {
+                        if(item.innerText === originalTitle){
+                            item.setAttribute('value', data.updateTitle)
+                            item.innerText = data.updateTitle
+                        }
+                    })
+                }
             })
             .catch(err => console.log(err))
         })
