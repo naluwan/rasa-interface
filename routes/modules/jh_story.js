@@ -40,6 +40,24 @@ Array.prototype.equals = function (array) {
 // Hide method from for-in loops
 Object.defineProperty(Array.prototype, "equals", {enumerable: false});
 
+// 刪除故事流程
+router.delete('/fragments', (req, res) => {
+  const request = new sql.Request(pool)
+  const {storyName} = req.body
+  const cpnyId = res.locals.user.CPY_ID
+
+  // 使用模組從資料庫抓取fragments data
+  getSqlTrainingData('BF_JH_DATA_TEST', 'fragments-test', 'fragments', cpnyId)
+  .then(data => {
+    data.stories = data.stories.filter(item => item.story !== storyName)
+
+    const filePath = '../public/trainData/fragments-test.json'
+    const response = {status: 'success', message: '刪除故事流程成功', data}
+    fsSqlUpdate(filePath, data, 'BF_JH_DATA_TEST', 'fragments-test', response, request, res, cpnyId)
+  })
+  .catch(err => console.log(err))
+})
+
 // 抓取所有的response
 router.get('/domain/getResponses', (req, res) => {
   const request = new sql.Request(pool)
