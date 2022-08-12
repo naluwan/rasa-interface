@@ -1530,7 +1530,7 @@ Method.story = {
             }
 
             // 動態顯示使用者按鈕
-            if(stories.children.length){
+            if(stories.children.length > 1){
                 if(stories.lastElementChild.previousElementSibling.className == 'userStep'){
                     if(document.querySelector('#userBtn')){
                         userBtn.style.display = 'none';
@@ -1540,6 +1540,9 @@ Method.story = {
                     userBtn.style.display = 'inline-block';
                     botBtn.style.marginLeft = '12px';
                 }
+            }else{
+                userBtn.style.display = 'inline-block';
+                botBtn.style.marginLeft = '12px';
             }
         })
 

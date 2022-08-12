@@ -868,7 +868,7 @@ router.get('/filter', (req, res) => {
         return dataObj
       })
       .then(dataObj => {
-        console.log(dataObj.storyData)
+        // console.log(dataObj.storyData)
         res.render('index', {stories: dataObj.stories, jh_story, storyData: dataObj.storyData})
       })
       .catch(err => console.log(err))
