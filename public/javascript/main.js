@@ -42,6 +42,7 @@ Method.button.all = function(){
     Method.button.backToTopBtn();
     Method.button.addStoryButton();
     Method.button.storyButton();
+    Method.button.addSimpleStoryButton();
 };
 
 //save button
@@ -473,6 +474,24 @@ Method.button.addStoryButton = function(){
     }
 }
 
+// jh_new_simple_story 互動按鈕
+Method.button.addSimpleStoryButton = function(){
+    if(document.querySelector('.jh_new_simple_story')){
+        const stories = document.querySelector('#stories');
+        const btnDiv = document.querySelector('#btnDiv')
+        const userBtn = document.querySelector('#userBtn')
+        const botBtn = document.querySelector('#botBtn')
+
+        Method.story.editStoryTitle()
+        Method.story.getStoryTitle()
+        
+        Method.story.stepControlBtn(userBtn, botBtn)
+
+        Method.story.showBorder(stories, btnDiv, userBtn, botBtn)
+        
+    }
+}
+
 // jh_story 互動按鈕
 Method.button.storyButton = function(){
     if(document.querySelector('.jh_story')){
@@ -544,10 +563,17 @@ Method.story = {
     userStep: {
         // 所有使用者步驟事件
         allUserStepEvent: (removeBtn, intentBtn, storySpan, input) => {
-            Method.story.userStep.removeBtnClickEvent(removeBtn)
-            Method.story.userStep.intentBtnClickEvent(intentBtn)
-            Method.story.userStep.inputClickEvent(storySpan)
-            Method.story.userStep.inputEvent(input)
+            if(document.querySelector('.jh_new_story') || document.querySelector('.jh_story')){
+                Method.story.userStep.removeBtnClickEvent(removeBtn)
+                Method.story.userStep.intentBtnClickEvent(intentBtn)
+                Method.story.userStep.inputClickEvent(storySpan)
+                Method.story.userStep.inputEvent(input)
+            }else{
+                Method.story.userStep.simpleClickRemoveBtnEvent(removeBtn)
+                Method.story.userStep.simpleInputClickEvent(storySpan)
+                Method.story.userStep.simpleInputEvent(input)
+            }
+            
         },
         // 使用者步驟刪除按鈕事件
         removeBtnClickEvent: (removeBtn) => {
@@ -700,6 +726,7 @@ Method.story = {
                     
                     const userText = target.value.trim()
                     const intent = target.nextElementSibling.children[0].innerText.slice(4, target.nextElementSibling.innerText.length)
+                    console.log(intent)
                     getTextExam(userText, intent)
                 }
 
@@ -824,9 +851,10 @@ Method.story = {
                                             return
                                         }
                                         textExamData.push(newExam)
+                                        localStorage.setItem('textExamData', JSON.stringify(textExamData))
                                         const exampleTitle = localStorage.getItem('exampleTitle')
                                         const newData = textExamData.filter(item => item.text !== exampleTitle)
-                                        localStorage.setItem('textExamData', JSON.stringify(newData))
+                                        
                                         return newData
                                     })
                                     .then(newData => {
@@ -1114,6 +1142,481 @@ Method.story = {
                     }
                 })
         },
+        simpleInputEvent: (input) => {
+            // userInput焦點事件
+            input.addEventListener('focus', e => {
+                const target = e.target
+                target.setAttribute('data-event', 'blur')
+                target.setAttribute('data-status', 'typing')
+            })
+
+            // userInput鍵盤事件
+            input.addEventListener('keydown', e => {
+                const target = e.target;
+
+                if(!target.value || target.value.trim() == '') return
+
+                if(e.keyCode == 13){
+                    // 獲取輸入框在陣列中的位置
+                    let indexNum = 0
+                    const allStorySpan = document.querySelectorAll('#storySpan')
+                    for(i = 0; i < allStorySpan.length; i++){
+                        if(allStorySpan[i].children[0].dataset.status == 'typing'){
+                            indexNum = i
+                        }
+                    }
+
+                    target.setAttribute('data-event', 'keydown')
+                    if(document.querySelector('#storyTitle').innerText == '未命名故事'){
+                        target.setAttribute('data-status', 'waiting')
+                        target.value = ''
+                        var html = "<h2><div class='sa-icon warning'><span></span></div>請先設定故事名稱</h2>";
+                        Method.common.showBox(html, 'message', '')
+                        return
+                    }
+
+                    // 串接後端API 將資料傳送至rasa預測使用者輸入的意圖和關鍵字
+                    fetch(`http://192.168.10.127:3030/jh_story/parse?userInput=${target.value}`)
+                    .then(response => {
+                        return response.json();
+                    })
+                    .then(data => {
+                        const storyName = document.querySelector('#storyTitle').innerText
+                        const payload = {
+                            parse: data,
+                            storyName,
+                            indexNum
+                        }
+                        // 串接後端API新增故事流程
+                        fetch(`http://192.168.10.127:3030/jh_simple_story/userStep/fragments`,{
+                            method: 'post',
+                            body: JSON.stringify(payload),
+                            headers: {
+                                'Content-Type': "application/json",
+                            },
+                        })
+                        .then(response => response.json())
+                        .then(info => {
+                            if(info.status == 'success'){
+                                // 新增nlu
+                                const payload = {
+                                    userParse: data
+                                }
+                                fetch(`http://192.168.10.127:3030/jh_simple_story/userStep/nlu`,{
+                                    method: 'post',
+                                    body: JSON.stringify(payload),
+                                    headers: {
+                                        'Content-Type': "application/json",
+                                    },
+                                })
+                                .then(response => response.json())
+                                .then(info => {
+                                    if(info.status == 'warning'){
+                                        const userStoryDiv = target.parentElement.parentElement
+                                        var html = `<h2><div class='sa-icon warning'><span></span></div>${info.message}</h2>`;
+                                        Method.common.showBox(html, 'message', '')
+                                        const payload = {
+                                            storyName,
+                                            userSays: data.text,
+                                            intent: data.text
+                                        }
+                                        fetch(`http://192.168.10.127:3030/jh_simple_story/userStep/fragments`,{
+                                            method: 'delete',
+                                            body: JSON.stringify(payload),
+                                            headers: {
+                                                'Content-Type': "application/json",
+                                            },
+                                        })
+                                        .then(response => response.json())
+                                        .then(info => {
+                                            if(info.status == 'success'){
+                                                userStoryDiv.remove()
+                                            }
+                                        })
+                                        .catch(err => console.log(err))
+                                        return
+                                    }
+                                    // 新增domain
+                                    const payload = {
+                                        userParse: data
+                                    }
+                                    fetch(`http://192.168.10.127:3030/jh_simple_story/userStep/domain`,{
+                                        method: 'post',
+                                        body: JSON.stringify(payload),
+                                        headers: {
+                                            'Content-Type': "application/json",
+                                        }
+                                    })
+                                    .catch(err => console.log(err))
+
+                                    target.value = `${target.value}`;
+                                    target.setAttribute('data-status', 'waiting')
+                                    target.setAttribute('disabled', '');
+                                    target.setAttribute('style', 'cursor: pointer;')
+                                    // Method.story.showNluSpan(data, allStorySpan, indexNum)
+                                    // 將stepIndex放進intentSpan屬性中，讓查詢故事流程時，可以使用intentSpan點擊事件
+                                    // allStorySpan[indexNum].children[1].firstElementChild.dataset.stepindex = indexNum
+                                })
+                                .catch(err => console.log(err))
+                            }
+                        })
+                        .catch(err => console.log(err))
+                    })
+                    .catch(err => console.log(err))
+                }
+            })
+
+            // userInput失焦事件
+            input.addEventListener('blur', e => {
+                const target = e.target;
+
+                // 獲取輸入框在陣列中的位置
+                let indexNum = 0
+                const allStorySpan = document.querySelectorAll('#storySpan')
+                for(i = 0; i < allStorySpan.length; i++){
+                    if(allStorySpan[i].children[0].dataset.status == 'typing'){
+                        indexNum = i
+                    }
+                }
+
+                if(target.dataset.event != 'blur') return
+                if(target.value == ''){
+                    target.setAttribute('data-status', 'waiting')
+                    target.parentElement.parentElement.remove();
+                }else{
+                    if(document.querySelector('#storyTitle').innerText == '未命名故事'){
+                        target.setAttribute('data-status', 'waiting')
+                        target.value = ''
+                        var html = "<h2><div class='sa-icon warning'><span></span></div>請先設定故事名稱</h2>";
+                        Method.common.showBox(html, 'message', '')
+                        return
+                    }
+                    // 串接後端API 將資料傳送至rasa預測使用者輸入的意圖和關鍵字
+                    fetch(`http://192.168.10.127:3030/jh_story/parse?userInput=${target.value}`)
+                    .then(response => {
+                        return response.json();
+                    })
+                    .then(data => {
+                        const storyName = document.querySelector('#storyTitle').innerText
+                        const payload = {
+                            parse: data,
+                            storyName,
+                            indexNum
+                        }
+                        // 串接後端API新增故事流程
+                        fetch(`http://192.168.10.127:3030/jh_simple_story/userStep/fragments`,{
+                            method: 'post',
+                            body: JSON.stringify(payload),
+                            headers: {
+                                'Content-Type': "application/json",
+                            },
+                        })
+                        .then(response => response.json())
+                        .then(info => {
+                            if(info.status == 'success'){
+                                // 新增nlu
+                                const payload = {
+                                    userParse: data
+                                }
+                                fetch(`http://192.168.10.127:3030/jh_simple_story/userStep/nlu`,{
+                                    method: 'post',
+                                    body: JSON.stringify(payload),
+                                    headers: {
+                                        'Content-Type': "application/json",
+                                    },
+                                })
+                                .then(response => response.json())
+                                .then(info => {
+                                    if(info.status == 'warning'){
+                                        const userStoryDiv = target.parentElement.parentElement
+                                        var html = `<h2><div class='sa-icon warning'><span></span></div>${info.message}</h2>`;
+                                        Method.common.showBox(html, 'message', '')
+                                        const payload = {
+                                            storyName,
+                                            userSays: data.text,
+                                            intent: data.text
+                                        }
+                                        fetch(`http://192.168.10.127:3030/jh_simple_story/userStep/fragments`,{
+                                            method: 'delete',
+                                            body: JSON.stringify(payload),
+                                            headers: {
+                                                'Content-Type': "application/json",
+                                            },
+                                        })
+                                        .then(response => response.json())
+                                        .then(info => {
+                                            if(info.status == 'success'){
+                                                userStoryDiv.remove()
+                                            }
+                                        })
+                                        .catch(err => console.log(err))
+                                        return
+                                    }
+                                    // 新增domain
+                                    const payload = {
+                                        userParse: data
+                                    }
+                                    fetch(`http://192.168.10.127:3030/jh_simple_story/userStep/domain`,{
+                                        method: 'post',
+                                        body: JSON.stringify(payload),
+                                        headers: {
+                                            'Content-Type': "application/json",
+                                        }
+                                    })
+                                    .catch(err => console.log(err))
+
+                                    target.value = `${target.value}`;
+                                    target.setAttribute('data-status', 'waiting')
+                                    target.setAttribute('disabled', '');
+                                    target.setAttribute('style', 'cursor: pointer;')
+                                    // Method.story.showNluSpan(data, allStorySpan, indexNum)
+                                    // 將stepIndex放進intentSpan屬性中，讓查詢故事流程時，可以使用intentSpan點擊事件
+                                    // allStorySpan[indexNum].children[1].firstElementChild.dataset.stepindex = indexNum
+                                })
+                                .catch(err => console.log(err))
+                            }
+                        })
+                        .catch(err => console.log(err))
+                    })
+                    .catch(err => console.log(err))
+                }
+            })
+        },
+        simpleInputClickEvent: (input) => {
+            // storySpan點擊事件
+            // 由於userInput變成disabled之後，點擊事件無法運作，所以將點擊事件加在storySpan上
+            // 新增例句彈跳窗
+            storySpan.addEventListener('click', e => {
+                const target = e.target
+
+                // 顯示使用者新增例句彈跳窗
+                if(target.matches('#userInput') && target.getAttribute('disabled') == ''){
+                    
+                    const userText = target.value.trim()
+                    const intent = target.value.trim()
+                    getTextExam(userText, intent)
+                }
+
+                // 使用者新增例句彈跳窗彈跳窗產生function
+                function getTextExam(userText, intent){
+                    // 串接API - 抓取彈跳窗內所需資料
+                    fetch(`http://192.168.10.127:3030/jh_simple_story/userStep/nlu/getTextExams?text=${userText}&intent=${intent}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log(data)
+                        localStorage.setItem('textExamData', JSON.stringify(data))
+                        // 彈跳窗標題產生關鍵字
+                        let examsTitleHtml = ''
+                        data.forEach(item => {
+                            if(item.text == userText && item.intent == intent){
+                                // if(item.entities.length){
+                                    examsTitleHtml = Method.story.createTextHtml(item, userText)
+                                // }
+                            }
+                        })
+
+
+                        let html = `
+                        <div class="userBoxTitle">
+                            <span class="userTextTitle" id="userTextTitle">${examsTitleHtml.text}</span>
+                        </div>
+                        <div class="userTextExam" style="width:800px;">
+                            <input type="text" class="form-control" name="userExamInput" id="userExamInput" placeholder="使用者說..." autocomplete="off">
+                            <div id="textExams-panel">
+                        `
+
+                        const filterData = data.filter(item => item.text !== userText)
+                        html = Method.story.createTextsFunc(filterData, html, examsTitleHtml)
+
+                        html += `
+                            </div>
+                            <div class="textExams--footer">
+                                <div id="errorMessageBox"></div>
+                                <button id="sendExam" type="button" class="btn btn-info">送出</button>
+                            </div>
+                        </div>
+                        `
+
+                        Method.common.showBox(html,"userTextBox");
+
+                        // 彈跳窗使用者添加例句功能
+                        const userExamInput = document.querySelector('#userExamInput')
+                        // 彈跳窗例句輸入框焦點事件
+                        userExamInput.addEventListener('focus', e => {
+                            const target = e.target
+                            target.setAttribute('data-event', 'blur')
+                        })
+
+                        // 彈跳窗例句輸入框按鍵事件
+                        userExamInput.addEventListener('keydown', e => {
+                            const target = e.target
+                            const exampleTitle = Method.story.sliceText(document.querySelector('#userTextTitle').innerText)
+                            const examText = target.value
+                            localStorage.setItem('exampleTitle', exampleTitle)
+                            if(e.keyCode == 13){
+                                if(!examText) return
+                                target.setAttribute('data-event', 'keydown')
+                                fetch(`http://192.168.10.127:3030/jh_story/userStep/nlu/checkRepeat?userInput=${examText}`)
+                                .then(res => res.json())
+                                .then(info => {
+                                    if(info.status !== 'success'){
+                                        target.value = ''
+                                        var html = `<h2><div class='sa-icon warning'><span></span></div>${info.message}</h2>`;
+                                        Method.common.showBox(html, 'message', '')
+                                        return
+                                    }
+                                    // 串接後端API - 將使用者輸入的字句判斷意圖及關鍵字
+                                    fetch(`http://192.168.10.127:3030/jh_story/parse?userInput=${examText}`)
+                                    .then(response => response.json())
+                                    .then(inputParse => {
+                                        // 將回傳的判斷組成新的例句object
+                                        const newExam = {
+                                            text: inputParse.text,
+                                            intent,
+                                            entities: inputParse.entities
+                                        }
+                                        // 驗證是否重複
+                                        const textExamData = JSON.parse(localStorage.getItem('textExamData'))
+                                        const repeatExam = textExamData.filter(item => item.text == newExam.text)
+                                        if(repeatExam.length){
+                                            target.value = ''
+                                            var html = `<h2><div class='sa-icon warning'><span></span></div>例句重複</h2>`;
+                                            Method.common.showBox(html, 'message', '')
+                                            return
+                                        }
+                                        textExamData.push(newExam)
+                                        localStorage.setItem('textExamData', JSON.stringify(textExamData))
+                                        const exampleTitle = localStorage.getItem('exampleTitle')
+                                        const newData = textExamData.filter(item => item.text !== exampleTitle)
+                                        return newData
+                                    })
+                                    .then(newData => {
+                                        let newExamHtml = ''
+                                        newExamHtml = Method.story.createTextsFunc(newData, newExamHtml, examsTitleHtml)
+                                        document.querySelector('#textExams-panel').innerHTML = newExamHtml
+                                        // Method.story.checkAllExampleIntent(newData)
+                                        Method.story.eventFunc(newData, examsTitleHtml)
+                                        userExamInput.value = ''
+                                    })
+                                    .catch(err => console.log(err))
+                                })
+                                .catch(err => console.log(err))
+                            }
+                        })
+
+                        // 例句彈跳窗 送出按鈕事件
+                        const sendExamBtn = document.querySelector('#sendExam')
+                        sendExamBtn.addEventListener('click', e => {
+                            const target = e.target
+                            const textExamData = localStorage.getItem('textExamData')
+                            const payload = {
+                                textExamData
+                            }
+                            fetch('http://192.168.10.127:3030/jh_simple_story/userStep/nlu/addExamples', {
+                                method: 'post',
+                                body: JSON.stringify(payload),
+                                headers: {
+                                    'Content-Type': "application/json",
+                                }
+                            })
+                            .then(res => res.json())
+                            .then(info => {
+                                if(info.status === 'success'){
+                                    document.querySelector('#userTextBox').remove()
+                                }
+                            })
+                            .catch(err => console.log(err))
+                        })
+
+                        Method.story.eventFunc(data, examsTitleHtml)
+                    })
+                    .catch(err => console.log(err))
+                }
+            })
+        },
+        simpleClickRemoveBtnEvent: (removeBtn) => {
+            // 刪除按鈕點擊事件
+            removeBtn.addEventListener('click', e => {
+                // storyName - 該頁面故事流程名稱
+                const target = e.target;
+                const storyName = document.querySelector('#storyTitle').innerText
+        
+                // userStoryDiv - 該點擊目標的故事流程步驟外框，用來刪除故事流程步驟用
+                // text - 該點擊目標故事流程步驟，使用者輸入的文字
+                // intent - 該點擊目標故事流程步驟，使用者的意圖，使用slice()是因為顯示文字時，在前方加上「意圖: 」，所以取意圖需要去除前4個字
+                if(target.matches('#removeBtn')){
+                    const userStoryDiv = target.parentElement.parentElement.parentElement
+                    if(target.parentElement.parentElement.previousElementSibling.children[0].id == 'userInput'){
+                        if(target.parentElement.parentElement.previousElementSibling.children[0].value){
+                            const text = target.parentElement.parentElement.previousElementSibling.children[0].value
+                            const intent = text
+                            removeUserStep(storyName, text, intent, userStoryDiv)
+                        }else{
+                            userStoryDiv.remove()
+                        }
+                    }
+                }
+        
+                if(target.tagName == 'svg'){
+                    const userStoryDiv = target.parentElement.parentElement.parentElement.parentElement
+                    if(target.parentElement.parentElement.parentElement.previousElementSibling.children[0].id == 'userInput'){
+                        if(target.parentElement.parentElement.parentElement.previousElementSibling.children[0].value){
+                            const text = target.parentElement.parentElement.parentElement.previousElementSibling.children[0].value
+                            const intent = text
+                            removeUserStep(storyName, text, intent, userStoryDiv)
+                        }else{
+                            userStoryDiv.remove()
+                        }
+                    }
+                }
+        
+                if(target.tagName == 'path'){
+                    const userStoryDiv = target.parentElement.parentElement.parentElement.parentElement.parentElement
+                    if(target.parentElement.parentElement.parentElement.parentElement.previousElementSibling.children[0].id == 'userInput'){
+                        if(target.parentElement.parentElement.parentElement.parentElement.previousElementSibling.children[0].value){
+                            const text = target.parentElement.parentElement.parentElement.parentElement.previousElementSibling.children[0].value
+                            const intent = text
+                            intent = intent.slice(4, intent.length)
+                            removeUserStep(storyName, text, intent, userStoryDiv)
+                        }else{
+                            userStoryDiv.remove()
+                        }
+                    }
+                }
+        
+                // 移除故事流程function
+                function removeUserStep(storyName, userSays, intent, userStoryDiv){
+                    const payload = {
+                        storyName,
+                        userSays,
+                        intent
+                    }
+                    fetch(`http://192.168.10.127:3030/jh_story/userStep/fragments`,{
+                        method: 'delete',
+                        body: JSON.stringify(payload),
+                        headers: {
+                            'Content-Type': "application/json",
+                        },
+                    })
+                    .then(response => response.json())
+                    .then(info => {
+                        if(info.status == 'success'){
+                            userStoryDiv.remove()
+                        }
+                    })
+                    .catch(err => console.log(err))
+        
+                    fetch(`http://192.168.10.127:3030/jh_story/userStep/nlu/example`,{
+                        method: 'delete',
+                        body: JSON.stringify(payload),
+                        headers: {
+                            'Content-Type': "application/json",
+                        },
+                    })
+                    .catch(err => console.log(err))
+                }
+            })
+        }
     },
     // 機器人步驟共用function
     botStep: {
@@ -1655,18 +2158,23 @@ Method.story = {
         removeIcon.setAttribute('style', 'font-size: 7px;');
         removeBtn.appendChild(removeIcon);
 
-        const intentBtn = document.createElement('button');
-        intentBtn.setAttribute('type', 'button');
-        intentBtn.setAttribute('id', 'intentBtn');
-        intentBtn.setAttribute('class', 'btn btn-warning');
-
-        const intentIcon = document.createElement('i');
-        intentIcon.setAttribute('class', 'fas fa-tag');
-        intentIcon.setAttribute('style', 'font-size: 7px;');
-        intentBtn.appendChild(intentIcon);
+        
 
         const btnSpan = document.createElement('span');
-        btnSpan.appendChild(intentBtn);
+
+        if(document.querySelector('.jh_story') || document.querySelector('.jh_new_story')){
+            const intentBtn = document.createElement('button');
+            intentBtn.setAttribute('type', 'button');
+            intentBtn.setAttribute('id', 'intentBtn');
+            intentBtn.setAttribute('class', 'btn btn-warning');
+
+            const intentIcon = document.createElement('i');
+            intentIcon.setAttribute('class', 'fas fa-tag');
+            intentIcon.setAttribute('style', 'font-size: 7px;');
+            intentBtn.appendChild(intentIcon);
+
+            btnSpan.appendChild(intentBtn);
+        }
         btnSpan.appendChild(removeBtn);
 
         const topRightDiv = document.createElement('div');
@@ -1680,7 +2188,11 @@ Method.story = {
         storyDiv.appendChild(topRightDiv);
         stories.insertBefore(storyDiv, stories.lastElementChild);
 
-        Method.story.userStep.allUserStepEvent(removeBtn, intentBtn, storySpan, input)
+        if(document.querySelector('.jh_story') || document.querySelector('.jh_new_story')){
+            Method.story.userStep.allUserStepEvent(removeBtn, intentBtn, storySpan, input)
+        }else{
+            Method.story.userStep.allUserStepEvent(removeBtn, null, storySpan, input)
+        }
     },
     // 點擊機器人按鈕
     clickBotBtn: () => {
@@ -1981,12 +2493,29 @@ Method.story = {
             const examsTextHtml = Method.story.createTextHtml(item, item.text, examsTitleHtml.titleInfo)
             html += `
             <div class="textExams--examples">
+            `
+
+            if(document.querySelector('.jh_story') || document.querySelector('.jh_new_story')){
+                html += `
                 <span>
                     <span id="intent-span" class="nluSpan">
                         <i class="fas fa-tag" style="font-size: 7px;"></i>
                         <span id="intent-text" class="nluText">${item.intent}</span>
                     </span>
                 </span>
+                `
+            }else{
+                // 不顯示意圖，僅顯示圖案
+                html += `
+                <span>
+                    <span id="intent-span" class="nluSpan" style="cursor: text;">
+                        <i class="fas fa-pencil-alt" style="font-size: 12px"></i>
+                    </span>
+                </span>
+                `
+            }
+            
+            html += `
                 <span class="textExams-span">
                     ${examsTextHtml.text}
                 </span>
@@ -2318,41 +2847,43 @@ Method.story = {
         }
 
         // 例句意圖點擊事件
-        const textExamsExamples = document.querySelectorAll('.textExams--examples')
-        textExamsExamples.forEach(textExamsExample => {
-            textExamsExample.children[0].addEventListener('click', e => {
-                const target = e.target
-                let intent = ''
-                let examText = ''
-                if(target.matches('#intent-text')){
-                    console.log('#intent-text examText: ', target.parentElement.parentElement.nextElementSibling.children[0].innerText)
-                    intent = target.innerText
-                    examText = Method.story.sliceText(target.parentElement.parentElement.nextElementSibling.children[0].innerText)
-                }
+        if(document.querySelector('.jh_story') || document.querySelector('.jh_new_story')){
+            const textExamsExamples = document.querySelectorAll('.textExams--examples')
+            textExamsExamples.forEach(textExamsExample => {
+                textExamsExample.children[0].addEventListener('click', e => {
+                    const target = e.target
+                    let intent = ''
+                    let examText = ''
+                    if(target.matches('#intent-text')){
+                        console.log('#intent-text examText: ', target.parentElement.parentElement.nextElementSibling.children[0].innerText)
+                        intent = target.innerText
+                        examText = Method.story.sliceText(target.parentElement.parentElement.nextElementSibling.children[0].innerText)
+                    }
 
-                if(target.matches('#intent-span')){
-                    console.log('#intent-span examText: ', target.parentElement.nextElementSibling.children[0].innerText)
-                    intent = target.lastElementChild.innerText
-                    examText = Method.story.sliceText(target.parentElement.nextElementSibling.children[0].innerText)
-                }
+                    if(target.matches('#intent-span')){
+                        console.log('#intent-span examText: ', target.parentElement.nextElementSibling.children[0].innerText)
+                        intent = target.lastElementChild.innerText
+                        examText = Method.story.sliceText(target.parentElement.nextElementSibling.children[0].innerText)
+                    }
 
-                if(target.matches('svg')){
-                    console.log('svg examText: ', target.parentElement.parentElement.nextElementSibling.children[0].innerText)
-                    intent = target.nextElementSibling.innerText
-                    examText = Method.story.sliceText(target.parentElement.parentElement.nextElementSibling.children[0].innerText)
-                }
+                    if(target.matches('svg')){
+                        console.log('svg examText: ', target.parentElement.parentElement.nextElementSibling.children[0].innerText)
+                        intent = target.nextElementSibling.innerText
+                        examText = Method.story.sliceText(target.parentElement.parentElement.nextElementSibling.children[0].innerText)
+                    }
 
-                if(target.matches('path')){
-                    console.log('path examText: ', target.parentElement.parentElement.parentElement.nextElementSibling.children[0].innerText)
-                    intent = target.parentElement.nextElementSibling.innerText
-                    examText = Method.story.sliceText(target.parentElement.parentElement.parentElement.nextElementSibling.children[0].innerText)
-                }
-                console.log('intent: ', intent)
-                console.log('examText: ', examText)
-                const examTempData = data
-                Method.story.setIntentShowBox(examText, intent, null, null, examTempData, examsTitleHtml)
+                    if(target.matches('path')){
+                        console.log('path examText: ', target.parentElement.parentElement.parentElement.nextElementSibling.children[0].innerText)
+                        intent = target.parentElement.nextElementSibling.innerText
+                        examText = Method.story.sliceText(target.parentElement.parentElement.parentElement.nextElementSibling.children[0].innerText)
+                    }
+                    console.log('intent: ', intent)
+                    console.log('examText: ', examText)
+                    const examTempData = JSON.parse(localStorage.getItem('textExamData'))
+                    Method.story.setIntentShowBox(examText, intent, null, null, examTempData, examsTitleHtml)
+                })
             })
-        })
+        }
 
         // 彈跳窗典範按鈕點擊事件
         const starBtns = document.querySelectorAll('#textExams--actionBtn_starBtn')
@@ -2523,20 +3054,22 @@ Method.story = {
 
                 const exampleTitle = Method.story.sliceText(document.querySelector('#userTextBox .content .userTextTitle').innerText)
 
-                console.log(exampleTitle)
                 const textExamData = JSON.parse(localStorage.getItem('textExamData'))
                 const newData = textExamData.filter(exam => {
-                    if(exam.text !== examText && exam.text !== exampleTitle){
+                    if(exam.text !== examText){
                         return exam
                     }
                 })
-                localStorage.setItem('textExamData', JSON.stringify(newData))
+                localStorage.setItem('textExamData', JSON.stringify(newData)) // 將彈跳窗內的資料全部存在localStorage，包含標題
+                const currentData = newData.filter(exam => exam.text !== exampleTitle) // 顯示時，將標題篩選掉
 
                 let newExamHtml = ''
-                newExamHtml = Method.story.createTextsFunc(newData, newExamHtml, examsTitleHtml)
+                newExamHtml = Method.story.createTextsFunc(currentData, newExamHtml, examsTitleHtml)
                 document.querySelector('#textExams-panel').innerHTML = newExamHtml
-                Method.story.checkAllExampleIntent(newData)
-                Method.story.eventFunc(newData, examsTitleHtml)
+                if(document.querySelector('.jh_story') || document.querySelector('.jh_new_story')){
+                    Method.story.checkAllExampleIntent(currentData)
+                }
+                Method.story.eventFunc(currentData, examsTitleHtml)
             })
         })
     },
@@ -2827,8 +3360,8 @@ Method.story = {
                                 }
                             })
                             document.querySelector('#setExamInfo').remove()
-                            examTempData = examTempData.filter(exam => exam.text !== examTextTitle)
                             localStorage.setItem('textExamData', JSON.stringify(examTempData))
+                            examTempData = examTempData.filter(exam => exam.text !== examTextTitle)
                             let newExamHtml = ''
                             console.log('final examTempData:', examTempData)
                             newExamHtml = Method.story.createTextsFunc(examTempData, newExamHtml, examsTitleHtml)
@@ -2845,6 +3378,14 @@ Method.story = {
                             var warningHtml = "<h2><div class='sa-icon warning'><span></span></div>請先填寫意圖</h2>";
                             Method.common.showBox(warningHtml, 'message', '')
                             return
+                        }
+
+                        function editExamInfo(intent, input){
+                            input.value = intent
+                            input.setAttribute('disabled', '')
+                            const tempNlu = JSON.parse(localStorage.getItem('tempNlu'))
+                            tempNlu.intent = intent
+                            localStorage.setItem('tempNlu', JSON.stringify(tempNlu))
                         }
 
                         // 判斷意圖是否重複
