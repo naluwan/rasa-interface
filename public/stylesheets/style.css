@@ -1035,7 +1035,7 @@ header a:first-of-type {
 
 /* userTextBox */
 #userTextBox .nluSpan {
-  padding: 0 5px;
+  padding: 4px 5px;
 }
 .userBoxTitle,
 .textExams-span {
@@ -2417,7 +2417,7 @@ button.close:hover:before {
 }
 
 #userTextBox #textExams-panel {
-  height: calc(100% - 86px);
+  height: calc(100% - 100px);
   overflow: auto;
 }
 

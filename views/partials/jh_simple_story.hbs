@@ -1,7 +1,7 @@
-{{#if jh_story}}
+{{#if jh_simple_story}}
 <!-- jh_story -->
 <div class="jh_story">
-  <h1>故事流程</h1>
+  <h1>故事流程(simple)</h1>
   {{> message}}
   <form name="form" action="" class="searchBar" id="search">
     <label for="storyFilter">故事名稱：</label>
@@ -127,7 +127,7 @@
     </div>
   </div>
   <div class="footButton">
-    <input type="button" class="btn btn-warning" onclick="Method.common.page('/jh_story/new')" value="新增故事流程">
+    <input type="button" class="btn btn-warning" onclick="Method.common.page('/jh_simple_story/new')" value="新增故事流程">
   </div>
 </div>
 {{/if}}
