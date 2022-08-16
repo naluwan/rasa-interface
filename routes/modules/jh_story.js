@@ -395,39 +395,85 @@ router.get('/userStep/nlu/getTextExams', (req, res) => {
   .catch(err => console.log(err))
 })
 
+// // 例句彈跳窗- 使用者添加例句
+// router.post('/userStep/nlu/addExamples', (req, res) => {
+//   const {textExamData} = req.body
+//   const request = new sql.Request(pool)
+//   const cpnyId = res.locals.user.CPY_ID
+//   const textExamDataParse = JSON.parse(textExamData)
+
+//   getSqlTrainingData('BF_JH_DATA_TEST', 'nlu-json-test', 'nlu', cpnyId)
+//   .then(data => {
+//     textExamDataParse.map(exam => {
+//       // 將暫存例句陣列中已經添加過的例句篩選掉
+//       const checkText = data.rasa_nlu_data.common_examples.some(example => exam.text === example.text)
+//       const checkIntent = data.rasa_nlu_data.common_examples.some(example => exam.intent === example.intent)
+//       if( checkText && checkIntent) return
+//         const newNlu = {
+//           text: exam.text,
+//           intent: exam.intent,
+//           entities: []
+//         }
+  
+//         if(exam.entities.length){
+//           exam.entities.map(item => {
+//             const newEntity = {
+//               entity: item.entity,
+//               value: item.value,
+//               start: item.start,
+//               end: item.end
+//             }
+//             newNlu.entities.push(newEntity)
+//           })
+//         }
+  
+//         data.rasa_nlu_data.common_examples.push(newNlu)
+//     })
+
+//     const filePath = '../public/trainData/nlu-json-test.json'
+//     const response = {status: 'success', message: 'nlu例句新增成功'}
+//     fsSqlUpdate(filePath, data, 'BF_JH_DATA_TEST', 'nlu-json-test', response, request, res, cpnyId)
+//   })
+//   .catch(err => console.log(err))
+// })
+
 // 例句彈跳窗- 使用者添加例句
 router.post('/userStep/nlu/addExamples', (req, res) => {
   const {textExamData} = req.body
   const request = new sql.Request(pool)
   const cpnyId = res.locals.user.CPY_ID
   const textExamDataParse = JSON.parse(textExamData)
-
+  console.log('textExamDataParse',textExamDataParse)
   getSqlTrainingData('BF_JH_DATA_TEST', 'nlu-json-test', 'nlu', cpnyId)
   .then(data => {
+
+    const examIntent = textExamDataParse[0].intent
+    data.rasa_nlu_data.common_examples = data.rasa_nlu_data.common_examples.filter(example => example.intent !== examIntent)
+    return data
+    
+  })
+  .then(data => {
+
     textExamDataParse.map(exam => {
-      // 將暫存例句陣列中已經添加過的例句篩選掉
-      const checkText = data.rasa_nlu_data.common_examples.some(example => exam.text === example.text)
-      const checkIntent = data.rasa_nlu_data.common_examples.some(example => exam.intent === example.intent)
-      if( checkText && checkIntent) return
-        const newNlu = {
-          text: exam.text,
-          intent: exam.intent,
-          entities: []
-        }
+      const newNlu = {
+        text: exam.text,
+        intent: exam.intent,
+        entities: []
+      }
   
-        if(exam.entities.length){
-          exam.entities.map(item => {
-            const newEntity = {
-              entity: item.entity,
-              value: item.value,
-              start: item.start,
-              end: item.end
-            }
-            newNlu.entities.push(newEntity)
-          })
-        }
+      if(exam.entities.length){
+        exam.entities.map(item => {
+          const newEntity = {
+            entity: item.entity,
+            value: item.value,
+            start: item.start,
+            end: item.end
+          }
+          newNlu.entities.push(newEntity)
+        })
+      }
   
-        data.rasa_nlu_data.common_examples.push(newNlu)
+      data.rasa_nlu_data.common_examples.push(newNlu)
     })
 
     const filePath = '../public/trainData/nlu-json-test.json'
@@ -539,6 +585,7 @@ router.post('/userStep/domain', (req, res) => {
   .catch(err => console.log(err))
 })
 
+// 驗證例句是否重複
 router.get('/userStep/nlu/checkRepeat', (req, res) => {
   const {userInput} = req.query
   const request = new sql.Request(pool)
