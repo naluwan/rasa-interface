@@ -5,6 +5,7 @@ const methodOverride = require('method-override')
 const hbshelpers = require('handlebars-helpers')
 const multihelpers = hbshelpers()
 const flash = require('connect-flash')
+const cors = require('cors')
 
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config()
@@ -19,7 +20,12 @@ const PORT = process.env.PORT
 
 app.engine('hbs', engine({defaultLayout: 'main', extname: '.hbs'}))
 app.set('view engine', 'hbs')
-
+app.use(cors({
+  credentials: true,
+  preflightContinue: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH' , 'DELETE', 'OPTIONS'],
+  origin: true
+}))
 app.use(session({
   secret: 'botfrontSecret',
   resave: false,
