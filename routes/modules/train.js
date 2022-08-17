@@ -27,6 +27,17 @@ router.get('/jh/trainingData', (req, res) => {
   .catch(err => console.log(err))
 })
 
+// JWT TOKEN REACT抓取資料範例 router
+router.get('/react/jh/trainingData', (req, res) => {
+  const {cpnyId} = req.query
+  // console.log(cpnyId)
+  getTrainingData('BF_JH_DATA_TEST', cpnyId)
+  .then(data => {
+    return res.json(data)
+  })
+  .catch(err => console.log(err))
+})
+
 // 訓練完成
 router.get('/trainingComplete', (req, res) => {
   res.json({status: 'success', message: '訓練完成'})
