@@ -86,7 +86,7 @@ if(jhTrainBtn){
 						})
 						.then(filename => {
 							console.log('filename:',filename)
-							const payload ={ 'model_file': `/home/bill/Work/BF34_RASA_2.8.31_spacy/models/${filename}`}
+							const payload ={ 'model_file': `/home/bill/Work/BF36_RASA_2.8.31_spacy/models/${filename}`}
 							fetch('http://192.168.10.105:5005/model', {
 								method: 'put',
 								body: JSON.stringify(payload),
