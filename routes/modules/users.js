@@ -133,19 +133,23 @@ router.get('/register/insert', (req, res) => {
         return cpy_no
       })
       .then(cpnyNo => {
+        let count = 0
         trainingDataList.map(data => {
+          let content = JSON.stringify(data.content)
           if(data.name === 'config-test'){
-            request.input('cpny_no', sql.NVarChar(30), cpnyNo)
-            .input('dataName', sql.NVarChar(50), data.name)
-            .input('dataContent', sql.NVarChar(sql.MAX), yaml.dump(data.content))
-            .query(`insert into BF_JH_DATA_TEST(CPNY_ID, DATA_NAME, DATA_CONTENT)
-            values (@cpny_no, @dataName, @dataContent)`, (err, result) => {
-              if(err){
-                console.log(err)
-                return
-              }
-            })
+            content = yaml.dump(data.content)
           }
+          request.input(`cpny_no${count}`, sql.NVarChar(30), cpnyNo)
+          .input(`dataName${count}`, sql.NVarChar(50), data.name)
+          .input(`dataContent${count}`, sql.NVarChar(sql.MAX), content)
+          .query(`insert into BF_JH_DATA_TEST(CPNY_ID, DATA_NAME, DATA_CONTENT)
+          values (@cpny_no${count}, @dataName${count}, @dataContent${count})`, (err, result) => {
+            if(err){
+              console.log(err)
+              return
+            }
+          })
+          count++
         })
       })
       .then(() => {
@@ -198,19 +202,23 @@ router.post('/register', (req, res) => {
         return {cpy_no, token}
       })
       .then(info => {
+        let count = 0
         trainingDataList.map(data => {
+          let content = JSON.stringify(data.content)
           if(data.name === 'config-test'){
-            request.input('cpny_no', sql.NVarChar(30), info.cpy_no)
-            .input('dataName', sql.NVarChar(50), data.name)
-            .input('dataContent', sql.NVarChar(sql.MAX), yaml.dump(data.content))
-            .query(`insert into BF_JH_DATA_TEST(CPNY_ID, DATA_NAME, DATA_CONTENT)
-            values (@cpny_no, @dataName, @dataContent)`, (err, result) => {
-              if(err){
-                console.log(err)
-                return
-              }
-            })
+            content = yaml.dump(data.content)
           }
+          request.input(`cpny_no${count}`, sql.NVarChar(30), info.cpy_no)
+          .input(`dataName${count}`, sql.NVarChar(50), data.name)
+          .input(`dataContent${count}`, sql.NVarChar(sql.MAX), content)
+          .query(`insert into BF_JH_DATA_TEST(CPNY_ID, DATA_NAME, DATA_CONTENT)
+          values (@cpny_no${count}, @dataName${count}, @dataContent${count})`, (err, result) => {
+            if(err){
+              console.log(err)
+              return
+            }
+          })
+          count++
         })
         return info.token
       })
