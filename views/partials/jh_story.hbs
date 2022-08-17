@@ -26,7 +26,9 @@
             </div>
           </div>
           <div>
+            {{#isnt this.story '問候語'}}
             <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#staticBackdrop">刪除故事</button>
+            {{/isnt}}
           </div>
 
           <!-- Modal -->
