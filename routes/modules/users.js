@@ -186,20 +186,19 @@ router.post('/register', (req, res) => {
       .genSalt(10)
       .then(salt => bcrypt.hash(password, salt))
       .then(hash => {
-        const token = jwt.sign({id: cpy_no}, SECRET)
+        const token = jwt.sign({id: cpy_no, email}, SECRET)
         request.input('cpy_no', sql.NVarChar(30), cpy_no)
         .input('cpy_name', sql.NVarChar(80), cpy_name)
         .input('email', sql.NVarChar(80), email)
         .input('password', sql.NVarChar(100), hash)
-        .input('jwtToken', sql.NVarChar(sql.MAX), JSON.stringify([{token}]))
-        .query(`insert into BOTFRONT_USERS_INFO (CPY_ID, CPY_NAME, EMAIL, PASSWORD, TOKENS)
-        values (@cpy_no, @cpy_name, @email, @password, @jwtToken)`, (err, result) => {
+        .query(`insert into BOTFRONT_USERS_INFO (CPY_ID, CPY_NAME, EMAIL, PASSWORD)
+        values (@cpy_no, @cpy_name, @email, @password)`, (err, result) => {
           if(err){
             console.log(err)
             return
           }
         })
-        return {cpy_no, token}
+        return {cpy_no, email, token}
       })
       .then(info => {
         let count = 0
@@ -220,19 +219,21 @@ router.post('/register', (req, res) => {
           })
           count++
         })
-        return info.token
+        return {cpnyId: info.cpy_no, email: info.email, token: info.token}
       })
-      .then((token) => {
-        request.query(`select CPY_ID, CPY_NAME, EMAIL, ISADMIN, TOKENS
+      .then((data) => {
+        request.query(`select CPY_ID, CPY_NAME, EMAIL, ISADMIN
         from BOTFRONT_USERS_INFO
-        where EMAIL = '${email}'`, (err, result) => {
+        where CPY_ID = '${data.cpnyId}'
+        and EMAIL = '${data.email}'`, (err, result) => {
           if(err){
             console.log(err)
             return
           }
-          const user = result.recordsets[0]
-          return res.send({status: 'success', message: '帳號註冊成功', user, token})
+          const user = result.recordset[0]
+          res.send({status: 'success', message: '帳號註冊成功', user, token: data.token})
         })
+        
       })
       .catch(err => console.log(err))
     }
@@ -241,10 +242,10 @@ router.post('/register', (req, res) => {
 
 // JWT TOKEN 登入
 router.post('/react/login', (req, res) => {
-  const {email, password, expiresIn} = req.body
+  const {email, password} = req.body
 
   const request = new sql.Request(pool)
-  request.query(`select CPY_ID, CPY_NAME, EMAIL, PASSWORD, ISADMIN, TOKENS
+  request.query(`select CPY_ID, CPY_NAME, EMAIL, PASSWORD, ISADMIN
     from BOTFRONT_USERS_INFO
     where EMAIL = '${email}'`, (err, result) => {
       if(err){
@@ -259,53 +260,10 @@ router.post('/react/login', (req, res) => {
       return bcrypt.compare(password, user.PASSWORD)
       .then(isMatch => {
         if(!isMatch) return res.send({statue:'warning', message: '帳號或密碼錯誤'})
-        const token = jwt.sign({id: user.CPY_ID}, SECRET, {expiresIn})
-        const tokens = JSON.stringify(JSON.parse(user.TOKENS).concat({token}))
-        
-        request.input('jwtToken', sql.NVarChar(sql.MAX), tokens)
-        .query(`update BOTFRONT_USERS_INFO
-        set TOKENS = @jwtToken 
-        where CPY_ID = '${user.CPY_ID}'`, (err, result) => {
-          if(err){
-            console.log(err)
-            return
-          }
-
-          request.query(`select CPY_ID, CPY_NAME, EMAIL, ISADMIN
-          from BOTFRONT_USERS_INFO
-          where EMAIL = '${email}'`, (err, result) => {
-            if(err){
-              console.log(err)
-              return
-            }
-            const currentUser = result.recordsets[0]
-            return res.send({status: 'success', message: '登入成功', user: currentUser[0], token})
-          })
-        })
+        const token = jwt.sign({id: user.CPY_ID, email}, SECRET)
+        res.send({status: 'success', message: '登入成功', user, token})
       }).catch(err => console.log(err))
     })
-})
-
-// JWT TOKEN 登出
-router.post('/react/logout', auth, (req, res) => {
-  const request = new sql.Request(pool)
-
-  try{
-    req.user.TOKENS = JSON.stringify(JSON.parse(req.user.TOKENS).filter(token => token.token !== req.token))
-    
-    request.input('jwtToken', sql.NVarChar(sql.Max), req.user.TOKENS)
-    .query(`update BOTFRONT_USERS_INFO
-    set TOKENS = @jwtToken 
-    where CPY_ID = '${req.user.CPY_ID}'`, (err, result) => {
-      if(err){
-        console.log(err)
-        return
-      }
-      res.status(200).send({status: 'success', message: '登出成功'})
-    })
-  }catch(err){
-    res.status(500).send({status:'error', message: '資料錯誤'})
-  }
 })
 
 // JWT TOKEN 驗證

@@ -24,30 +24,25 @@ module.exports = {
     const request = new sql.Request(pool)
     try{
       const token = req.header('Authorization').replace('Bearer ', '')
-      const decoded = jwt.verify(token, SECRET, {expiresIn: '10000'})
+      const decoded = jwt.verify(token, SECRET)
 
-      request.query(`select CPY_ID, CPY_NAME, EMAIL, ISADMIN, TOKENS
+      request.query(`select CPY_ID, CPY_NAME, EMAIL, ISADMIN
       from BOTFRONT_USERS_INFO
-      where CPY_ID = '${decoded.id}'`, (err, result) => {
+      where CPY_ID = '${decoded.id}'
+      and EMAIL = '${decoded.email}'`, (err, result) => {
         if(err){
           console.log(err)
           return
         }
 
         const user = result.recordset[0]
-        if(!user) {throw new Error()}
-
-        const tokens = JSON.parse(user.TOKENS)
-        const isCurrentToken = tokens.some(item => item.token === token)
-        
-        if(isCurrentToken){
-          delete user.TOKENS
-          req.token = token
-          req.user = user
-          next()
-        }else{
-          res.status(401).send({status: 'error', message:'無效Token'})
+        if(!user) {
+          return res.status(401).send({status: 'error', message:'無效Token'})
         }
+
+        req.token = token
+        req.user = user
+        next()
       })
     }catch(err){
       res.status(401).send({status: 'error', message:'資料錯誤，請重新嘗試'})
