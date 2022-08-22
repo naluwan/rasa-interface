@@ -24,7 +24,7 @@ router.post('/userStep/nlu/addExamples', (req, res) => {
   getSqlTrainingData('BF_JH_DATA_TEST', 'nlu-json-test', 'nlu', cpnyId)
   .then(data => {
 
-    const examIntent = textExamDataParse[0].intent
+    const examIntent = textExamDataParse[0].intent.trim()
     data.rasa_nlu_data.common_examples = data.rasa_nlu_data.common_examples.filter(example => example.intent !== examIntent)
     return data
     
@@ -33,8 +33,8 @@ router.post('/userStep/nlu/addExamples', (req, res) => {
 
     textExamDataParse.map(exam => {
       const newNlu = {
-        text: exam.text,
-        intent: exam.intent,
+        text: exam.text.trim(),
+        intent: exam.intent.trim(),
         entities: []
       }
   
@@ -206,7 +206,7 @@ router.post('/userStep/nlu', (req, res) => {
     const repeat = []
     if(data.rasa_nlu_data.common_examples.length){
       data.rasa_nlu_data.common_examples.map(nlu => {
-        if(userParse.text === nlu.text){
+        if(userParse.text.trim() === nlu.text){
           repeat.push(nlu)
         }
       })
@@ -219,8 +219,8 @@ router.post('/userStep/nlu', (req, res) => {
 
     // 新增的nlu格式
     const newNlu = {
-      text: userParse.text,
-      intent: userParse.text,
+      text: userParse.text.trim(),
+      intent: userParse.text.trim(),
       entities: []
     }
 
@@ -263,15 +263,15 @@ router.post('/userStep/fragments', (req, res) => {
         if(!item.steps){
           item.steps = [
             {
-              intent: parse.text,
-              user: parse.text,
+              intent: parse.text.trim(),
+              user: parse.text.trim(),
               entities: []
             }
           ]
         }else{
           const newStep = {
-            intent: parse.text,
-            user: parse.text,
+            intent: parse.text.trim(),
+            user: parse.text.trim(),
             entities: []
           }
 
@@ -285,7 +285,7 @@ router.post('/userStep/fragments', (req, res) => {
             // object key值要使用變數要加上中括號[] 
             const newEntity = {[entityItem.entity]: entityItem.value}
             item.steps.map(step => {
-              if(step.intent == parse.intent.name && step.user == parse.text){
+              if(step.intent == parse.text.trim() && step.user == parse.text.trim()){
                 step.entities.push(newEntity)
               }
             })
@@ -298,6 +298,69 @@ router.post('/userStep/fragments', (req, res) => {
     const filePath = '../public/trainData/fragments-test.json'
     const response = {status: 'success', message: '故事流程設定成功'}
     fsSqlUpdate(filePath, data, 'BF_JH_DATA_TEST', 'fragments-test', response, request, res, cpnyId)
+  })
+  .catch(err => console.log(err))
+})
+
+// 篩選故事流程並回傳故事
+router.get('/filter', (req, res) => {
+  const {storyFilter} = req.query
+  const jh_simple_story = true
+  const cpnyId = res.locals.user.CPY_ID
+
+  // 使用模組從資料庫抓取fragments data
+  // 獲取正確故事
+  getSqlTrainingData('BF_JH_DATA_TEST', 'fragments-test', 'fragments', cpnyId)
+  .then(data => {
+    const stories = data.stories
+    const storyData = stories.filter(item => item.story == storyFilter)
+    return {storyData, stories}
+  })
+  .then(dataObj => {
+    // 使用模組從資料庫抓取nlu訓練資料
+    // 獲取故事中的關鍵字
+    getSqlTrainingData('BF_JH_DATA_TEST', 'nlu-json-test', 'nlu', cpnyId)
+    .then(data => {
+      const allNlu = data.rasa_nlu_data.common_examples
+      dataObj.storyData = dataObj.storyData.map(item => {
+        item.steps.map(step => {
+          if(!step.entities) return step
+          if(!step.entities.length) return step
+          allNlu.map(nlu => {
+            if(nlu.text === step.user && nlu.intent === step.intent){
+              step.entities = nlu.entities
+              step.entities.map(entityItem => {
+                entityItem.text = step.user.slice(entityItem.start, entityItem.end)
+              })
+            }
+          })
+        })
+        return item
+      })
+      return dataObj
+    })
+    .then(dataObj => {
+      // 使用模組從資料庫抓取domain訓練資料
+      // 獲取故事中機器人的回覆
+      getSqlTrainingData('BF_JH_DATA_TEST', 'domain-test', 'domain', cpnyId)
+      .then(data => {
+        dataObj.storyData = dataObj.storyData.map(item => {
+          item.steps.map(step => {
+            if(!step.action) return step
+            step.response = data.responses[step.action].map(res => res.text)[0].trim()
+            step.response = JSON.parse(JSON.stringify(step.response).replace(/  \\n/g, '\\r'))
+          })
+          return item
+        })
+        return dataObj
+      })
+      .then(dataObj => {
+        // console.log(dataObj.storyData)
+        res.render('index', {stories: dataObj.stories, jh_simple_story, storyData: dataObj.storyData})
+      })
+      .catch(err => console.log(err))
+    })
+    .catch(err => console.log(err))
   })
   .catch(err => console.log(err))
 })
