@@ -1,6 +1,6 @@
 {{#if jh_simple_story}}
-<!-- jh_story -->
-<div class="jh_story">
+<!-- jh_simple_story -->
+<div class="jh_simple_story">
   <h1>故事流程(simple)</h1>
   {{> message}}
   <form name="form" action="" class="searchBar" id="search">
@@ -26,9 +26,7 @@
             </div>
           </div>
           <div>
-            {{#isnt this.story '問候語'}}
             <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#staticBackdrop">刪除故事</button>
-            {{/isnt}}
           </div>
 
           <!-- Modal -->
@@ -61,31 +59,18 @@
               value="{{user}}">
             {{/if}}
             <span id="attrSpan">
+              {{#is ../this.story '問候語'}}
               <span id="intent-span" class="nluSpan {{#if user}}mt-10{{/if}}" data-stepindex="{{@index}}">
                 <i class="fas fa-tag" style="font-size: 7px;"></i>
                 <span id="intent-text" class="nluText">意圖: {{intent}}</span>
               </span>
-
-              {{#if entities.length}}
-              {{#forEach entities}}
-              <span id="entities-span" class="nluSpan mt-10">
-                <i class="fas fa-key" style="font-size: 9px;"></i>
-                <span id="entity-text" class="nluText">
-                  關鍵字: <span id="entity">{{text}}</span>,
-                  代號: <span id="entity--code">{{entity}}</span>,
-                  代表值: <span id="entity--value">{{value}}</span>
-                </span>
-              </span>
-              {{/forEach}}
-              {{/if}}
+              {{/is}}
+              
             </span>
           </span>
           <div class="top-right"
             style="max-width: 100px; position: absolute; top: 9px; right: 9px; visibility: hidden;">
             <span>
-              <button type="button" id="intentBtn" class="btn btn-warning" style="visibility: hidden;">
-                <i class="fas fa-tag" style="font-size: 7px;"></i>
-              </button>
 
               <button type="button" id="removeBtn" class="btn btn-danger" style="margin-left: 5px;">
                 <i class="fas fa-trash-alt" style="font-size: 7px;"></i>

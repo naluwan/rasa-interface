@@ -3825,7 +3825,7 @@ Method.search.keyWord = function(){
             };
 
             if(document.querySelector(".jh_simple_story")){
-                url += "/jh_story/filter";
+                url += "/jh_simple_story/filter";
             };
 
             url += data;
