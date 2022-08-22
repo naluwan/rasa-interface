@@ -41,8 +41,7 @@ Method.button.all = function(){
     Method.button.resetPwd();
     Method.button.backToTopBtn();
     Method.button.addStoryButton();
-    Method.button.storyButton();
-    Method.button.addSimpleStoryButton();
+    Method.button.editStoryButton();
 };
 
 //save button
@@ -456,9 +455,9 @@ Method.button.backToTopBtn = function(){
     }
 }
 
-// jh_new_story 互動按鈕
+// 新增故事頁 互動按鈕
 Method.button.addStoryButton = function(){
-    if(document.querySelector('.jh_new_story')){
+    if(document.querySelector('.jh_new_story') || document.querySelector('.jh_new_simple_story')){
         const stories = document.querySelector('#stories');
         const btnDiv = document.querySelector('#btnDiv')
         const userBtn = document.querySelector('#userBtn')
@@ -474,27 +473,9 @@ Method.button.addStoryButton = function(){
     }
 }
 
-// jh_new_simple_story 互動按鈕
-Method.button.addSimpleStoryButton = function(){
-    if(document.querySelector('.jh_new_simple_story')){
-        const stories = document.querySelector('#stories');
-        const btnDiv = document.querySelector('#btnDiv')
-        const userBtn = document.querySelector('#userBtn')
-        const botBtn = document.querySelector('#botBtn')
-
-        Method.story.editStoryTitle()
-        Method.story.getStoryTitle()
-        
-        Method.story.stepControlBtn(userBtn, botBtn)
-
-        Method.story.showBorder(stories, btnDiv, userBtn, botBtn)
-        
-    }
-}
-
-// jh_story 互動按鈕
-Method.button.storyButton = function(){
-    if(document.querySelector('.jh_story')){
+// 查詢及編輯故事頁 互動按鈕
+Method.button.editStoryButton = function(){
+    if(document.querySelector('.jh_story') || document.querySelector('.jh_simple_story')){
         const storyFilter = document.querySelector('#storyFilter')
         const filterBtn = document.querySelector('#filterBtn')
         const btnDiv = document.querySelector('#btnDiv')
@@ -505,11 +486,20 @@ Method.button.storyButton = function(){
         if(storyFilter.value){
             // 因為畫面render會有一些延遲，所已設定0.5秒後才添加事件
             setTimeout(() => {
+                /* 
+                使用共用事件
+                editStoryTitle - 編輯故事名稱
+                getStoryTitle - 獲取故事名稱
+                showBorder - 動態顯示
+                stepControlBtn - 步驟控制按鈕
+                clickStoryRemoveBtnEvent - 故事刪除按鈕
+                */
                 Method.story.editStoryTitle()
                 Method.story.getStoryTitle()
                 Method.story.showBorder(stories, btnDiv, userBtn, botBtn)
                 Method.story.stepControlBtn(userBtn, botBtn)
                 Method.story.clickStoryRemoveBtnEvent(storyRemoveBtn)
+
                 // 使用者步驟的element
                 const userStepRemoveBtns = document.querySelectorAll('.userStep #removeBtn')
                 const userStepIntentBtns = document.querySelectorAll('.userStep #intentBtn')
@@ -523,13 +513,6 @@ Method.button.storyButton = function(){
                 const botStepResNameInputs = document.querySelectorAll('.botRes #res-name-input')
                 const botStepResInputs = document.querySelectorAll('.botRes #botInput')
 
-                // 添加使用者步驟事件
-                Array.from(userStepRemoveBtns).map(userStepRemoveBtn => Method.story.userStep.removeBtnClickEvent(userStepRemoveBtn))
-                Array.from(userStepIntentBtns).map(userStepIntentBtn => Method.story.userStep.intentBtnClickEvent(userStepIntentBtn))
-                Array.from(userStepStorySpans).map(userStepStorySpan => Method.story.userStep.inputClickEvent(userStepStorySpan))
-                Array.from(userStepInputs).map(userStepInput => Method.story.userStep.inputEvent(userStepInput))
-                Array.from(userStepIntentSpans).map(userStepIntentSpan => Method.story.clickIntentSpanEvent(userStepIntentSpan))
-
                 // 添加機器人步驟事件
                 Array.from(botStepRemoveBtns).map(botStepRemoveBtn => Method.story.botStep.removeBtnClickEvent(botStepRemoveBtn))
                 Array.from(botStepBottomRightDivs).map(botStepBottomRightDiv => Method.story.botStep.resNameDivMouseEvent(botStepBottomRightDiv))
@@ -540,6 +523,24 @@ Method.button.storyButton = function(){
                 Array.from(botStepResInputs).map(botStepResInput => {
                     botStepResInput.style.height = botStepResInput.scrollHeight + 20 + 'px'
                 })
+
+                // 需設定意圖
+                if(document.querySelector('.jh_story')){
+                    // 添加使用者步驟事件
+                    Array.from(userStepRemoveBtns).map(userStepRemoveBtn => Method.story.userStep.removeBtnClickEvent(userStepRemoveBtn))
+                    Array.from(userStepIntentBtns).map(userStepIntentBtn => Method.story.userStep.intentBtnClickEvent(userStepIntentBtn))
+                    Array.from(userStepStorySpans).map(userStepStorySpan => Method.story.userStep.inputClickEvent(userStepStorySpan))
+                    Array.from(userStepInputs).map(userStepInput => Method.story.userStep.inputEvent(userStepInput))
+                    Array.from(userStepIntentSpans).map(userStepIntentSpan => Method.story.clickIntentSpanEvent(userStepIntentSpan))
+                }
+
+                // 不用設定意圖
+                if(document.querySelector('.jh_simple_story')){
+                    // 添加使用者步驟事件
+                    Array.from(userStepRemoveBtns).map(userStepRemoveBtn => Method.story.userStep.simpleClickRemoveBtnEvent(userStepRemoveBtn))
+                    Array.from(userStepStorySpans).map(userStepStorySpan => Method.story.userStep.simpleInputClickEvent(userStepStorySpan))
+                    Array.from(userStepInputs).map(userStepInput => Method.story.userStep.simpleInputEvent(userStepInput))
+                }
 
             }, 500)
             
@@ -1382,7 +1383,7 @@ Method.story = {
                 }
             })
         },
-        simpleInputClickEvent: (input) => {
+        simpleInputClickEvent: (storySpan) => {
             // storySpan點擊事件
             // 由於userInput變成disabled之後，點擊事件無法運作，所以將點擊事件加在storySpan上
             // 新增例句彈跳窗
@@ -3820,6 +3821,10 @@ Method.search.keyWord = function(){
             };
 
             if(document.querySelector(".jh_story")){
+                url += "/jh_story/filter";
+            };
+
+            if(document.querySelector(".jh_simple_story")){
                 url += "/jh_story/filter";
             };
 
