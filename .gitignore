@@ -12,5 +12,5 @@ module
 
 # Test files
 coverage
-
+public/trainData
 .env

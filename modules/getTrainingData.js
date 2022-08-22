@@ -85,6 +85,7 @@ module.exports = {
                   'nlu': {nluData},
                   'domain': domainYml,
                   'stories': fragmentsYml,
+                  "fixed_model_name": model
                 }
                 console.log(data)
                 resolve(data)
