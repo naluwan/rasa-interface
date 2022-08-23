@@ -20,6 +20,14 @@ router.post('/userStep/nlu/addExamples', (req, res) => {
   const request = new sql.Request(pool)
   const cpnyId = res.locals.user.CPY_ID
   const textExamDataParse = JSON.parse(textExamData)
+  
+  const regex = /\'|\`|\"|\[|\]|\{|\}|\(|\)/g
+  for(i = 0; i < textExamDataParse.length; i++){
+    if(regex.test(textExamDataParse[i].text)){
+      res.send({status: 'warning', message: '例句不能有特殊符號'})
+      return
+    }
+  }
 
   getSqlTrainingData('BF_JH_DATA_TEST', 'nlu-json-test', 'nlu', cpnyId)
   .then(data => {
@@ -251,6 +259,12 @@ router.post('/userStep/fragments', (req, res) => {
   const {parse, storyName, indexNum} = req.body
   const request = new sql.Request(pool)
   const cpnyId = res.locals.user.CPY_ID
+
+  const regex = /\'|\`|\"|\[|\]|\{|\}|\(|\)/g
+  if(regex.test(parse.text)){
+    res.send({status: 'warning', message: '例句不能有特殊符號'})
+    return
+  }
 
   // 使用模組從資料庫抓取fragments data
   getSqlTrainingData('BF_JH_DATA_TEST', 'fragments-test', 'fragments', cpnyId)

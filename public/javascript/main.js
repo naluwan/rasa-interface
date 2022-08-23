@@ -822,6 +822,13 @@ Method.story = {
                             localStorage.setItem('exampleTitle', exampleTitle)
                             if(e.keyCode == 13){
                                 if(!examText) return
+                                const regex = /\'|\`|\"|\[|\]|\{|\}|\(|\)/g
+                                if(regex.test(target.value)){
+                                    target.value = ''
+                                    var html = `<h2><div class='sa-icon warning'><span></span></div>例句不能有特殊符號</h2>`;
+                                    Method.common.showBox(html, 'message', '')
+                                    return
+                                }
                                 target.setAttribute('data-event', 'keydown')
                                 fetch(`http://192.168.10.127:3030/jh_story/userStep/nlu/checkRepeat?userInput=${examText}`)
                                 .then(res => res.json())
@@ -891,6 +898,10 @@ Method.story = {
                             .then(info => {
                                 if(info.status === 'success'){
                                     document.querySelector('#userTextBox').remove()
+                                }else{
+                                    var html = `<h2><div class='sa-icon ${info.status}'><span></span></div>${info.message}</h2>`;
+                                    Method.common.showBox(html, 'message', '')
+                                    return
                                 }
                             })
                             .catch(err => console.log(err))
@@ -925,6 +936,14 @@ Method.story = {
                             if(allStorySpan[i].children[0].dataset.status == 'typing'){
                                 indexNum = i
                             }
+                        }
+
+                        const regex = /\'|\`|\"|\[|\]|\{|\}|\(|\)/g
+                        if(regex.test(target.value)){
+                            target.value = ''
+                            var html = `<h2><div class='sa-icon warning'><span></span></div>例句不能有特殊符號</h2>`;
+                            Method.common.showBox(html, 'message', '')
+                            return
                         }
 
                         target.setAttribute('data-event', 'keydown')
@@ -1019,6 +1038,10 @@ Method.story = {
                                         allStorySpan[indexNum].children[1].firstElementChild.dataset.stepindex = indexNum
                                     })
                                     .catch(err => console.log(err))
+                                }else{
+                                    var html = `<h2><div class='sa-icon ${info.status}'><span></span></div>${info.message}</h2>`;
+                                    Method.common.showBox(html, 'message', '')
+                                    return
                                 }
                             })
                             .catch(err => console.log(err))
@@ -1038,6 +1061,14 @@ Method.story = {
                         if(allStorySpan[i].children[0].dataset.status == 'typing'){
                             indexNum = i
                         }
+                    }
+
+                    const regex = /\'|\`|\"|\[|\]|\{|\}|\(|\)/g
+                    if(regex.test(target.value)){
+                        target.value = ''
+                        var html = `<h2><div class='sa-icon warning'><span></span></div>例句不能有特殊符號</h2>`;
+                        Method.common.showBox(html, 'message', '')
+                        return
                     }
 
                     if(target.dataset.event != 'blur') return
@@ -1135,6 +1166,10 @@ Method.story = {
                                         allStorySpan[indexNum].children[1].firstElementChild.dataset.stepindex = indexNum
                                     })
                                     .catch(err => console.log(err))
+                                }else{
+                                    var html = `<h2><div class='sa-icon ${info.status}'><span></span></div>${info.message}</h2>`;
+                                    Method.common.showBox(html, 'message', '')
+                                    return
                                 }
                             })
                             .catch(err => console.log(err))
@@ -1172,6 +1207,14 @@ Method.story = {
                         target.setAttribute('data-status', 'waiting')
                         target.value = ''
                         var html = "<h2><div class='sa-icon warning'><span></span></div>請先設定故事名稱</h2>";
+                        Method.common.showBox(html, 'message', '')
+                        return
+                    }
+
+                    const regex = /\'|\`|\"|\[|\]|\{|\}|\(|\)/g
+                    if(regex.test(target.value)){
+                        target.value = ''
+                        var html = `<h2><div class='sa-icon warning'><span></span></div>例句不能有特殊符號</h2>`;
                         Method.common.showBox(html, 'message', '')
                         return
                     }
@@ -1259,6 +1302,8 @@ Method.story = {
                                     // allStorySpan[indexNum].children[1].firstElementChild.dataset.stepindex = indexNum
                                 })
                                 .catch(err => console.log(err))
+                            }else{
+
                             }
                         })
                         .catch(err => console.log(err))
@@ -1278,6 +1323,14 @@ Method.story = {
                     if(allStorySpan[i].children[0].dataset.status == 'typing'){
                         indexNum = i
                     }
+                }
+
+                const regex = /\'|\`|\"|\[|\]|\{|\}|\(|\)/g
+                if(regex.test(target.value)){
+                    target.value = ''
+                    var html = `<h2><div class='sa-icon warning'><span></span></div>例句不能有特殊符號</h2>`;
+                    Method.common.showBox(html, 'message', '')
+                    return
                 }
 
                 if(target.dataset.event != 'blur') return
@@ -1453,9 +1506,17 @@ Method.story = {
                             const target = e.target
                             const exampleTitle = Method.story.sliceText(document.querySelector('#userTextTitle').innerText)
                             const examText = target.value
+                            
                             localStorage.setItem('exampleTitle', exampleTitle)
                             if(e.keyCode == 13){
                                 if(!examText) return
+                                const regex = /\'|\`|\"|\[|\]|\{|\}|\(|\)/g
+                                if(regex.test(examText)){
+                                    target.value = ''
+                                    var html = `<h2><div class='sa-icon warning'><span></span></div>例句不能有特殊符號</h2>`;
+                                    Method.common.showBox(html, 'message', '')
+                                    return
+                                }
                                 target.setAttribute('data-event', 'keydown')
                                 fetch(`http://192.168.10.127:3030/jh_story/userStep/nlu/checkRepeat?userInput=${examText}`)
                                 .then(res => res.json())
@@ -1524,6 +1585,10 @@ Method.story = {
                             .then(info => {
                                 if(info.status === 'success'){
                                     document.querySelector('#userTextBox').remove()
+                                }else{
+                                    var html = `<h2><div class='sa-icon ${info.status}'><span></span></div>${info.message}</h2>`;
+                                    Method.common.showBox(html, 'message', '')
+                                    return
                                 }
                             })
                             .catch(err => console.log(err))
@@ -1873,6 +1938,14 @@ Method.story = {
                     }
                 }
 
+                const regex = /\'|\`|\"|\[|\]|\{|\}|\(|\)/g
+                if(regex.test(target.value)){
+                    target.value = ''
+                    var html = `<h2><div class='sa-icon warning'><span></span></div>回覆內容不能有特殊符號</h2>`;
+                    Method.common.showBox(html, 'message', '')
+                    return
+                }
+
                 if(target.dataset.event != 'blur') return
                 if(target.value == ''){
                     target.setAttribute('data-status', 'waiting')
@@ -1930,6 +2003,10 @@ Method.story = {
                                 if(info.status === 'success'){
                                     target.setAttribute('data-status', 'waiting')
                                     target.readOnly = true
+                                }else{
+                                    var html = `<h2><div class='sa-icon ${info.status}'><span></span></div>${info.message}</h2>`;
+                                    Method.common.showBox(html, 'message', '')
+                                    return
                                 }
                             })
                             .catch(err => console.log(err))
@@ -1968,6 +2045,24 @@ Method.story = {
                                         if(info.status === 'success'){
                                             target.setAttribute('data-status', 'waiting')
                                             target.readOnly = true
+                                        }else{
+                                            const payload = {
+                                                storyName,
+                                                resCode
+                                            }
+                                            fetch('http://192.168.10.127:3030/jh_story/botStep/fragments', {
+                                                method: 'delete',
+                                                body: JSON.stringify(payload),
+                                                headers: {
+                                                    'Content-Type': "application/json",
+                                                },
+                                            })
+                                            .then(res => res.json())
+                                            .then(() => {
+                                                var html = `<h2><div class='sa-icon ${info.status}'><span></span></div>${info.message}</h2>`;
+                                                Method.common.showBox(html, 'message', '')
+                                                return
+                                            })
                                         }
                                     })
                                     .catch(err => console.log(err))

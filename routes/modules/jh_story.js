@@ -13,6 +13,7 @@ const {setInfoDict, setPositionDict} = require('../../modules/setDict')
 const {randomNum, checkNum} = require('../../modules/randomNum')
 const {insertDes, updateDes, deleteDes, insertCategory, querySynonym, queryEditSynonym} = require('../../modules/useSql')
 const {getSqlTrainingData} = require('../../modules/getTrainingData')
+const { emitWarning } = require('process')
 
 // 複寫equals使其能夠比對array的內容
 // Warn if overriding existing method
@@ -76,6 +77,12 @@ router.put('/botStep/domain', (req, res) => {
   const request = new sql.Request(pool)
   const {resCode, botReply} = req.body
   const cpnyId = res.locals.user.CPY_ID
+
+  const regex = /\'|\`|\"|\[|\]|\{|\}|\(|\)/g
+  if(regex.test(botReply)){
+    res.send({status: 'warning', message: '回覆內容不能有特殊符號'})
+    return
+  }
 
   // 將回覆文字的換行符號(\n)改成符合rasa機器人回覆的換行符號(  \n)
   // rasa機器人回覆需要空兩格+\n，否則對話會分開，變成兩句話
@@ -159,6 +166,12 @@ router.post('/botStep/domain', (req, res) => {
   const request = new sql.Request(pool)
   const {resCode, botReply} = req.body
   const cpnyId = res.locals.user.CPY_ID
+
+  const regex = /\'|\`|\"|\[|\]|\{|\}|\(|\)/g
+  if(regex.test(botReply)){
+    res.send({status: 'warning', message: '回覆內容不能有特殊符號'})
+    return
+  }
 
   // 將回覆文字的換行符號(\n)改成符合rasa機器人回覆的換行符號(  \n)
   // rasa機器人回覆需要空兩格+\n，否則對話會分開，變成兩句話
@@ -395,6 +408,7 @@ router.get('/userStep/nlu/getTextExams', (req, res) => {
   .catch(err => console.log(err))
 })
 
+/*
 // // 例句彈跳窗- 使用者添加例句
 // router.post('/userStep/nlu/addExamples', (req, res) => {
 //   const {textExamData} = req.body
@@ -436,6 +450,7 @@ router.get('/userStep/nlu/getTextExams', (req, res) => {
 //   })
 //   .catch(err => console.log(err))
 // })
+*/
 
 // 例句彈跳窗- 使用者添加例句
 router.post('/userStep/nlu/addExamples', (req, res) => {
@@ -443,7 +458,15 @@ router.post('/userStep/nlu/addExamples', (req, res) => {
   const request = new sql.Request(pool)
   const cpnyId = res.locals.user.CPY_ID
   const textExamDataParse = JSON.parse(textExamData)
-  console.log('textExamDataParse',textExamDataParse)
+  
+  const regex = /\'|\`|\"|\[|\]|\{|\}|\(|\)/g
+  for(i = 0; i < textExamDataParse.length; i++){
+    if(regex.test(textExamDataParse[i].text)){
+      res.send({status: 'warning', message: '例句不能有特殊符號'})
+      return
+    }
+  }
+
   getSqlTrainingData('BF_JH_DATA_TEST', 'nlu-json-test', 'nlu', cpnyId)
   .then(data => {
 
@@ -673,6 +696,12 @@ router.post('/userStep/fragments', (req, res) => {
   const {parse, storyName, indexNum} = req.body
   const request = new sql.Request(pool)
   const cpnyId = res.locals.user.CPY_ID
+
+  const regex = /\'|\`|\"|\[|\]|\{|\}|\(|\)/g
+  if(regex.test(parse.text)){
+    res.send({status: 'warning', message: '例句不能有特殊符號'})
+    return
+  }
 
   // 使用模組從資料庫抓取fragments data
   getSqlTrainingData('BF_JH_DATA_TEST', 'fragments-test', 'fragments', cpnyId)
